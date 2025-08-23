@@ -13,4 +13,4 @@ if [ "$SERVER_RESPONSE" = "$PING_MESSAGE" ]; then
     RESULT="success"
 fi
 
-echo "test_echo_server | result: $RESULT"
+echo "action: test_echo_server | result: $RESULT"
