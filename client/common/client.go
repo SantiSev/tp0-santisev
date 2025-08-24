@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/op/go-logging"
@@ -52,6 +55,17 @@ func (c *Client) createClientSocket() error {
 
 // StartClientLoop Send messages to the client until some time threshold is met
 func (c *Client) StartClientLoop() {
+
+	// This is how i handle SIGTERM signals
+
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGTERM)
+
+	go func() {
+		<-sigChannel
+		c.HandleShutdown()
+	}()
+
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
@@ -86,4 +100,13 @@ func (c *Client) StartClientLoop() {
 
 	}
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
+}
+
+func (c *Client) HandleShutdown() {
+	if c.conn != nil {
+		log.Info("action: shutdown | result: in_progress | client_id: %v", c.config.ID)
+		c.conn.Close()
+		log.Info("action: shutdown | result: success | client_id: %v", c.config.ID)
+	}
+
 }

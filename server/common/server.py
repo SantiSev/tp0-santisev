@@ -1,5 +1,6 @@
 import socket
 import logging
+import signal
 
 
 class Server:
@@ -8,6 +9,8 @@ class Server:
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
+
+        signal.signal(signal.SIGTERM, self.__handle_shutdown)
 
     def run(self):
         """
@@ -56,3 +59,14 @@ class Server:
         c, addr = self._server_socket.accept()
         logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
         return c
+
+    def __handle_shutdown(self):
+        """
+        Handle server shutdown
+
+        This function is called to gracefully shutdown the server,
+        closing all active connections and freeing resources.
+        """
+        logging.info('action: shutdown | result: in_progress')
+        self._server_socket.close()
+        logging.info('action: shutdown | result: success')
