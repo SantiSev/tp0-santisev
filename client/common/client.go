@@ -60,15 +60,25 @@ func (c *Client) StartClientLoop() {
 
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGTERM)
+	done := make(chan bool, 1)
 
 	go func() {
 		<-sigChannel
 		c.HandleShutdown()
+		done <- true
 	}()
 
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
+
+		select {
+		case <-done:
+			log.Infof("action: exit | result: success | client_id: %v", c.config.ID)
+			return
+		default:
+		}
+
 		// Create the connection the server in every loop iteration. Send an
 		c.createClientSocket()
 
@@ -104,9 +114,9 @@ func (c *Client) StartClientLoop() {
 
 func (c *Client) HandleShutdown() {
 	if c.conn != nil {
-		log.Info("action: shutdown | result: in_progress | client_id: %v", c.config.ID)
+		log.Infof("action: shutdown | result: in_progress | client_id: %v", c.config.ID)
 		c.conn.Close()
-		log.Info("action: shutdown | result: success | client_id: %v", c.config.ID)
+		log.Infof("action: shutdown | result: success | client_id: %v", c.config.ID)
 	}
 
 }
