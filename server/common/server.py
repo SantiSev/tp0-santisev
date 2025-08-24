@@ -60,13 +60,17 @@ class Server:
         logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
         return c
 
-    def __handle_shutdown(self):
+    def __handle_shutdown(self, signal_number, frame):
         """
         Handle server shutdown
 
         This function is called to gracefully shutdown the server,
         closing all active connections and freeing resources.
         """
-        logging.info('action: shutdown | result: in_progress')
-        self._server_socket.close()
-        logging.info('action: shutdown | result: success')
+        logging.debug(f"Signal received at frame: {frame}")
+
+        if signal_number == signal.SIGTERM:
+            logging.info('action: shutdown | result: in_progress')
+            self._server_socket.close()
+            logging.info('action: shutdown | result: success')
+            exit(0)
