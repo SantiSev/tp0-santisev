@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from configparser import ConfigParser
-from common.server import Server
+from common.server.server import Server
 import logging
 import os
 
@@ -33,7 +33,7 @@ def initialize_config():
 
     return config_params
 
-
+# to run locally, cd to this directory and run: python3 -m server.main
 def main():
     config_params = initialize_config()
     logging_level = config_params["logging_level"]
