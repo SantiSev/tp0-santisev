@@ -19,6 +19,8 @@ class MessageHandler:
                 logging.debug("action: receive_message | result: no_data")
                 return None
 
+            logging.debug(f"action: receive_message | result: success | data: {data.decode('utf-8')}")
+
             return self._parse_bet_data(data.decode("utf-8"))
 
         except UnicodeDecodeError as e:
@@ -44,28 +46,10 @@ class MessageHandler:
         """Parse raw message string into Bet object"""
         try:
             message = raw_message.strip()
-            if not message:
-                logging.warning(
-                    "action: parse_bet | result: fail | reason: empty_message"
-                )
-                raise ValueError("Empty message")
-
-            fields = message.split(",")
-            if len(fields) != self.EXPECTED_FIELDS:
-                logging.warning(
-                    f"action: parse_bet | result: fail | reason: invalid_field_count | expected: {self.EXPECTED_FIELDS} | got: {len(fields)}"
-                )
-                raise ValueError("Invalid field count")
 
             agency, first_name, last_name, document, birthdate, number = [
-                field.strip() for field in fields
+                field.strip() for field in message.split(",")
             ]
-
-            if not all([agency, first_name, last_name, document, birthdate, number]):
-                logging.warning(
-                    "action: parse_bet | result: fail | reason: empty_fields"
-                )
-                raise ValueError("One or more required fields are empty")
 
             return Bet(
                 agency=agency,

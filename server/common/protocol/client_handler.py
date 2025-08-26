@@ -27,6 +27,9 @@ class ClientHandler:
 
         finally:
             self._close_client_connection(client_socket)
+            logging.info(
+                f"--------------------------------------------"
+            )
 
     def _process_bet(self, bet: Bet):
         store_bets([bet])

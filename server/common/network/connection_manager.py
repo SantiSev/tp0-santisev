@@ -20,6 +20,7 @@ class ConnectionManager:
     def is_running(self) -> bool:
         return self._is_running
 
+    # TODO: the socketAdapter should be responsible for closing, the manager just gives you a socket to connect to shut itself down
     def shutdown(self) -> None:
         self._server_socket.close()
         self._is_running = False
