@@ -14,14 +14,6 @@ import (
 var log = logging.MustGetLogger("log")
 var err error
 
-// ClientConfig Configuration used by the client
-type ClientConfig struct {
-	ID            string
-	ServerAddress string
-	LoopAmount    int
-	LoopPeriod    time.Duration
-}
-
 type Client struct {
 	config      ClientConfig
 	connManager network.ConnectionManager
@@ -64,16 +56,13 @@ func (c *Client) StartClientLoop() {
 		default:
 		}
 
-		bet := protocol.NewBet(
-			1,
-			"santiago",
-			"sev",
-			42951041,
-			"2000-10-08",
-			42069,
-		)
+		if err != nil {
+			log.Errorf("action: create_bet | result: fail | client_id: %v | error: %v", c.config.ID, err)
+			c.Shutdown()
+			return
+		}
 
-		err := c.betHandler.SendBet(*bet, c.connSocket)
+		err = c.betHandler.SendBet(*c.config.Bet, c.connSocket)
 
 		if err != nil {
 			log.Errorf("action: send_message | result: fail | client_id: %v | error: %v",

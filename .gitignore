@@ -8,3 +8,6 @@ bin/
 __pycache__/
 
 dataset_test/
+
+# env vars
+.env

@@ -14,30 +14,6 @@ const EOF = "\xFF"
 const SUCCESS = "\x00"
 const BET_DATA_SIZE = 256
 
-type Bet struct {
-	AgencyId  int64
-	FirstName string
-	LastName  string
-	Document  int64
-	Birthdate string
-	Number    int64
-}
-
-func NewBet(agencyId int64, firstName, lastName string, document int64, birthdate string, number int64) *Bet {
-	return &Bet{
-		AgencyId:  agencyId,
-		FirstName: firstName,
-		LastName:  lastName,
-		Document:  document,
-		Birthdate: birthdate,
-		Number:    number,
-	}
-}
-
-func (b *Bet) to_string() (string, error) {
-	return fmt.Sprintf("%d,%s,%s,%d,%s,%d", b.AgencyId, b.FirstName, b.LastName, b.Document, b.Birthdate, b.Number), nil
-}
-
 type BetHandler struct {
 }
 
@@ -45,17 +21,14 @@ func NewBetHandler() *BetHandler {
 	return &BetHandler{}
 }
 func (b *BetHandler) SendBet(bet Bet, connSock *network.ConnectionInterface) error {
-	betString, err := bet.to_string()
-	if err != nil {
-		return err
-	}
+	betString := bet.To_string()
 	betBytes := []byte(betString)
 	if len(betBytes) > BET_DATA_SIZE {
 		return fmt.Errorf("bet data too large: %d bytes", len(betBytes))
 	}
 
 	// Send header byte first
-	err = connSock.SendData([]byte(HEADER))
+	err := connSock.SendData([]byte(HEADER))
 	if err != nil {
 		return err
 	}
