@@ -41,7 +41,7 @@ func (c *Client) StartClientLoop() {
 		done <- true
 	}()
 
-	c.connSocket, err = c.connManager.Connect(c.config.ServerAddress, c.config.ID)
+	c.connSocket, err = c.connManager.Connect(c.config.ServerAddress, c.config.Id)
 
 	if err != nil {
 		return
@@ -51,13 +51,13 @@ func (c *Client) StartClientLoop() {
 
 		select {
 		case <-done:
-			log.Infof("action: exit | result: success | client_id: %v", c.config.ID)
+			log.Infof("action: exit | result: success | client_id: %v", c.config.Id)
 			return
 		default:
 		}
 
 		if err != nil {
-			log.Errorf("action: create_bet | result: fail | client_id: %v | error: %v", c.config.ID, err)
+			log.Errorf("action: create_bet | result: fail | client_id: %v | error: %v", c.config.Id, err)
 			c.Shutdown()
 			return
 		}
@@ -66,7 +66,7 @@ func (c *Client) StartClientLoop() {
 
 		if err != nil {
 			log.Errorf("action: send_message | result: fail | client_id: %v | error: %v",
-				c.config.ID,
+				c.config.Id,
 				err,
 			)
 			c.Shutdown()
@@ -77,7 +77,7 @@ func (c *Client) StartClientLoop() {
 
 		if err != nil {
 			log.Errorf("action: recv_message | result: fail | client_id: %v | error: %v",
-				c.config.ID,
+				c.config.Id,
 				err,
 			)
 			c.Shutdown()
@@ -87,7 +87,7 @@ func (c *Client) StartClientLoop() {
 		time.Sleep(c.config.LoopPeriod)
 
 	}
-	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.ID)
+	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
 	c.betHandler.SendDone(c.connSocket)
 	c.Shutdown()
 }
