@@ -17,7 +17,7 @@ class BetProcessor:
 
             if not data:
                 logging.debug("action: receive_message | result: no_data")
-                return None
+                raise Exception("Something went wrong when receiving bet data, stopping process . . .")
 
             logging.debug(
                 f"action: receive_message | result: success | data: {data.decode('utf-8').rstrip('\x00')}"

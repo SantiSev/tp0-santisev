@@ -26,15 +26,9 @@ class ConnectionInterface:
                 return None
             data = self._receive_all(buffer_size)
             if not data:
-                logging.debug("action: receive | result: no_data")
                 return None
             return data
 
-        except UnicodeDecodeError as e:
-            logging.error(
-                f"action: receive | result: fail | section: ConnectionInterface | error: UTF-8 decode error: {e}"
-            )
-            return None
         except Exception as e:
             logging.error(
                 f"action: receive | result: fail | section: ConnectionInterface | error: {e}"

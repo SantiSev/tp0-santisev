@@ -12,4 +12,10 @@ dataset_test/
 # env vars
 .env
 
+# Data sets
 *.csv
+
+
+# Virtual environment
+venv/
+.venv

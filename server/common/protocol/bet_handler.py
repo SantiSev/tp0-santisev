@@ -21,8 +21,9 @@ class BetHandler:
         Process the best being sent by the client - receive and store bets
         """
         header = HEADER_SIZE
-        try:
-            while True:
+
+        while True:
+            try:
                 header = client_connection.receive(HEADER_SIZE)
 
                 if header == EOF:
@@ -36,10 +37,14 @@ class BetHandler:
                     logging.info(
                         f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}"
                     )
+                else:
+                    logging.info("action: an error occured during the transmission | result: fail")
+                    break
 
-        except Exception as e:
-            self.confirmation_to_client(client_connection, False)
-            logging.error(f"action: handle_client | result: error | error: {e}")
+            except Exception as e:
+                self.confirmation_to_client(client_connection, False)
+                logging.error(f"action: handle_client | result: error | error: {e}")
+                break
 
     def confirmation_to_client(
         self, connection: ConnectionInterface, status: bool
