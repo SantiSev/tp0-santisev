@@ -12,6 +12,7 @@ import (
 )
 
 var log = logging.MustGetLogger("log")
+var err error
 
 // ClientConfig Configuration used by the client
 type ClientConfig struct {
@@ -24,7 +25,7 @@ type ClientConfig struct {
 type Client struct {
 	config      ClientConfig
 	connManager network.ConnectionManager
-	connSocket  *network.ConnectionSocket
+	connSocket  *network.ConnectionInterface
 	betHandler  protocol.BetHandler
 }
 
@@ -38,17 +39,21 @@ func NewClient(config ClientConfig) *Client {
 
 func (c *Client) StartClientLoop() {
 
-	// This is how i handle SIGTERM signals
-
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGTERM)
 	done := make(chan bool, 1)
 
 	go func() {
 		<-sigChannel
-		c.HandleShutdown()
+		c.Shutdown()
 		done <- true
 	}()
+
+	c.connSocket, err = c.connManager.Connect(c.config.ServerAddress, c.config.ID)
+
+	if err != nil {
+		return
+	}
 
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
 
@@ -58,9 +63,6 @@ func (c *Client) StartClientLoop() {
 			return
 		default:
 		}
-
-		// Create the connection the server in every loop iteration. Send an
-		c.connSocket = c.connManager.Connect(c.config.ServerAddress, c.config.ID)
 
 		bet := protocol.NewBet(
 			1,
@@ -78,6 +80,7 @@ func (c *Client) StartClientLoop() {
 				c.config.ID,
 				err,
 			)
+			c.Shutdown()
 			return
 		}
 
@@ -88,17 +91,19 @@ func (c *Client) StartClientLoop() {
 				c.config.ID,
 				err,
 			)
+			c.Shutdown()
 			return
 		}
 
-		// Wait a time between sending one message and the next one
 		time.Sleep(c.config.LoopPeriod)
 
 	}
-	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
+	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.ID)
+	c.betHandler.SendDone(c.connSocket)
+	c.Shutdown()
 }
 
-func (c *Client) HandleShutdown() {
+func (c *Client) Shutdown() {
 	c.connSocket.Close()
 
 }

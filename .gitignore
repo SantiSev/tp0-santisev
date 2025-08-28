@@ -6,3 +6,5 @@ bin/
 
 # Python cache
 __pycache__/
+
+dataset_test/

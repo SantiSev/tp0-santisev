@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"bytes"
 	"fmt"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network" // odio los imports de golang :D
@@ -10,6 +9,11 @@ import (
 
 var log = logging.MustGetLogger("log")
 
+const HEADER = "\x02"
+const EOF = "\xFF"
+const SUCCESS = "\x00"
+const BET_DATA_SIZE = 256
+
 type Bet struct {
 	AgencyId  int64
 	FirstName string
@@ -17,11 +21,6 @@ type Bet struct {
 	Document  int64
 	Birthdate string
 	Number    int64
-}
-
-type BetConfirmation struct {
-	Status string
-	Error  string
 }
 
 func NewBet(agencyId int64, firstName, lastName string, document int64, birthdate string, number int64) *Bet {
@@ -45,27 +44,48 @@ type BetHandler struct {
 func NewBetHandler() *BetHandler {
 	return &BetHandler{}
 }
-
-func (b *BetHandler) SendBet(bet Bet, connSock *network.ConnectionSocket) error {
-	data, err := bet.to_string()
+func (b *BetHandler) SendBet(bet Bet, connSock *network.ConnectionInterface) error {
+	betString, err := bet.to_string()
 	if err != nil {
 		return err
 	}
-	err = connSock.SendData([]byte(data))
+	betBytes := []byte(betString)
+	if len(betBytes) > BET_DATA_SIZE {
+		return fmt.Errorf("bet data too large: %d bytes", len(betBytes))
+	}
+
+	// Send header byte first
+	err = connSock.SendData([]byte(HEADER))
+	if err != nil {
+		return err
+	}
+
+	// Send 1024-byte data payload
+	data := make([]byte, BET_DATA_SIZE)
+	copy(data, betBytes)
+	err = connSock.SendData(data)
 	return err
 }
 
-func (b *BetHandler) RecvBetConfirmation(connSock *network.ConnectionSocket) error {
-	data := make([]byte, 256)
+func (b *BetHandler) SendDone(connSock *network.ConnectionInterface) error {
+	err := connSock.SendData([]byte(EOF))
+	return err
+}
 
-	n, err := connSock.ReceiveData(data)
+func (b *BetHandler) RecvBetConfirmation(connSock *network.ConnectionInterface) error {
+	data := make([]byte, len(SUCCESS))
+
+	err := connSock.ReceiveData(data)
 	if err != nil {
 		return err
 	}
 
-	response := string(bytes.TrimRight(data[:n], "\x00"))
-
-	log.Infof("Received response: %s", response)
+	response := string(data)
+	if response == SUCCESS {
+		log.Info("Bet confirmation: SUCCESS")
+	} else {
+		log.Info("Bet confirmation: FAIL")
+	}
 
 	return nil
 }
