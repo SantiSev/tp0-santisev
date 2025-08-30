@@ -2,12 +2,13 @@ import logging
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_processor import BetProcessor
-from common.utils.utils import store_bets
+from common.utils.utils import Bet, store_bets
 
-EOF = b"\xff"
+EOF = b"\xFF"
 HEADER_SIZE = 1
-SUCCESS = b"\x00"
-FAIL = b"\xff"
+SUCCESS_HEADER = b"\x01"
+SUCCESS_MESSAGE_SIZE = 64
+FAIL = b"\xFF"
 
 
 class BetHandler:
@@ -33,12 +34,14 @@ class BetHandler:
                 bet = self.message_handler.process_bet(client_connection)
                 if bet:
                     store_bets([bet])
-                    self.confirmation_to_client(client_connection, True)
+                    self.confirmation_to_client(client_connection, bet)
                     logging.info(
                         f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}"
                     )
                 else:
-                    logging.info("action: an error occured during the transmission | result: fail")
+                    logging.info(
+                        "action: an error occured during the transmission | result: fail"
+                    )
                     break
 
             except Exception as e:
@@ -46,13 +49,18 @@ class BetHandler:
                 logging.error(f"action: handle_client | result: error | error: {e}")
                 break
 
-    def confirmation_to_client(
-        self, connection: ConnectionInterface, status: bool
-    ) -> None:
+    def confirmation_to_client(self, connection: ConnectionInterface, bet: Bet) -> None:
         """
         Confirm the bet with the client
         """
         try:
-            connection.send(SUCCESS if status else FAIL)
+            if bet:
+                connection.send(SUCCESS_HEADER)
+                response_string = f"{bet.document},{bet.number}"
+                response_bytes = response_string.encode("utf-8")
+                padded_response = response_bytes.ljust(SUCCESS_MESSAGE_SIZE, b"\x00")
+                connection.send(padded_response)
+            else:
+                connection.send(FAIL)
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")

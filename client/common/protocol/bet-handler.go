@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network" // odio los imports de golang :D
 	"github.com/op/go-logging"
@@ -11,7 +12,8 @@ var log = logging.MustGetLogger("log")
 
 const HEADER = "\x02"
 const EOF = "\xFF"
-const SUCCESS = "\x00"
+const SUCCESS_HEADER = "\x01"
+const SUCCESS_MESSAGE_SIZE = 64
 const BET_DATA_SIZE = 256
 
 type BetHandler struct {
@@ -46,16 +48,26 @@ func (b *BetHandler) SendDone(connSock *network.ConnectionInterface) error {
 }
 
 func (b *BetHandler) RecvBetConfirmation(connSock *network.ConnectionInterface) error {
-	data := make([]byte, len(SUCCESS))
+	data := make([]byte, len(SUCCESS_HEADER))
 
 	err := connSock.ReceiveData(data)
 	if err != nil {
 		return err
 	}
 
-	response := string(data)
-	if response == SUCCESS {
-		log.Info("Bet confirmation: SUCCESS")
+	success_header := string(data)
+	if success_header == SUCCESS_HEADER {
+		success_message := make([]byte, SUCCESS_MESSAGE_SIZE)
+		err = connSock.ReceiveData(success_message)
+		if err != nil {
+			return err
+		}
+		successMsgStr := string(success_message)
+		parts := strings.Split(successMsgStr, ",")
+		if len(parts) != 2 {
+			return fmt.Errorf("invalid bet confirmation format: %s", successMsgStr)
+		}
+		log.Infof("action: apuesta_enviada | result: success | dni: %s | numero: %s", parts[0], parts[1])
 	} else {
 		log.Info("Bet confirmation: FAIL")
 	}
