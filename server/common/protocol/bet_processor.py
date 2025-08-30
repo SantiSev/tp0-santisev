@@ -19,10 +19,6 @@ class BetProcessor:
                 logging.debug("action: receive_message | result: no_data")
                 raise Exception("Something went wrong when receiving bet data, stopping process . . .")
 
-            logging.debug(
-                f"action: receive_message | result: success | data: {data.decode('utf-8').rstrip('\x00')}"
-            )
-
             return self._parse_bet_data(data.decode("utf-8").rstrip("\x00"))
 
         except UnicodeDecodeError as e:
