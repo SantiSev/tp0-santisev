@@ -13,10 +13,10 @@ func NewConnectionManager() *ConnectionManager {
 	return &ConnectionManager{}
 }
 
-func (c *ConnectionManager) Connect(serverAddr string, connID string) (*ConnectionInterface, error) {
+func (c *ConnectionManager) Connect(serverAddr string) (*ConnectionInterface, error) {
 
 	connSocket := NewConnectionInterface(nil)
-	err := connSocket.Connect(serverAddr, connID)
+	err := connSocket.Connect(serverAddr)
 	if err != nil {
 		return nil, err
 	}

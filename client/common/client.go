@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/protocol"
 	"github.com/op/go-logging"
@@ -14,17 +14,20 @@ import (
 var log = logging.MustGetLogger("log")
 var err error
 
+const BET_DATA_FILE = "data/agency_bets.csv"
+
 type Client struct {
-	config      ClientConfig
+	config      config.ClientConfig
 	connManager network.ConnectionManager
 	connSocket  *network.ConnectionInterface
 	betHandler  protocol.BetHandler
 }
 
-func NewClient(config ClientConfig) *Client {
+func NewClient(config config.ClientConfig) *Client {
 	client := &Client{
 		config:      config,
 		connManager: *network.NewConnectionManager(),
+		betHandler:  *protocol.NewBetHandler(config.MaxBatchAmount),
 	}
 	return client
 }
@@ -41,52 +44,31 @@ func (c *Client) StartClientLoop() {
 		done <- true
 	}()
 
-	c.connSocket, err = c.connManager.Connect(c.config.ServerAddress, c.config.Id)
+	select {
+	case <-done:
+		log.Infof("action: exit | result: success | client_id: %v", c.config.Id)
+		return
+	default:
+	}
+
+	c.connSocket, err = c.connManager.Connect(c.config.ServerAddress)
 
 	if err != nil {
+		log.Infof("action: connect | result: fail | client_id: %v", c.config.Id)
 		return
 	}
 
-	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
+	err = c.betHandler.SendAllBetData(c.config.Id, BET_DATA_FILE, c.connSocket)
 
-		select {
-		case <-done:
-			log.Infof("action: exit | result: success | client_id: %v", c.config.Id)
-			return
-		default:
-		}
-
-		if err != nil {
-			log.Errorf("action: create_bet | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			c.Shutdown()
-			return
-		}
-
-		err = c.betHandler.SendBet(*c.config.Bet, c.connSocket)
-
-		if err != nil {
-			log.Errorf("action: send_message | result: fail | client_id: %v | error: %v",
-				c.config.Id,
-				err,
-			)
-			c.Shutdown()
-			return
-		}
-
-		err = c.betHandler.RecvBetConfirmation(c.connSocket)
-
-		if err != nil {
-			log.Errorf("action: recv_message | result: fail | client_id: %v | error: %v",
-				c.config.Id,
-				err,
-			)
-			c.Shutdown()
-			return
-		}
-
-		time.Sleep(c.config.LoopPeriod)
-
+	if err != nil {
+		log.Errorf("action: send_message | result: fail | client_id: %v | error: %v",
+			c.config.Id,
+			err,
+		)
+		c.Shutdown()
+		return
 	}
+
 	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
 	c.betHandler.SendDone(c.connSocket)
 	c.Shutdown()

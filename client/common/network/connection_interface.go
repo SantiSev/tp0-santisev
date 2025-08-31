@@ -15,14 +15,13 @@ func NewConnectionInterface(conn net.Conn) *ConnectionInterface {
 	}
 }
 
-func (c *ConnectionInterface) Connect(serverAddr string, connID string) error {
+func (c *ConnectionInterface) Connect(serverAddr string) error {
 	log.Infof("connecting . . . ")
 	conn, err := net.Dial("tcp", serverAddr)
 	log.Infof("connection established, starting bet transmission")
 	if err != nil {
 		log.Criticalf(
-			"action: connect | result: fail | client_id: %v | error: %v",
-			connID,
+			"action: connect | result: fail | error: %v",
 			err,
 		)
 		return err

@@ -14,7 +14,7 @@ services:
   client1:
     container_name: client1
     image: client:latest
-    entrypoint: /client
+    entrypoint: ["tail", "-f", "/dev/null"]
     environment:
       - CLI_ID=1
       - CLI_BET_NUMBER=67890
@@ -26,6 +26,7 @@ services:
       - testing_net
     volumes:
       - ./client/config.yaml:/config.yaml
+      - ./.data:/data
     depends_on:
       - server
 

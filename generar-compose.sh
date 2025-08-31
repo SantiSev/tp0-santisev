@@ -33,15 +33,11 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     entrypoint: /client
     environment:
       - CLI_ID=$i
-      - CLI_BET_NUMBER=67890
-      - CLI_DOCUMENT=11223344
-      - CLI_FIRST_NAME=John
-      - CLI_LAST_NAME=Doe
-      - CLI_BIRTHDATE=1990-01-01
     networks:
       - testing_net
     volumes:
       - ./client/config.yaml:/config.yaml
+      - ./.data/agency-$i.csv:/data/agency.csv
     depends_on:
       - server
 EOF

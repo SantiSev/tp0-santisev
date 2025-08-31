@@ -4,11 +4,11 @@ from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_processor import BetProcessor
 from common.utils.utils import Bet, store_bets
 
-EOF = b"\xFF"
+EOF = b"\xff"
 HEADER_SIZE = 1
 SUCCESS_HEADER = b"\x01"
 SUCCESS_MESSAGE_SIZE = 64
-FAIL = b"\xFF"
+FAIL = b"\xff"
 
 
 class BetHandler:
@@ -17,11 +17,12 @@ class BetHandler:
     def __init__(self):
         self.message_handler = BetProcessor()
 
-    def process_bets(self, client_connection: ConnectionInterface) -> None:
+    def process_bets(self, client_connection: ConnectionInterface) -> int:
         """
         Process the best being sent by the client - receive and store bets
         """
         header = HEADER_SIZE
+        bet_counter = 0
 
         while True:
             try:
@@ -38,16 +39,20 @@ class BetHandler:
                     logging.info(
                         f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}"
                     )
+                    bet_counter += 1
                 else:
-                    logging.info(
-                        "action: an error occured during the transmission | result: fail"
-                    )
-                    break
+                    raise Exception("Invalid bet received")
 
             except Exception as e:
                 self.confirmation_to_client(client_connection, False)
-                logging.error(f"action: handle_client | result: error | error: {e}")
+                logging.critical(
+                    f"action: apuesta_recibida | result: fail | cantidad: ${bet_counter}"
+                )
                 break
+        logging.info(
+            f"action: apuesta_recibida | result: success | cantidad: ${bet_counter}"
+        )
+        return bet_counter
 
     def confirmation_to_client(self, connection: ConnectionInterface, bet: Bet) -> None:
         """
