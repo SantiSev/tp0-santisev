@@ -29,13 +29,11 @@ func (b *BetHandler) SendBet(bet Bet, connSock *network.ConnectionInterface) err
 		return fmt.Errorf("bet data too large: %d bytes", len(betBytes))
 	}
 
-	// Send header byte first
 	err := connSock.SendData([]byte(HEADER))
 	if err != nil {
 		return err
 	}
 
-	// Send 1024-byte data payload
 	data := make([]byte, BET_DATA_SIZE)
 	copy(data, betBytes)
 	err = connSock.SendData(data)
