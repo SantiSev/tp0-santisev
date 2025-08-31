@@ -57,7 +57,7 @@ func InitConfig() (*ClientConfig, error) {
 		LoopAmount:     v.GetInt("loop.amount"),
 		LoopPeriod:     v.GetDuration("loop.period"),
 		LogLevel:       v.GetString("log.level"),
-		MaxBatchAmount: v.GetInt("max.batch.amount"),
+		MaxBatchAmount: v.GetInt("batch.maxAmount"),
 	}
 
 	return clientConfig, nil

@@ -17,7 +17,6 @@ const EOF = "\xFF"
 const SUCCESS_HEADER = "\x01"
 const SUCCESS_MESSAGE_SIZE = 64
 const BET_DATA_SIZE = 256
-const MAX_FILE_SIZE = 8192
 
 type BetHandler struct {
 	MaxBatchAmount int
@@ -30,16 +29,7 @@ func NewBetHandler(maxBatchAmount int) *BetHandler {
 }
 func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, connSock *network.ConnectionInterface) error {
 
-	fileInfo, err := os.Stat(agency_data_file)
-	if err != nil {
-		return fmt.Errorf("failed to get file info: %v", err)
-	}
-
-	if fileInfo.Size() > MAX_FILE_SIZE {
-		return fmt.Errorf("file too large: %d bytes | the max amount to send is 8 Kb", fileInfo.Size())
-	}
-
-	err = connSock.SendData([]byte(HEADER))
+	err := connSock.SendData([]byte(HEADER))
 	if err != nil {
 		return err
 	}
@@ -57,6 +47,8 @@ func (b *BetHandler) _sendBatch(agency_id int64, agency_data_file string, connSo
 
 	scanner := bufio.NewScanner(file)
 
+	// TODO: THIS IS SUPPOSED TO SEND AS BATCHES, NOT ONE BY ONE UNTIL IT REACHES THE BATCH AMOUNT
+	// as in: (SEND X BETS AT A TIME)
 	for i := 0; i < b.MaxBatchAmount && scanner.Scan(); i++ {
 		line := strings.TrimSpace(scanner.Text())
 
