@@ -9,10 +9,8 @@ type ConnectionInterface struct {
 	conn net.Conn
 }
 
-func NewConnectionInterface(conn net.Conn) *ConnectionInterface {
-	return &ConnectionInterface{
-		conn: conn,
-	}
+func NewConnectionInterface() *ConnectionInterface {
+	return &ConnectionInterface{}
 }
 
 func (c *ConnectionInterface) Connect(serverAddr string) error {
