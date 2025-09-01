@@ -11,6 +11,11 @@ SUCCESS_MESSAGE_SIZE = 64
 FAIL = b"\xFF"
 
 
+# TODO: DO THESE CHANGES:
+# 1. REMOVE THE CLIENT MESSAGE LOOP, THE EXERCISE STATES TO SEND 1 BET, sending multiple times the same bet doesnt make sense
+# 2. DONT PADD OUT THE MESSAGES, HAVE IT SEND FIRST THE LENGTH AND THEN THE DATA
+# 3. ( Optional )Check to see if you can refactort the connectionINterface so you don't have to send the length and then data, have it send the length and then the data all at once
+
 class BetHandler:
     """Handles individual client connections"""
 
