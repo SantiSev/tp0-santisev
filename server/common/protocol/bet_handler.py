@@ -72,9 +72,10 @@ class BetHandler:
         """
         try:
             if status:
-                send_status = connection.send(SUCCESS_HEADER)
+                connection.send(SUCCESS_HEADER)
                 logging.info(f"action: confirm_bet | result: success")
             else:
                 connection.send(FAIL)
+                logging.info(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
