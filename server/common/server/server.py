@@ -33,7 +33,7 @@ class Server:
                     self.connectedClients[client_connection] = bet_counter
                     self.processed_agencies += 1
                     logging.info(
-                        f"action: server_loop | result: processed_agency | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
+                        f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
                     )
 
                 except Exception as e:
