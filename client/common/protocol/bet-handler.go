@@ -96,7 +96,6 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 }
 
 func (b *BetHandler) GetLotteryResults(connSock *network.ConnectionInterface) error {
-	log.Info("action: get_lottery_results | result: awaiting lottery results")
 	headerData := make([]byte, WINNER_HEADER_SIZE)
 	err := connSock.ReceiveData(headerData)
 	if err != nil {
