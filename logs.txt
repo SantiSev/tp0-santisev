@@ -17004,3 +17004,126 @@ server   | 2025-09-01 22:30:02 INFO     action: close | result: success
 server   | 2025-09-01 22:30:02 INFO     action: close | result: success
 server   | 2025-09-01 22:30:02 INFO     action: close | result: success
 server   | 2025-09-01 22:30:02 INFO     action: server_shutdown | result: complete
+docker compose -f docker-compose-dev.yaml logs -f
+server   | 2025-09-01 23:04:47 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG | agencies_amount: 3
+server   | 2025-09-01 23:04:47 INFO     action: server_start | result: success
+server   | 2025-09-01 23:04:47 INFO     action: connect_client | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+client1  | 2025-09-01 23:04:47 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 500 | loop_period: 150ms | log_level: INFO | max_batch_amount: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+client1  | 2025-09-01 23:04:47 INFO     connecting . . . 
+client1  | 2025-09-01 23:04:47 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 373B
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: config | result: success | client_id: 3 | server_address: server:12345 | loop_amount: 500 | loop_period: 150ms | log_level: INFO | max_batch_amount: 10
+client3  | 2025-09-01 23:04:47 INFO     connecting . . . 
+client3  | 2025-09-01 23:04:47 INFO     connection established, starting bet transmission
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 379B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client1  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client3  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client3  | 2025-09-01 23:04:47 INFO     action: winner_confirmation | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: success | cant_ganadores: 6
+client3  | 2025-09-01 23:04:47 INFO     action: transmission finished | result: success | client_id: 3
+client3  | 2025-09-01 23:04:47 INFO     action: close | result: success
+client3  | 2025-09-01 23:04:47 INFO     action: exit | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client1  | 2025-09-01 23:04:47 INFO     action: winner_confirmation | result: success
+client1  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: success | cant_ganadores: 6
+client1  | 2025-09-01 23:04:47 INFO     action: transmission finished | result: success | client_id: 1
+client1  | 2025-09-01 23:04:47 INFO     action: close | result: success
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: end of transmission | result: success
+server   | 2025-09-01 23:04:47 INFO     action: apuesta_recibida | result: success | cantidad: 60
+server   | 2025-09-01 23:04:47 INFO     action: server_loop | result: processed_agency | agencies_processed: 1 / 3
+client1  | 2025-09-01 23:04:47 INFO     action: exit | result: success
+server   | 2025-09-01 23:04:47 INFO     action: connect_client | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: end of transmission | result: success
+server   | 2025-09-01 23:04:47 INFO     action: apuesta_recibida | result: success | cantidad: 60
+server   | 2025-09-01 23:04:47 INFO     action: server_loop | result: processed_agency | agencies_processed: 2 / 3
+server   | 2025-09-01 23:04:47 INFO     action: connect_client | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: config | result: success | client_id: 2 | server_address: server:12345 | loop_amount: 500 | loop_period: 150ms | log_level: INFO | max_batch_amount: 10
+client2  | 2025-09-01 23:04:47 INFO     connecting . . . 
+client2  | 2025-09-01 23:04:47 INFO     connection established, starting bet transmission
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 376B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: send_bet_batch | result: success | batch_length: 380B
+client2  | 2025-09-01 23:04:47 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client2  | 2025-09-01 23:04:47 INFO     action: winner_confirmation | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-01 23:04:47 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 23:04:47 INFO     action: end of transmission | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: consulta_ganadores | result: success | cant_ganadores: 6
+client2  | 2025-09-01 23:04:47 INFO     action: transmission finished | result: success | client_id: 2
+client2  | 2025-09-01 23:04:47 INFO     action: close | result: success
+client2  | 2025-09-01 23:04:47 INFO     action: exit | result: success
+server   | 2025-09-01 23:04:47 INFO     action: apuesta_recibida | result: success | cantidad: 60
+server   | 2025-09-01 23:04:47 INFO     action: server_loop | result: processed_agency | agencies_processed: 3 / 3
+server   | 2025-09-01 23:04:47 INFO     action: sorteo | result: success | winners_count: 6
+server   | 2025-09-01 23:04:47 INFO     action: send_winning_numbers | result: success | winners: 6
+server   | 2025-09-01 23:04:47 INFO     action: send_winning_numbers | result: success | winners: 6
+server   | 2025-09-01 23:04:47 INFO     action: send_winning_numbers | result: success | winners: 6
+server   | 2025-09-01 23:04:47 INFO     action: server_shutdown | result: in_progress
+server   | 2025-09-01 23:04:47 INFO     action: close | result: success
+server   | 2025-09-01 23:04:47 INFO     action: close | result: success
+server   | 2025-09-01 23:04:47 INFO     action: close | result: success
+server   | 2025-09-01 23:04:47 INFO     action: server_shutdown | result: complete

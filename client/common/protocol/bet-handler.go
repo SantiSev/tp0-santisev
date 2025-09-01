@@ -45,16 +45,6 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 	scanner := bufio.NewScanner(file)
 
 	for {
-		// TODO: read from file first before sending data
-		err = connSock.SendData([]byte(HEADER))
-		if err != nil {
-			return err
-		}
-
-		// TODO: remove this later
-		if err := scanner.Err(); err != nil {
-			return fmt.Errorf("error reading file: %v", err)
-		}
 
 		betBatchMessage, canRead, err := b._createBetBatch(agency_id, scanner)
 		if err != nil {
@@ -66,6 +56,16 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		if batchLen > MAX_BATCH_SIZE {
 			return fmt.Errorf("batch length too large for single byte: %d (max: %d)", batchLen, MAX_BATCH_SIZE)
 		}
+
+		if !canRead || batchLen == 0 {
+			break
+		}
+
+		err = connSock.SendData([]byte(HEADER))
+		if err != nil {
+			return err
+		}
+
 		lenBytes := make([]byte, 2)
 		binary.BigEndian.PutUint16(lenBytes, uint16(batchLen))
 		log.Infof("action: send_bet_batch | result: success | batch_length: %dB", batchLen)
@@ -82,10 +82,6 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		err = b._recvConfirmation(connSock)
 		if err != nil {
 			return err
-		}
-
-		if !canRead {
-			break
 		}
 
 	}
@@ -128,13 +124,15 @@ func (b *BetHandler) GetLotteryResults(connSock *network.ConnectionInterface) er
 }
 
 func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (string, bool, error) {
-	// TODO: dont use counter, use  [ for i := 0; i < b.MaxBatchAmount; i++ ]
 	var betBatchMessage string
-	counter := 0
 
-	for counter < b.MaxBatchAmount {
+	for i := 0; i < b.MaxBatchAmount; i++ {
 
 		canRead := scanner.Scan()
+
+		if err := scanner.Err(); err != nil {
+			return "", false, fmt.Errorf("error reading file: %v", err)
+		}
 
 		if !canRead {
 			return betBatchMessage, false, nil
@@ -147,7 +145,6 @@ func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (s
 		}
 		betMessage := fmt.Sprintf("%d,%s,", agency_id, line)
 		betBatchMessage += betMessage
-		counter++
 	}
 	return betBatchMessage, true, nil
 }

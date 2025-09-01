@@ -6,17 +6,14 @@ from common.network.connection_manager import ConnectionManager
 from common.protocol.bet_handler import BetHandler
 from common.network.connection_interface import ConnectionInterface
 
-# TODO: Change this to be a .env
-LOTTERY_AGENCIES = 5
-
-
 class Server:
-    def __init__(self, port, listen_backlog):
+    def __init__(self, port, listen_backlog, agencies_amount):
         self.connection_manager = ConnectionManager(
             port=port, listen_backlog=listen_backlog
         )
         self.connectedClients: Dict[ConnectionInterface, int] = {}
         self.is_running = True
+        self.agencies_amount = agencies_amount
         self.processed_agencies = 0
         self.bet_handler = BetHandler()
         signal.signal(signal.SIGTERM, self._shutdown)
@@ -28,7 +25,7 @@ class Server:
             self.connection_manager.start_listening()
             logging.info("action: server_start | result: success")
 
-            while self.is_running and self.processed_agencies < LOTTERY_AGENCIES:
+            while self.is_running and self.processed_agencies < self.agencies_amount:
                 try:
                     client_connection = self._connect_client()
                     # TODO: convert to list since i dont really use the bet_counter here
@@ -36,7 +33,7 @@ class Server:
                     self.connectedClients[client_connection] = bet_counter
                     self.processed_agencies += 1
                     logging.info(
-                        f"action: server_loop | result: processed_agency | agencies_processed: {self.processed_agencies} / {LOTTERY_AGENCIES}"
+                        f"action: server_loop | result: processed_agency | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
                     )
 
                 except Exception as e:
