@@ -58,7 +58,6 @@ func InitConfig() (*ClientConfig, error) {
 		LoopPeriod:     v.GetDuration("loop.period"),
 		LogLevel:       v.GetString("log.level"),
 		MaxBatchAmount: v.GetInt("batch.maxAmount"),
-		BetFilePath:    v.GetString("bet_file_path"),
 	}
 
 	return clientConfig, nil
