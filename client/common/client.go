@@ -14,10 +14,6 @@ import (
 var log = logging.MustGetLogger("log")
 var err error
 
-const BET_DATA_FILE = "../.data/agency-2.csv"
-
-//const BET_DATA_FILE = "data/agency.csv"
-
 type Client struct {
 	config      config.ClientConfig
 	connManager network.ConnectionManager
@@ -57,6 +53,11 @@ func (c *Client) StartClientLoop() {
 	if err != nil {
 		log.Infof("action: connect | result: fail | client_id: %v", c.config.Id)
 		return
+	}
+
+	BET_DATA_FILE := "data/agency.csv"
+	if _, err := os.Stat(BET_DATA_FILE); err != nil {
+		BET_DATA_FILE = "../.data/agency-2.csv"
 	}
 
 	err = c.betHandler.SendAllBetData(c.config.Id, BET_DATA_FILE, c.connSocket)
