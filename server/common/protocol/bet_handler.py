@@ -47,9 +47,10 @@ class BetHandler:
                 )
                 break
         store_bets(bets)
-        self.confirmation_to_client(client_connection, True)
+        logging.info(
+            f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
+        )
         return len(bets)
-
 
     def confirmation_to_client(
         self, connection: ConnectionInterface, status: bool

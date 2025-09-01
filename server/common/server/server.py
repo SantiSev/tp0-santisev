@@ -29,9 +29,6 @@ class Server:
                     client_connection = self._connect_client()
                     bet_counter = self.bet_handler.process_bets(client_connection)
                     self.connectedClients[client_connection] = bet_counter
-                    logging.info(
-                        f"action: apuesta_recibida | result: success | cantidad: {bet_counter}"
-                    )
                     self._disconnect_client(client_connection)
 
                 except Exception as e:
