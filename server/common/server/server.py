@@ -79,5 +79,5 @@ class Server:
         self.is_running = False
         for client in self.connectedClients:
             client.close()
-        logging.info("action: server_shutdown | result: complete")
+        logging.info("action: server_shutdown | result: success")
         sys.exit(0)
