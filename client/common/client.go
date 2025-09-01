@@ -76,5 +76,5 @@ func (c *Client) StartClientLoop() {
 
 func (c *Client) Shutdown() {
 	c.connSocket.Close()
-
+	log.Infof("action: exit | result: success")
 }
