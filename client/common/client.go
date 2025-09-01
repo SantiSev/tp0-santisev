@@ -71,7 +71,6 @@ func (c *Client) StartClientLoop() {
 	}
 
 	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
-	c.betHandler.SendDone(c.connSocket)
 	c.Shutdown()
 }
 

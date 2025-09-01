@@ -10,13 +10,23 @@ import (
 	"github.com/op/go-logging"
 )
 
+// TODO: SEND THE LENGTH AND THEN THE DATA ! ! ! DONT USE FIXED AMOUNTS
+// this is due to using strings
+// e.g:
+// main header: 1 B
+// [bet length] [bet data] ;
+// [bet length] [bet data] ;
+// . . .
+// EOF header
+
 var log = logging.MustGetLogger("log")
 
 const HEADER = "\x02"
 const EOF = "\xFF"
 const SUCCESS_HEADER = "\x01"
+const MAX_DATA_LEN = 255
 const SUCCESS_MESSAGE_SIZE = 64
-const BET_DATA_SIZE = 256
+const MAX_BATCH_SIZE = 8192 // 8 kB
 
 type BetHandler struct {
 	MaxBatchAmount int
@@ -29,100 +39,75 @@ func NewBetHandler(maxBatchAmount int) *BetHandler {
 }
 func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, connSock *network.ConnectionInterface) error {
 
-	err := connSock.SendData([]byte(HEADER))
-	if err != nil {
-		return err
-	}
-
-	b._sendBatch(agency_id, agency_data_file, connSock)
-	return err
-}
-
-func (b *BetHandler) _sendBatch(agency_id int64, agency_data_file string, connSock *network.ConnectionInterface) error {
 	file, err := os.Open(agency_data_file)
 	if err != nil {
 		return fmt.Errorf("failed to open file: %v", err)
 	}
 	defer file.Close()
 
+	// First, we send the header
+	err = connSock.SendData([]byte(HEADER))
+	if err != nil {
+		return err
+	}
+
 	scanner := bufio.NewScanner(file)
 
-	// TODO: THIS IS SUPPOSED TO SEND AS BATCHES, NOT ONE BY ONE UNTIL IT REACHES THE BATCH AMOUNT
-	// as in: (SEND X BETS AT A TIME)
-	for i := 0; i < b.MaxBatchAmount && scanner.Scan(); i++ {
-		line := strings.TrimSpace(scanner.Text())
+	for scanner.Scan() {
 
-		// Skip empty lines
-		if line == "" {
-			i--
-			continue
+		if err := scanner.Err(); err != nil {
+			return fmt.Errorf("error reading file: %v", err)
 		}
 
-		bet, err := _processBet(line, agency_id)
+		betBatchMessage, err := b._createBetBatch(agency_id, scanner)
 		if err != nil {
-			log.Errorf("action: parse_bet | result: fail | line: %s | error: %v", line, err)
+			return err
+		}
+		err = connSock.SendData([]byte(betBatchMessage))
+		if err != nil {
+			return err
+		}
+		err = b._recvConfirmation(connSock)
+		if err != nil {
 			return err
 		}
 
-		err = b._sendBet(bet, connSock)
-		if err != nil {
-			log.Errorf("action: send_bet | result: fail | batch_index: %d | error: %v", i, err)
-			return err
-		}
-
-		err = b._recvBetConfirmation(connSock)
-		if err != nil {
-			log.Errorf("action: recv_confirmation | result: fail | batch_index: %d | error: %v", i, err)
-			return err
-		}
 	}
 
-	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("error reading file: %v", err)
+	err = b._sendDone(connSock)
+	if err != nil {
+		log.Errorf("action: send_done | result: fail | error: %v", err)
+		return err
 	}
-
-	log.Infof("action: send_batch | result: success")
-	return nil
+	return err
 }
 
-func (b *BetHandler) SendDone(connSock *network.ConnectionInterface) error {
+func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (string, error) {
+	var betBatchMessage string
+
+	for i := 0; i < b.MaxBatchAmount && scanner.Scan(); i++ {
+		i++
+		line := strings.TrimSpace(scanner.Text())
+
+		betMessage := fmt.Sprintf("%d,%s\n", agency_id, line)
+		length := len(betMessage)
+		if length > MAX_DATA_LEN {
+			return "", fmt.Errorf("this line [%s] is too large: %d bytes", line, length)
+		}
+		betMessage = fmt.Sprintf("%c%s", length, betMessage)
+		betBatchMessage += betMessage
+	}
+	log.Infof("action: create_bet_batch | result: success | batch data: %s", betBatchMessage)
+
+	return betBatchMessage, nil
+}
+
+func (b *BetHandler) _sendDone(connSock *network.ConnectionInterface) error {
 	err := connSock.SendData([]byte(EOF))
 	return err
 }
 
-func _processBet(data string, agencyId int64) (*Bet, error) {
-	var firstName, lastName, birthdate string
-	var document, number int64
-
-	_, err := fmt.Sscanf(data, "%d,%s,%s,%d,%s,%d", &agencyId, &firstName, &lastName, &document, &birthdate, &number)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewBet(agencyId, firstName, lastName, document, birthdate, number), nil
-}
-
-func (b *BetHandler) _sendBet(bet *Bet, connSock *network.ConnectionInterface) error {
-	betString := bet.To_string()
-
-	betBytes := []byte(betString)
-	if len(betBytes) > BET_DATA_SIZE {
-		return fmt.Errorf("bet data too large: %d bytes", len(betBytes))
-	}
-
-	data := make([]byte, BET_DATA_SIZE)
-	copy(data, betBytes)
-
-	err := connSock.SendData(data)
-	if err != nil {
-		log.Errorf("action: send_bet | result: fail | error: %v", err)
-		return err
-	}
-
-	return nil
-}
-
-func (b *BetHandler) _recvBetConfirmation(connSock *network.ConnectionInterface) error {
+func (b *BetHandler) _recvConfirmation(connSock *network.ConnectionInterface) error {
 	data := make([]byte, len(SUCCESS_HEADER))
 
 	err := connSock.ReceiveData(data)
