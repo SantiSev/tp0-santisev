@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network"
@@ -76,6 +77,7 @@ func (c *Client) StartClientLoop() {
 }
 
 func (c *Client) Shutdown() {
+	time.Sleep(100 * time.Millisecond)
 	c.connSocket.Close()
 	log.Infof("action: exit | result: success")
 }
