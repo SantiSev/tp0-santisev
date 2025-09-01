@@ -15,7 +15,7 @@ var log = logging.MustGetLogger("log")
 var err error
 
 // const BET_DATA_FILE = "data/agency_bets.csv"
-const BET_DATA_FILE = "data/agency.csv"
+const BET_DATA_FILE = "../.data/agency-2.csv"
 
 type Client struct {
 	config      config.ClientConfig

@@ -7,18 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network" // odio los imports de golang :D
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network"
 	"github.com/op/go-logging"
 )
-
-// TODO: SEND THE LENGTH AND THEN THE DATA ! ! ! DONT USE FIXED AMOUNTS
-// this is due to using strings
-// e.g:
-// main header: 1 B
-// data size: 2 B
-// data: N B in chunks less than 8kB
-// . . .
-// EOF header
 
 var log = logging.MustGetLogger("log")
 
@@ -82,6 +73,11 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 			return err
 		}
 
+		err = b._recvConfirmation(connSock)
+		if err != nil {
+			return err
+		}
+
 		if !canRead {
 			break
 		}
@@ -94,10 +90,6 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		return err
 	}
 
-	err = b._recvConfirmation(connSock)
-	if err != nil {
-		return err
-	}
 	return err
 }
 

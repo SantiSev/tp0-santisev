@@ -34,6 +34,7 @@ class BetHandler:
                 batchBets = self.message_handler.process_batch(client_connection)
                 if batchBets:
                     bets.extend(batchBets)
+                    self.confirmation_to_client(client_connection, True)
 
                 else:
                     raise Exception("An Error occured proccesing bets")
@@ -45,21 +46,10 @@ class BetHandler:
                     f"action: apuesta_recibida | result: fail | cantidad: {len(bets)}"
                 )
                 break
-        self.store_all_bets(bets)
+        store_bets(bets)
         self.confirmation_to_client(client_connection, True)
-        logging.info(
-            f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
-        )
         return len(bets)
 
-    def store_all_bets(self, bets: List[Bet]) -> None:
-        """
-        Store all bets in the database
-        """
-        store_bets(bets)
-        logging.debug(
-            f"action: store_bets | result: success | amount of bets stored: {len(bets)}"
-        )
 
     def confirmation_to_client(
         self, connection: ConnectionInterface, status: bool
