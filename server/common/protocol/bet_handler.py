@@ -7,8 +7,8 @@ from common.utils.utils import Bet, store_bets
 EOF = b"\xff"
 HEADER_SIZE = 1
 SUCCESS_HEADER = b"\x01"
-SUCCESS_MESSAGE_SIZE = 64
 FAIL = b"\xff"
+
 
 
 class BetHandler:
@@ -32,19 +32,16 @@ class BetHandler:
                     logging.info(f"action: end of transmission | result: success")
                     break
 
-                bet = self.message_handler.process_bet(client_connection)
-                if bet:
-                    store_bets([bet])
-                    self.confirmation_to_client(client_connection, bet)
-                    logging.info(
-                        f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}"
-                    )
-                    bet_counter += 1
+                bets = self.message_handler.process_batch(client_connection)
+                if bets:
+                    store_bets(bets)
+                    self.confirmation_to_client(client_connection)
+                    bet_counter += len(bets)
                 else:
-                    raise Exception("Invalid bet received")
+                    raise Exception("An Error occured proccesing bets")
 
             except Exception as e:
-                self.confirmation_to_client(client_connection, False)
+                self.confirmation_to_client(client_connection, 0)
                 logging.critical(
                     f"action: apuesta_recibida | result: fail | cantidad: ${bet_counter}"
                 )
@@ -54,17 +51,15 @@ class BetHandler:
         )
         return bet_counter
 
-    def confirmation_to_client(self, connection: ConnectionInterface, bet: Bet) -> None:
+    # TODO: refactort client to handle this correctly
+    def confirmation_to_client(self, connection: ConnectionInterface, bet_counter: int) -> None:
         """
         Confirm the bet with the client
         """
         try:
-            if bet:
+            if bet_counter > 0:
                 connection.send(SUCCESS_HEADER)
-                response_string = f"{bet.document},{bet.number}"
-                response_bytes = response_string.encode("utf-8")
-                padded_response = response_bytes.ljust(SUCCESS_MESSAGE_SIZE, b"\x00")
-                connection.send(padded_response)
+                connection.send(bet_counter.to_bytes(4, "big"))
             else:
                 connection.send(FAIL)
         except Exception as e:

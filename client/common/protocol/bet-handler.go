@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"bufio"
+	"encoding/binary"
 	"fmt"
 	"os"
 	"strings"
@@ -25,8 +26,8 @@ const HEADER = "\x02"
 const EOF = "\xFF"
 const SUCCESS_HEADER = "\x01"
 const MAX_DATA_LEN = 255
-const SUCCESS_MESSAGE_SIZE = 64
-const MAX_BATCH_SIZE = 8192 // 8 kB
+const SUCCESS_MESSAGE_SIZE = 4
+const MAX_BATCH_SIZE = 8192 // 8 kBFAIL = b"\xff"
 
 type BetHandler struct {
 	MaxBatchAmount int
@@ -63,6 +64,19 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		if err != nil {
 			return err
 		}
+
+		batchLen := len(betBatchMessage)
+
+		if batchLen > MAX_DATA_LEN {
+			return fmt.Errorf("batch length too large for single byte: %d (max: %d)", batchLen, MAX_DATA_LEN)
+		}
+		lenBytes := make([]byte, 4)
+		binary.BigEndian.PutUint32(lenBytes, uint32(batchLen))
+		err = connSock.SendData(lenBytes)
+		if err != nil {
+			return err
+		}
+
 		err = connSock.SendData([]byte(betBatchMessage))
 		if err != nil {
 			return err
@@ -88,13 +102,7 @@ func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (s
 	for i := 0; i < b.MaxBatchAmount && scanner.Scan(); i++ {
 		i++
 		line := strings.TrimSpace(scanner.Text())
-
 		betMessage := fmt.Sprintf("%d,%s\n", agency_id, line)
-		length := len(betMessage)
-		if length > MAX_DATA_LEN {
-			return "", fmt.Errorf("this line [%s] is too large: %d bytes", line, length)
-		}
-		betMessage = fmt.Sprintf("%c%s", length, betMessage)
 		betBatchMessage += betMessage
 	}
 	log.Infof("action: create_bet_batch | result: success | batch data: %s", betBatchMessage)
@@ -108,28 +116,29 @@ func (b *BetHandler) _sendDone(connSock *network.ConnectionInterface) error {
 }
 
 func (b *BetHandler) _recvConfirmation(connSock *network.ConnectionInterface) error {
-	data := make([]byte, len(SUCCESS_HEADER))
-
-	err := connSock.ReceiveData(data)
+	// Read the header (1 byte)
+	headerData := make([]byte, len(SUCCESS_HEADER))
+	err := connSock.ReceiveData(headerData)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to receive header: %v", err)
 	}
 
-	success_header := string(data)
+	success_header := string(headerData)
+
 	if success_header == SUCCESS_HEADER {
-		success_message := make([]byte, SUCCESS_MESSAGE_SIZE)
-		err = connSock.ReceiveData(success_message)
+		countBytes := make([]byte, 4)
+		err = connSock.ReceiveData(countBytes)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to receive bet count: %v", err)
 		}
-		successMsgStr := string(success_message)
-		parts := strings.Split(successMsgStr, ",")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid bet confirmation format: %s", successMsgStr)
-		}
-		log.Infof("action: apuesta_enviada | result: success | dni: %s | numero: %s", parts[0], parts[1])
+
+		betCount := int(binary.BigEndian.Uint32(countBytes))
+
+		log.Infof("action: batch_confirmation | result: success | bets_processed: %d", betCount)
+
 	} else {
-		log.Info("Bet confirmation: FAIL")
+		log.Errorf("action: batch_confirmation | result: fail | header: %x", headerData)
+		return fmt.Errorf("batch processing failed")
 	}
 
 	return nil

@@ -30,7 +30,7 @@ class Server:
                     bet_counter = self.bet_handler.process_bets(client_connection)
                     self.connectedClients[client_connection] = bet_counter
                     self._disconnect_client(client_connection)
-                    
+
                 except Exception as e:
                     logging.error(f"action: server_loop | result: error | error: {e}")
                     continue
