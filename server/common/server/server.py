@@ -6,6 +6,8 @@ from common.network.connection_manager import ConnectionManager
 from common.protocol.bet_handler import BetHandler
 from common.network.connection_interface import ConnectionInterface
 
+# TODO: change the client bet path to be a .env variable insted of a hardcoded value
+
 
 class Server:
     def __init__(self, port, listen_backlog):
