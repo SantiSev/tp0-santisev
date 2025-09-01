@@ -1,5 +1,5 @@
 server:
-  address: "localhost:12345"
+  address: "server:12345"
 loop:
   amount: 3
   period: "50ms"
@@ -7,3 +7,4 @@ log:
   level: "INFO"
 batch:
   maxAmount: 99
+bet_file_path: "data/agency_bets.csv"
