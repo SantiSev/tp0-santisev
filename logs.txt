@@ -15812,3 +15812,1195 @@ server   | 2025-09-01 16:53:05 DEBUG    action: confirm_bet | result: success
 server   | 2025-09-01 16:53:05 INFO     action: apuesta_recibida | result: success | cantidad: 991
 server   | 2025-09-01 16:53:05 INFO     action: close | result: success
 server   | 2025-09-01 16:53:05 INFO     action: disconnect_client | result: success
+docker compose -f docker-compose-dev.yaml logs -f
+server  | 2025-09-01 22:19:43 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG
+server  | 2025-09-01 22:19:43 INFO     action: server_start | result: success
+client1  | 2025-09-01 22:19:43 INFO     action: config | result: success | client_id: 1 | server_address: localhost:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client1  | 2025-09-01 22:19:43 INFO     connecting . . . 
+client1  | 2025-09-01 22:19:43 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 22:19:43 CRITI     action: connect | result: fail | error: dial tcp [::1]:12345: connect: connection refused
+client1  | 2025-09-01 22:19:43 WARNI     action: connect | result: fail | attempt: 1/3 | server: localhost:12345
+client1  | 2025-09-01 22:19:43 INFO     action: retry_connect | duration: 100ms
+client1  | 2025-09-01 22:19:43 INFO     connecting . . . 
+client1  | 2025-09-01 22:19:43 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 22:19:43 CRITI     action: connect | result: fail | error: dial tcp [::1]:12345: connect: connection refused
+client1  | 2025-09-01 22:19:43 WARNI     action: connect | result: fail | attempt: 2/3 | server: localhost:12345
+client1  | 2025-09-01 22:19:43 INFO     action: retry_connect | duration: 200ms
+client1  | 2025-09-01 22:19:44 INFO     connecting . . . 
+client1  | 2025-09-01 22:19:44 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 22:19:44 CRITI     action: connect | result: fail | error: dial tcp [::1]:12345: connect: connection refused
+client1  | 2025-09-01 22:19:44 WARNI     action: connect | result: fail | attempt: 3/3 | server: localhost:12345
+client1  | 2025-09-01 22:19:44 INFO     action: retry_connect | duration: 300ms
+client1  | 2025-09-01 22:19:44 INFO     action: connect | result: fail | client_id: 1
+docker compose -f docker-compose-dev.yaml logs -f
+server   | 2025-09-01 22:21:55 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG
+server   | 2025-09-01 22:21:55 INFO     action: server_start | result: success
+server   | 2025-09-01 22:21:55 INFO     action: connect_client | result: success
+server   | 2025-09-01 22:21:55 INFO     action: parse_bet_batch | result: success | total_bets: 4
+server   | 2025-09-01 22:21:55 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:21:55 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:21:55 INFO     action: apuesta_recibida | result: success | cantidad: 4
+server   | 2025-09-01 22:21:55 INFO     action: server_loop | result: processed_agency | agencies_processed: 1 / 5
+client1  | 2025-09-01 22:21:55 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client1  | 2025-09-01 22:21:55 INFO     connecting . . . 
+client1  | 2025-09-01 22:21:55 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 22:21:55 INFO     action: send_bet_batch | result: success | batch_length: 115B
+client1  | 2025-09-01 22:21:55 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 22:21:55 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+docker compose -f docker-compose-dev.yaml logs -f
+server   | 2025-09-01 22:21:55 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG
+client4  | 2025-09-01 22:30:02 INFO     action: config | result: success | client_id: 4 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client4  | 2025-09-01 22:30:02 INFO     connecting . . . 
+client4  | 2025-09-01 22:30:02 INFO     connection established, starting bet transmission
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4357B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4574B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 22:30:02 INFO     action: config | result: success | client_id: 2 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client2  | 2025-09-01 22:30:02 INFO     connecting . . . 
+server   | 2025-09-01 22:21:55 INFO     action: server_start | result: success
+server   | 2025-09-01 22:21:55 INFO     action: connect_client | result: success
+server   | 2025-09-01 22:21:55 INFO     action: parse_bet_batch | result: success | total_bets: 4
+client5  | 2025-09-01 22:30:02 INFO     action: config | result: success | client_id: 5 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+server   | 2025-09-01 22:21:55 DEBUG    action: confirm_bet | result: success
+client1  | 2025-09-01 22:21:55 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client1  | 2025-09-01 22:21:55 INFO     connecting . . . 
+client1  | 2025-09-01 22:21:55 INFO     connection established, starting bet transmission
+client1  | 2025-09-01 22:21:55 INFO     action: send_bet_batch | result: success | batch_length: 115B
+client5  | 2025-09-01 22:30:02 INFO     connecting . . . 
+client5  | 2025-09-01 22:30:02 INFO     connection established, starting bet transmission
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4342B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4558B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: config | result: success | client_id: 3 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99
+client3  | 2025-09-01 22:30:02 INFO     connecting . . . 
+client3  | 2025-09-01 22:30:02 INFO     connection established, starting bet transmission
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4721B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4719B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4661B
+client1  | 2025-09-01 22:21:55 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-01 22:21:55 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client1  | 2025-09-01 22:30:02 INFO     action: winner_confirmation | result: success
+client1  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: success | cant_ganadores: 7
+client1  | 2025-09-01 22:30:02 INFO     action: transmission finished | result: success | client_id: 1
+client1  | 2025-09-01 22:30:02 INFO     action: close | result: success
+client1  | 2025-09-01 22:30:02 INFO     action: exit | result: success
+server   | 2025-09-01 22:21:55 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:21:55 INFO     action: apuesta_recibida | result: success | cantidad: 4
+server   | 2025-09-01 22:21:55 INFO     action: server_loop | result: processed_agency | agencies_processed: 1 / 5
+server   | 2025-09-01 22:30:02 INFO     action: connect_client | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4729B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4789B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4696B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 22:30:02 INFO     connection established, starting bet transmission
+client2  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 115B
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4685B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4751B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4783B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4815B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4781B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4828B
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4646B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4748B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4797B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4798B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4780B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4779B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4668B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4425B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4601B
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4816B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4813B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4758B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 49B
+client5  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client5  | 2025-09-01 22:30:02 INFO     action: winner_confirmation | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: success | cant_ganadores: 7
+client5  | 2025-09-01 22:30:02 INFO     action: transmission finished | result: success | client_id: 5
+client5  | 2025-09-01 22:30:02 INFO     action: close | result: success
+client5  | 2025-09-01 22:30:02 INFO     action: exit | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4813B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4770B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4443B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4497B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4708B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4615B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4757B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4809B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4808B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4787B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4788B
+client2  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client2  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client2  | 2025-09-01 22:30:02 INFO     action: winner_confirmation | result: success
+client2  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: success | cant_ganadores: 7
+client2  | 2025-09-01 22:30:02 INFO     action: transmission finished | result: success | client_id: 2
+client2  | 2025-09-01 22:30:02 INFO     action: close | result: success
+client2  | 2025-09-01 22:30:02 INFO     action: exit | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4728B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4657B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4770B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4854B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4830B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4792B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4747B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4733B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4406B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4463B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4537B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4682B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4630B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4773B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4558B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4709B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4652B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4776B
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4741B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4789B
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4767B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4789B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4766B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4486B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4486B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4780B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4825B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4773B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4780B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4676B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4660B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4702B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4784B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4785B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4787B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4793B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4799B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4533B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4487B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4653B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4669B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4698B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4770B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4806B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4790B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4365B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4565B
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4771B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4821B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4779B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4610B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4690B
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4456B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4611B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4711B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4661B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4781B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4804B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4655B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4795B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4760B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4657B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4423B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4582B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4742B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4648B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4777B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4784B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4793B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4776B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4777B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4666B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4419B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4612B
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4740B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4793B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4839B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4725B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4833B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4735B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4400B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4737B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4548B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4733B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4656B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4756B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4803B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4676B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4758B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4780B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4829B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4774B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4746B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4734B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4409B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4776B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4787B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4761B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4771B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4435B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4572B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4716B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4690B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4702B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4789B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4838B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4775B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4798B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4771B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4342B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4566B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 1462B
+client4  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client4  | 2025-09-01 22:30:02 INFO     action: winner_confirmation | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: success | cant_ganadores: 7
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: transmission finished | result: success | client_id: 4
+client4  | 2025-09-01 22:30:02 INFO     action: close | result: success
+client4  | 2025-09-01 22:30:02 INFO     action: exit | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4532B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4706B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4660B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4749B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4782B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4845B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4808B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4773B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4431B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4549B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4711B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4620B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4771B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4766B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4846B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4770B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4500B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4476B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4666B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4650B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4746B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4768B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4822B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 31
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:30:02 INFO     action: apuesta_recibida | result: success | cantidad: 9238
+server   | 2025-09-01 22:30:02 INFO     action: server_loop | result: processed_agency | agencies_processed: 2 / 5
+server   | 2025-09-01 22:30:02 INFO     action: connect_client | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4799B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4797B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4737B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4591B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4493B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4657B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4671B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4728B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4777B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4811B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4741B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4834B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4747B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4594B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4496B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4600B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4722B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4679B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4776B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4796B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4801B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4804B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4758B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4643B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4435B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 1
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:30:02 INFO     action: apuesta_recibida | result: success | cantidad: 991
+server   | 2025-09-01 22:30:02 INFO     action: server_loop | result: processed_agency | agencies_processed: 3 / 5
+server   | 2025-09-01 22:30:02 INFO     action: connect_client | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4591B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4738B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4656B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4749B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4842B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4785B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4819B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4784B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4695B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4413B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4578B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4738B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4658B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4756B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4791B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4825B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4796B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4783B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4735B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4399B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4558B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4725B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4685B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4735B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4806B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4751B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4826B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4803B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4348B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4547B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4709B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4661B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4743B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4773B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4800B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4747B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4814B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4756B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4398B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4572B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4722B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4657B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4738B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4802B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4782B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4826B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4806B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4767B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4403B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4523B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4692B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4654B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4730B
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4788B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4764B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4826B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4794B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4768B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4440B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 4541B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: send_bet_batch | result: success | batch_length: 3516B
+client3  | 2025-09-01 22:30:02 INFO     action: batch_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: awaiting lottery results . . .
+client3  | 2025-09-01 22:30:02 INFO     action: winner_confirmation | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: consulta_ganadores | result: success | cant_ganadores: 7
+client3  | 2025-09-01 22:30:02 INFO     action: transmission finished | result: success | client_id: 3
+client3  | 2025-09-01 22:30:02 INFO     action: close | result: success
+client3  | 2025-09-01 22:30:02 INFO     action: exit | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 99
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 75
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:30:02 INFO     action: apuesta_recibida | result: success | cantidad: 16014
+server   | 2025-09-01 22:30:02 INFO     action: server_loop | result: processed_agency | agencies_processed: 4 / 5
+server   | 2025-09-01 22:30:02 INFO     action: connect_client | result: success
+server   | 2025-09-01 22:30:02 INFO     action: parse_bet_batch | result: success | total_bets: 4
+server   | 2025-09-01 22:30:02 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-01 22:30:02 INFO     action: end of transmission | result: success
+server   | 2025-09-01 22:30:02 INFO     action: apuesta_recibida | result: success | cantidad: 4
+server   | 2025-09-01 22:30:02 INFO     action: server_loop | result: processed_agency | agencies_processed: 5 / 5
+server   | 2025-09-01 22:30:02 INFO     action: sorteo | result: success | winners_count: 7
+server   | 2025-09-01 22:30:02 INFO     action: send_winning_numbers | result: success | winners: 7
+server   | 2025-09-01 22:30:02 INFO     action: send_winning_numbers | result: success | winners: 7
+server   | 2025-09-01 22:30:02 INFO     action: send_winning_numbers | result: success | winners: 7
+server   | 2025-09-01 22:30:02 INFO     action: send_winning_numbers | result: success | winners: 7
+server   | 2025-09-01 22:30:02 INFO     action: send_winning_numbers | result: success | winners: 7
+server   | 2025-09-01 22:30:02 INFO     action: server_shutdown | result: in_progress
+server   | 2025-09-01 22:30:02 INFO     action: close | result: success
+server   | 2025-09-01 22:30:02 INFO     action: close | result: success
+server   | 2025-09-01 22:30:02 INFO     action: close | result: success
+server   | 2025-09-01 22:30:02 INFO     action: close | result: success
+server   | 2025-09-01 22:30:02 INFO     action: close | result: success
+server   | 2025-09-01 22:30:02 INFO     action: server_shutdown | result: complete

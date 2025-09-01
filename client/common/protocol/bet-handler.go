@@ -16,17 +16,22 @@ var log = logging.MustGetLogger("log")
 const HEADER = "\x02"
 const EOF = "\xFF"
 const SUCCESS_HEADER_SIZE = 1
+const WINNER_HEADER_SIZE = 1
 const SUCCESS_HEADER = "\x01"
 const SUCCESS_MESSAGE_SIZE = 4
+const WINNERS_HEADER = "\x03"
 const MAX_BATCH_SIZE = 8192 // 8 kB
+const WINNER_COUNT_SIZE = 2
 
 type BetHandler struct {
 	MaxBatchAmount int
+	bets           map[int16][]string
 }
 
 func NewBetHandler(maxBatchAmount int) *BetHandler {
 	return &BetHandler{
 		MaxBatchAmount: maxBatchAmount,
+		bets:           make(map[int16][]string),
 	}
 }
 func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, connSock *network.ConnectionInterface) error {
@@ -40,12 +45,13 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 	scanner := bufio.NewScanner(file)
 
 	for {
-
+		// TODO: read from file first before sending data
 		err = connSock.SendData([]byte(HEADER))
 		if err != nil {
 			return err
 		}
 
+		// TODO: remove this later
 		if err := scanner.Err(); err != nil {
 			return fmt.Errorf("error reading file: %v", err)
 		}
@@ -93,7 +99,36 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 	return err
 }
 
+func (b *BetHandler) GetLotteryResults(connSock *network.ConnectionInterface) error {
+	log.Info("action: consulta_ganadores | result: awaiting lottery results . . .")
+	headerData := make([]byte, WINNER_HEADER_SIZE)
+	err := connSock.ReceiveData(headerData)
+	if err != nil {
+		return fmt.Errorf("failed to receive header: %v", err)
+	}
+	success_header := string(headerData)
+
+	if success_header == WINNERS_HEADER {
+		log.Infof("action: winner_confirmation | result: success")
+		winnerCountBytes := make([]byte, WINNER_COUNT_SIZE)
+		err := connSock.ReceiveData(winnerCountBytes)
+		if err != nil {
+			return fmt.Errorf("failed to receive length data: %v", err)
+		}
+		winnerCount := binary.BigEndian.Uint16(winnerCountBytes)
+
+		log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d", winnerCount)
+
+	} else {
+		log.Errorf("action: winner_confirmation | result: fail")
+		return fmt.Errorf("an error occurred tallying up the winners")
+	}
+
+	return nil
+}
+
 func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (string, bool, error) {
+	// TODO: dont use counter, use  [ for i := 0; i < b.MaxBatchAmount; i++ ]
 	var betBatchMessage string
 	counter := 0
 
@@ -107,11 +142,9 @@ func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (s
 
 		line := strings.TrimSpace(scanner.Text())
 
-		// Skip empty lines
 		if line == "" {
 			continue
 		}
-
 		betMessage := fmt.Sprintf("%d,%s,", agency_id, line)
 		betBatchMessage += betMessage
 		counter++

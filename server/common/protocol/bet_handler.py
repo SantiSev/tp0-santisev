@@ -1,13 +1,14 @@
 import logging
-from typing import List
+import struct
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_processor import BetProcessor
-from common.utils.utils import Bet, store_bets
+from common.utils.utils import has_won, load_bets, store_bets
 
 EOF = b"\xff"
 HEADER_SIZE = 1
 SUCCESS_HEADER = b"\x01"
+WINNERS_HEADER = b"\x03"
 FAIL = b"\xff"
 
 
@@ -67,3 +68,31 @@ class BetHandler:
                 logging.debug(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
+
+    def get_winning_numbers(self) -> int:
+        """
+        Get the winning numbers
+        """
+        winner_count = 0
+        bets = load_bets()
+        for bet in bets:
+            if has_won(bet):
+                winner_count += 1
+
+        return winner_count
+
+    def send_winning_numbers(
+        self, connection: ConnectionInterface, winners_count: int
+    ) -> None:
+        """
+        Send the winning numbers to the client
+        """
+        try:
+            connection.send(WINNERS_HEADER)
+            winners_bytes = struct.pack(">H", winners_count)
+            connection.send(winners_bytes)
+            logging.info(
+                f"action: send_winning_numbers | result: success | winners: {winners_count}"
+            )
+        except Exception as e:
+            logging.error(f"action: send_winning_numbers | result: fail | error: {e}")

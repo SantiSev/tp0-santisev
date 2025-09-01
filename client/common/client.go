@@ -72,6 +72,8 @@ func (c *Client) StartClientLoop() {
 		return
 	}
 
+	err = c.betHandler.GetLotteryResults(c.connSocket)
+
 	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
 	c.Shutdown()
 }
