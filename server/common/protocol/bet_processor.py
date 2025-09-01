@@ -5,7 +5,7 @@ from common.network.connection_interface import ConnectionInterface
 from common.utils.utils import Bet
 
 EXPECTED_FIELDS = 6
-DATA_LENGTH = 4
+DATA_LENGTH = 2
 
 
 class BetProcessor:
@@ -13,17 +13,13 @@ class BetProcessor:
 
     def process_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
         try:
-            # TODO: HAVE FIRST BYTE AFTER HEADER BE THE DATA_LENGTH
-            data_length = int.from_bytes(client_connection.receive(DATA_LENGTH), "big")
+            data_length_bytes = client_connection.receive(DATA_LENGTH)
+            data_length = int.from_bytes(data_length_bytes, "big")
             data = client_connection.receive(data_length).decode("utf-8")
-
-            logging.debug(f"action: receive_message | result: success | data: {data}")
 
             if not data:
                 logging.debug("action: receive_message | result: no_data")
-                raise Exception(
-                    "Something went wrong when receiving bet data, stopping process . . ."
-                )
+                raise Exception("No data was sent, stopping process . . .")
 
             return self._parse_batch_data(data)
 
@@ -34,13 +30,13 @@ class BetProcessor:
     def _parse_batch_data(self, data: str) -> List[Bet]:
         """Parse comma-separated data into list of Bet objects"""
         try:
+            data = data.rstrip(",")
             fields = [field.strip() for field in data.split(",")]
+            fields = [field for field in fields if field]
 
             bets = []
 
-            # Process every 6 fields as one bet
             for i in range(0, len(fields), EXPECTED_FIELDS):
-                # Check if we have enough fields for a complete bet
                 if i + EXPECTED_FIELDS <= len(fields):
                     agency = fields[i]
                     first_name = fields[i + 1]

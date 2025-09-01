@@ -15,8 +15,8 @@ import (
 // this is due to using strings
 // e.g:
 // main header: 1 B
-// [bet length] [bet data] ;
-// [bet length] [bet data] ;
+// data size: 2 B
+// data: N B in chunks less than 8kB
 // . . .
 // EOF header
 
@@ -24,10 +24,10 @@ var log = logging.MustGetLogger("log")
 
 const HEADER = "\x02"
 const EOF = "\xFF"
+const SUCCESS_HEADER_SIZE = 1
 const SUCCESS_HEADER = "\x01"
-const MAX_DATA_LEN = 255
 const SUCCESS_MESSAGE_SIZE = 4
-const MAX_BATCH_SIZE = 8192 // 8 kBFAIL = b"\xff"
+const MAX_BATCH_SIZE = 8192 // 8 kB
 
 type BetHandler struct {
 	MaxBatchAmount int
@@ -46,32 +46,32 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 	}
 	defer file.Close()
 
-	// First, we send the header
-	err = connSock.SendData([]byte(HEADER))
-	if err != nil {
-		return err
-	}
-
 	scanner := bufio.NewScanner(file)
 
-	for scanner.Scan() {
+	for {
+
+		err = connSock.SendData([]byte(HEADER))
+		if err != nil {
+			return err
+		}
 
 		if err := scanner.Err(); err != nil {
 			return fmt.Errorf("error reading file: %v", err)
 		}
 
-		betBatchMessage, err := b._createBetBatch(agency_id, scanner)
+		betBatchMessage, canRead, err := b._createBetBatch(agency_id, scanner)
 		if err != nil {
 			return err
 		}
 
 		batchLen := len(betBatchMessage)
 
-		if batchLen > MAX_DATA_LEN {
-			return fmt.Errorf("batch length too large for single byte: %d (max: %d)", batchLen, MAX_DATA_LEN)
+		if batchLen > MAX_BATCH_SIZE {
+			return fmt.Errorf("batch length too large for single byte: %d (max: %d)", batchLen, MAX_BATCH_SIZE)
 		}
-		lenBytes := make([]byte, 4)
-		binary.BigEndian.PutUint32(lenBytes, uint32(batchLen))
+		lenBytes := make([]byte, 2)
+		binary.BigEndian.PutUint16(lenBytes, uint16(batchLen))
+		log.Infof("action: send_bet_batch | result: success | batch_length: %dB", batchLen)
 		err = connSock.SendData(lenBytes)
 		if err != nil {
 			return err
@@ -81,9 +81,9 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		if err != nil {
 			return err
 		}
-		err = b._recvConfirmation(connSock)
-		if err != nil {
-			return err
+
+		if !canRead {
+			break
 		}
 
 	}
@@ -93,21 +93,38 @@ func (b *BetHandler) SendAllBetData(agency_id int64, agency_data_file string, co
 		log.Errorf("action: send_done | result: fail | error: %v", err)
 		return err
 	}
+
+	err = b._recvConfirmation(connSock)
+	if err != nil {
+		return err
+	}
 	return err
 }
 
-func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (string, error) {
+func (b *BetHandler) _createBetBatch(agency_id int64, scanner *bufio.Scanner) (string, bool, error) {
 	var betBatchMessage string
+	counter := 0
 
-	for i := 0; i < b.MaxBatchAmount && scanner.Scan(); i++ {
-		i++
+	for counter < b.MaxBatchAmount {
+
+		canRead := scanner.Scan()
+
+		if !canRead {
+			return betBatchMessage, false, nil
+		}
+
 		line := strings.TrimSpace(scanner.Text())
-		betMessage := fmt.Sprintf("%d,%s\n", agency_id, line)
-		betBatchMessage += betMessage
-	}
-	log.Infof("action: create_bet_batch | result: success | batch data: %s", betBatchMessage)
 
-	return betBatchMessage, nil
+		// Skip empty lines
+		if line == "" {
+			continue
+		}
+
+		betMessage := fmt.Sprintf("%d,%s,", agency_id, line)
+		betBatchMessage += betMessage
+		counter++
+	}
+	return betBatchMessage, true, nil
 }
 
 func (b *BetHandler) _sendDone(connSock *network.ConnectionInterface) error {
@@ -116,28 +133,23 @@ func (b *BetHandler) _sendDone(connSock *network.ConnectionInterface) error {
 }
 
 func (b *BetHandler) _recvConfirmation(connSock *network.ConnectionInterface) error {
-	// Read the header (1 byte)
-	headerData := make([]byte, len(SUCCESS_HEADER))
+	headerData := make([]byte, SUCCESS_HEADER_SIZE)
+	log.Infof("action: attempting_to_receive_confirmation | headerData_size: %d", len(headerData))
+
 	err := connSock.ReceiveData(headerData)
 	if err != nil {
 		return fmt.Errorf("failed to receive header: %v", err)
 	}
 
+	log.Infof("action: batch_confirmation | header_received: %x", headerData)
+
 	success_header := string(headerData)
 
 	if success_header == SUCCESS_HEADER {
-		countBytes := make([]byte, 4)
-		err = connSock.ReceiveData(countBytes)
-		if err != nil {
-			return fmt.Errorf("failed to receive bet count: %v", err)
-		}
-
-		betCount := int(binary.BigEndian.Uint32(countBytes))
-
-		log.Infof("action: batch_confirmation | result: success | bets_processed: %d", betCount)
+		log.Infof("action: batch_confirmation | result: success")
 
 	} else {
-		log.Errorf("action: batch_confirmation | result: fail | header: %x", headerData)
+		log.Errorf("action: batch_confirmation | result: fail")
 		return fmt.Errorf("batch processing failed")
 	}
 

@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_processor import BetProcessor
@@ -8,7 +9,6 @@ EOF = b"\xff"
 HEADER_SIZE = 1
 SUCCESS_HEADER = b"\x01"
 FAIL = b"\xff"
-
 
 
 class BetHandler:
@@ -21,45 +21,59 @@ class BetHandler:
         """
         Process the best being sent by the client - receive and store bets
         """
-        header = HEADER_SIZE
-        bet_counter = 0
+        bets = []
 
         while True:
             try:
                 header = client_connection.receive(HEADER_SIZE)
+                logging.info(
+                    f"action: receive_header | result: success | header: {header}"
+                )
 
                 if header == EOF:
                     logging.info(f"action: end of transmission | result: success")
                     break
 
-                bets = self.message_handler.process_batch(client_connection)
-                if bets:
-                    store_bets(bets)
-                    self.confirmation_to_client(client_connection)
-                    bet_counter += len(bets)
+                batchBets = self.message_handler.process_batch(client_connection)
+                if batchBets:
+                    bets.extend(batchBets)
+
                 else:
                     raise Exception("An Error occured proccesing bets")
 
             except Exception as e:
-                self.confirmation_to_client(client_connection, 0)
+                self.confirmation_to_client(client_connection, False)
+                logging.error(f"action: process_bets | result: fail | error: {e}")
                 logging.critical(
-                    f"action: apuesta_recibida | result: fail | cantidad: ${bet_counter}"
+                    f"action: apuesta_recibida | result: fail | cantidad: {len(bets)}"
                 )
                 break
+        self.store_all_bets(bets)
+        self.confirmation_to_client(client_connection, True)
         logging.info(
-            f"action: apuesta_recibida | result: success | cantidad: ${bet_counter}"
+            f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
         )
-        return bet_counter
+        return len(bets)
 
-    # TODO: refactort client to handle this correctly
-    def confirmation_to_client(self, connection: ConnectionInterface, bet_counter: int) -> None:
+    def store_all_bets(self, bets: List[Bet]) -> None:
+        """
+        Store all bets in the database
+        """
+        store_bets(bets)
+        logging.info(
+            f"action: store_bets | result: success | amount of bets stored: {len(bets)}"
+        )
+
+    def confirmation_to_client(
+        self, connection: ConnectionInterface, status: bool
+    ) -> None:
         """
         Confirm the bet with the client
         """
         try:
-            if bet_counter > 0:
-                connection.send(SUCCESS_HEADER)
-                connection.send(bet_counter.to_bytes(4, "big"))
+            if status:
+                send_status = connection.send(SUCCESS_HEADER)
+                logging.info(f"action: confirm_bet | result: {send_status}")
             else:
                 connection.send(FAIL)
         except Exception as e:
