@@ -134,15 +134,10 @@ func (b *BetHandler) _sendDone(connSock *network.ConnectionInterface) error {
 
 func (b *BetHandler) _recvConfirmation(connSock *network.ConnectionInterface) error {
 	headerData := make([]byte, SUCCESS_HEADER_SIZE)
-	log.Infof("action: attempting_to_receive_confirmation | headerData_size: %d", len(headerData))
-
 	err := connSock.ReceiveData(headerData)
 	if err != nil {
 		return fmt.Errorf("failed to receive header: %v", err)
 	}
-
-	log.Infof("action: batch_confirmation | header_received: %x", headerData)
-
 	success_header := string(headerData)
 
 	if success_header == SUCCESS_HEADER {
