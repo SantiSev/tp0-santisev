@@ -26,9 +26,6 @@ class BetHandler:
         while True:
             try:
                 header = client_connection.receive(HEADER_SIZE)
-                logging.info(
-                    f"action: receive_header | result: success | header: {header}"
-                )
 
                 if header == EOF:
                     logging.info(f"action: end of transmission | result: success")
@@ -60,7 +57,7 @@ class BetHandler:
         Store all bets in the database
         """
         store_bets(bets)
-        logging.info(
+        logging.debug(
             f"action: store_bets | result: success | amount of bets stored: {len(bets)}"
         )
 
@@ -73,9 +70,9 @@ class BetHandler:
         try:
             if status:
                 connection.send(SUCCESS_HEADER)
-                logging.info(f"action: confirm_bet | result: success")
+                logging.debug(f"action: confirm_bet | result: success")
             else:
                 connection.send(FAIL)
-                logging.info(f"action: confirm_bet | result: fail")
+                logging.debug(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
