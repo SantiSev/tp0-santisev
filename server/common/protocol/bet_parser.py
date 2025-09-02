@@ -1,19 +1,16 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 from common.network.connection_interface import ConnectionInterface
 from common.utils.utils import Bet
+from tp0.server.common.protocol.protocol_constants import *
 
-EXPECTED_FIELDS = 6
-DATA_LENGTH = 2
-
-
-class BetProcessor:
+class BetParser:
     """Process bet data from clients"""
 
-    def process_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
+    def parse_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
         try:
-            data_length_bytes = client_connection.receive(DATA_LENGTH)
+            data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
             data_length = int.from_bytes(data_length_bytes, "big")
             data = client_connection.receive(data_length).decode("utf-8")
 

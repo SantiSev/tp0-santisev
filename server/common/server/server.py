@@ -2,19 +2,25 @@ import logging
 import signal
 import sys
 from common.network.connection_manager import ConnectionManager
-from common.protocol.bet_handler import BetHandler
+from tp0.server.common.protocol.bet_handler import BetHandler
 from common.network.connection_interface import ConnectionInterface
+from tp0.server.common.business.lottery_service import LotteryService
+from tp0.server.common.server.server_config import ServerConfig
+from tp0.server.common.session.client_manager import ClientManager
+from tp0.server.common.session.client_session import ClientSession
+
 
 class Server:
-    def __init__(self, port, listen_backlog, agencies_amount):
-        self.connection_manager = ConnectionManager(
-            port=port, listen_backlog=listen_backlog
-        )
-        self.connectedClients: list[ConnectionInterface] = []  # Keep as list
+    def __init__(self, server_config: ServerConfig):
         self.is_running = True
-        self.agencies_amount = agencies_amount
         self.processed_agencies = 0
-        self.bet_handler = BetHandler()
+        self.agencies_amount = server_config.agencies_amount
+        self.connection_manager = ConnectionManager(
+            port=server_config.port, listen_backlog=server_config.listen_backlog
+        )
+        self.lottery_service = LotteryService()
+        self.clientManager: ClientManager = ClientManager(self.lottery_service)
+
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
 
@@ -24,22 +30,37 @@ class Server:
             self.connection_manager.start_listening()
             logging.info("action: server_start | result: success")
 
-            while self.is_running and self.processed_agencies < self.agencies_amount:
+            while self._running():
                 try:
-                    client_connection = self._connect_client()
-                    bets = self.bet_handler.process_bets(client_connection)
-                    self.connectedClients.append(client_connection)
-                    self.bet_handler.send_winners(client_connection, bets)
-                    self.processed_agencies += 1
-                    logging.info(
-                        f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
+                    client_connection: ConnectionInterface = (
+                        self.connection_manager.accept_connection()
                     )
+
+                    client: ClientSession = self.clientManager.add_client(
+                        client_connection
+                    )
+
+                    success, bets = client.begin()
+
+                    if success:
+                        self.processed_agencies += 1
+                        self.lottery_service.store_bets(bets)
+                        logging.info(
+                            f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
+                        )
+                    else:
+                        logging.info(
+                            f"action: server_loop | result: fail | an error occured processing the client with {client.id} , halting client"
+                        )
+                        self.clientManager.remove_client(client.id)
+                        continue
 
                 except Exception as e:
                     logging.error(f"action: server_loop | result: error | error: {e}")
+                    self._shutdown()
                     continue
 
-            self._announce_winners()
+            self.lottery_service.announce_winners()
 
         except Exception as e:
             logging.error(f"action: server_run | result: critical_error | error: {e}")
@@ -47,34 +68,13 @@ class Server:
         finally:
             self._shutdown()
 
-    def _connect_client(self) -> ConnectionInterface:
-        client_connection = self.connection_manager.accept_connection()
-        self.connectedClients.append(client_connection)
-        logging.info(f"action: connect_client | result: success")
-        return client_connection
-
-    def _disconnect_client(self, client_connection: ConnectionInterface) -> None:
-        """Disconnect a client from the server"""
-        if client_connection in self.connectedClients:
-            self.connectedClients.remove(client_connection)
-        client_connection.close()
-        logging.info(f"action: disconnect_client | result: success")
-
-    def _cancel_lottery(self) -> None:
-        # TODO: if an error occures processing a client, then cancel the lottery and notify all waiting clients
-        pass
-
-    def _announce_winners(self) -> None:
-        winners = self.bet_handler.get_all_winners()
-        logging.info(
-            f"action: sorteo | result: success | winners: {winners}"
-        )
+    def _running(self):
+        return self.is_running and self.processed_agencies < self.agencies_amount
 
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
-        logging.info("action: server_shutdown | result: in_progress")
         self.is_running = False
-        for client in self.connectedClients:
-            client.close()
+        self.clientManager.shutdown()
+        self.connection_manager.shutdown()
         logging.info("action: server_shutdown | result: success")
         sys.exit(0)

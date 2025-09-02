@@ -2,26 +2,19 @@ import logging
 import struct
 
 from common.network.connection_interface import ConnectionInterface
-from common.protocol.bet_processor import BetProcessor
+from tp0.server.common.protocol.bet_parser import BetParser
 from common.utils.utils import Bet, has_won, load_bets, store_bets
-
-EOF = b"\xff"
-HEADER_SIZE = 1
-SUCCESS_HEADER = b"\x01"
-WINNERS_HEADER = b"\x03"
-FAIL = b"\xff"
+from tp0.server.common.protocol.protocol_constants import *
 
 
 class BetHandler:
     """Handles individual client connections"""
 
     def __init__(self):
-        self.message_handler = BetProcessor()
+        self.bet_parser = BetParser()
 
     def process_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
-        """
-        Process the best being sent by the client - receive and store bets
-        """
+
         bets = []
 
         while True:
@@ -32,16 +25,22 @@ class BetHandler:
                     logging.info(f"action: end of transmission | result: success")
                     break
 
-                batchBets = self.message_handler.process_batch(client_connection)
+                if header != BET_HEADER:
+                    logging.warning(
+                        f"action: process_bets | result: fail | error: unexpected_header | header: {header}"
+                    )
+                    raise Exception("Unexpected header received")
+
+                batchBets = self.bet_parser.parse_batch(client_connection)
                 if batchBets:
                     bets.extend(batchBets)
-                    self.confirmation_to_client(client_connection, True)
+                    self._confirmation_to_client(client_connection, True)
 
                 else:
                     raise Exception("An Error occured proccesing bets")
 
             except Exception as e:
-                self.confirmation_to_client(client_connection, False)
+                self._confirmation_to_client(client_connection, False)
                 logging.error(f"action: process_bets | result: fail | error: {e}")
                 logging.critical(
                     f"action: apuesta_recibida | result: fail | cantidad: {len(bets)}"
@@ -53,7 +52,7 @@ class BetHandler:
         )
         return bets
 
-    def confirmation_to_client(
+    def _confirmation_to_client(
         self, connection: ConnectionInterface, status: bool
     ) -> None:
         """
@@ -69,24 +68,18 @@ class BetHandler:
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
 
-    def get_all_winners(self) -> list[str]:
-        """Return documents of winning bets."""
-        return [bet.document for bet in load_bets() if has_won(bet)]
-
-    def send_winners(self, connection: ConnectionInterface, bets: list[Bet]) -> None:
+    def send_winners(self, connection: ConnectionInterface, winners: list[str]) -> None:
         """
         Send the winning numbers to the client
         """
-        winners = [bet for bet in bets if has_won(bet)]
-        winners_count = len(winners)
+        winners_string = ",".join(winners)
 
         try:
-            # TODO: change this in the future to send the winning bets, not just the amount of winners
             connection.send(WINNERS_HEADER)
-            winners_bytes = struct.pack(">H", winners_count)
+            winners_bytes = struct.pack(">H", len(winners_string))
             connection.send(winners_bytes)
-            logging.info(
-                f"action: send_winning_numbers | result: success | winners: {winners_count}"
+            logging.debug(
+                f"action: sending_winners | result: success | winners: {winners_string}"
             )
         except Exception as e:
-            logging.error(f"action: send_winning_numbers | result: fail | error: {e}")
+            logging.error(f"action: sending_winners | result: fail | error: {e}")

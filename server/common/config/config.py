@@ -2,8 +2,10 @@ from configparser import ConfigParser
 import logging
 import os
 
+from tp0.server.common.server.server_config import ServerConfig
 
-def initialize_config():
+
+def initialize_config() -> ServerConfig:
     """Parse env variables or config file to find program config params
 
     Function that search and parse program configuration parameters in the
@@ -18,20 +20,17 @@ def initialize_config():
     # If config.ini does not exists original config object is not modified
     config.read("config.ini")
 
-    config_params = {}
     try:
-        config_params["port"] = int(
-            os.getenv("SERVER_PORT", config["DEFAULT"]["SERVER_PORT"])
-        )
-        config_params["listen_backlog"] = int(
+        port = int(os.getenv("SERVER_PORT", config["DEFAULT"]["SERVER_PORT"]))
+        listen_backlog = int(
             os.getenv(
                 "SERVER_LISTEN_BACKLOG", config["DEFAULT"]["SERVER_LISTEN_BACKLOG"]
             )
         )
-        config_params["logging_level"] = os.getenv(
-            "LOGGING_LEVEL", config["DEFAULT"]["LOGGING_LEVEL"]
+        logging_level = os.getenv("LOGGING_LEVEL", config["DEFAULT"]["LOGGING_LEVEL"])
+        agencies_amount = int(
+            os.getenv("AGENCIES_AMOUNT", config["DEFAULT"]["AGENCIES_AMOUNT"])
         )
-        config_params["agencies_amount"] = int(os.getenv("AGENCIES_AMOUNT", config["DEFAULT"]["AGENCIES_AMOUNT"]))
     except KeyError as e:
         raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
     except ValueError as e:
@@ -39,7 +38,12 @@ def initialize_config():
             "Key could not be parsed. Error: {}. Aborting server".format(e)
         )
 
-    return config_params
+    return ServerConfig(
+        port=port,
+        listen_backlog=listen_backlog,
+        agencies_amount=agencies_amount,
+        logging_level=logging_level,
+    )
 
 
 def initialize_log(logging_level):
