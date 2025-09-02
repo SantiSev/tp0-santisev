@@ -10,7 +10,7 @@ class Server:
         self.connection_manager = ConnectionManager(
             port=port, listen_backlog=listen_backlog
         )
-        self.connectedClients: list[ConnectionInterface] = []
+        self.connectedClients: list[ConnectionInterface] = []  # Keep as list
         self.is_running = True
         self.agencies_amount = agencies_amount
         self.processed_agencies = 0
@@ -49,7 +49,7 @@ class Server:
 
     def _connect_client(self) -> ConnectionInterface:
         client_connection = self.connection_manager.accept_connection()
-        self.connectedClients[client_connection] = 0
+        self.connectedClients.append(client_connection)
         logging.info(f"action: connect_client | result: success")
         return client_connection
 
