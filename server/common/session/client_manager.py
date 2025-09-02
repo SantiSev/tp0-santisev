@@ -1,7 +1,7 @@
 from typing import List
-from server.common.session.client_session import ClientSession
-from tp0.server.common.business.lottery_service import LotteryService
-from tp0.server.common.network.connection_interface import ConnectionInterface
+from common.session.client_session import ClientSession
+from common.business.lottery_service import LotteryService
+from common.network.connection_interface import ConnectionInterface
 
 class ClientManager:
     def __init__(self, lottery_service: LotteryService):

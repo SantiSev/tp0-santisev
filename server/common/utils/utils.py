@@ -1,13 +1,13 @@
+from configparser import ConfigParser
 import csv
 import datetime
-import time
+import os
 
 
-""" Bets storage location. """
-STORAGE_FILEPATH = "./bets.csv"
-""" Simulated winner number in the lottery contest. """
-LOTTERY_WINNER_NUMBER = 7574
-
+config = ConfigParser(os.environ)
+config.read("config.ini")
+STORAGE_FILEPATH = os.getenv("STORAGE_FILEPATH", config["DEFAULT"]["STORAGE_FILEPATH"])
+LOTTERY_WINNER_NUMBER = int(os.getenv("LOTTERY_WINNER_NUMBER", config["DEFAULT"]["LOTTERY_WINNER_NUMBER"]))
 
 """ A lottery bet registry. """
 class Bet:
@@ -48,4 +48,3 @@ def load_bets() -> list[Bet]:
         reader = csv.reader(file, quoting=csv.QUOTE_MINIMAL)
         for row in reader:
             yield Bet(row[0], row[1], row[2], row[3], row[4], row[5])
-

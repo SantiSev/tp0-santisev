@@ -1,8 +1,8 @@
 import logging
-from tp0.server.common.business.lottery_service import LotteryService
-from tp0.server.common.network.connection_interface import ConnectionInterface
-from tp0.server.common.protocol.bet_handler import BetHandler
-from tp0.server.common.utils.utils import Bet
+from common.business.lottery_service import LotteryService
+from common.network.connection_interface import ConnectionInterface
+from common.protocol.bet_handler import BetHandler
+from common.utils.utils import Bet
 
 
 class ClientSession:

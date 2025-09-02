@@ -3,7 +3,7 @@ from typing import List
 
 from common.network.connection_interface import ConnectionInterface
 from common.utils.utils import Bet
-from tp0.server.common.protocol.protocol_constants import *
+from common.protocol.protocol_constants import *
 
 class BetParser:
     """Process bet data from clients"""

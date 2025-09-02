@@ -2,9 +2,9 @@ import logging
 import struct
 
 from common.network.connection_interface import ConnectionInterface
-from tp0.server.common.protocol.bet_parser import BetParser
+from common.protocol.bet_parser import BetParser
 from common.utils.utils import Bet, has_won, load_bets, store_bets
-from tp0.server.common.protocol.protocol_constants import *
+from common.protocol.protocol_constants import *
 
 
 class BetHandler:

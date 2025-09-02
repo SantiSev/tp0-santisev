@@ -1,5 +1,5 @@
 import logging
-from tp0.server.common.utils.utils import Bet, has_won, load_bets, store_bets
+from common.utils.utils import Bet, has_won, load_bets, store_bets
 
 
 class LotteryService:

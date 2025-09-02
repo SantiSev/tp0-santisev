@@ -2,12 +2,11 @@ import logging
 import signal
 import sys
 from common.network.connection_manager import ConnectionManager
-from tp0.server.common.protocol.bet_handler import BetHandler
 from common.network.connection_interface import ConnectionInterface
-from tp0.server.common.business.lottery_service import LotteryService
-from tp0.server.common.server.server_config import ServerConfig
-from tp0.server.common.session.client_manager import ClientManager
-from tp0.server.common.session.client_session import ClientSession
+from common.business.lottery_service import LotteryService
+from common.server.server_config import ServerConfig
+from common.session.client_manager import ClientManager
+from common.session.client_session import ClientSession
 
 
 class Server:

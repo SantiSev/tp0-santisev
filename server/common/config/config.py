@@ -2,7 +2,7 @@ from configparser import ConfigParser
 import logging
 import os
 
-from tp0.server.common.server.server_config import ServerConfig
+from common.server.server_config import ServerConfig
 
 
 def initialize_config() -> ServerConfig:
