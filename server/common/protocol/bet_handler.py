@@ -3,7 +3,7 @@ import struct
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_processor import BetProcessor
-from common.utils.utils import has_won, load_bets, store_bets
+from common.utils.utils import Bet, has_won, load_bets, store_bets
 
 EOF = b"\xff"
 HEADER_SIZE = 1
@@ -18,7 +18,7 @@ class BetHandler:
     def __init__(self):
         self.message_handler = BetProcessor()
 
-    def process_bets(self, client_connection: ConnectionInterface) -> int:
+    def process_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
         """
         Process the best being sent by the client - receive and store bets
         """
@@ -51,7 +51,7 @@ class BetHandler:
         logging.info(
             f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
         )
-        return len(bets)
+        return bets
 
     def confirmation_to_client(
         self, connection: ConnectionInterface, status: bool
@@ -69,25 +69,19 @@ class BetHandler:
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
 
-    def get_winning_numbers(self) -> int:
-        """
-        Get the winning numbers
-        """
-        winner_count = 0
-        bets = load_bets()
-        for bet in bets:
-            if has_won(bet):
-                winner_count += 1
+    def get_all_winners(self) -> list[str]:
+        """Return documents of winning bets."""
+        return [bet.document for bet in load_bets() if has_won(bet)]
 
-        return winner_count
-
-    def send_winning_numbers(
-        self, connection: ConnectionInterface, winners_count: int
-    ) -> None:
+    def send_winners(self, connection: ConnectionInterface, bets: list[Bet]) -> None:
         """
         Send the winning numbers to the client
         """
+        winners = [bet for bet in bets if has_won(bet)]
+        winners_count = len(winners)
+
         try:
+            # TODO: change this in the future to send the winning bets, not just the amount of winners
             connection.send(WINNERS_HEADER)
             winners_bytes = struct.pack(">H", winners_count)
             connection.send(winners_bytes)

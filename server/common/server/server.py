@@ -1,7 +1,6 @@
 import logging
 import signal
 import sys
-from typing import Dict
 from common.network.connection_manager import ConnectionManager
 from common.protocol.bet_handler import BetHandler
 from common.network.connection_interface import ConnectionInterface
@@ -11,7 +10,7 @@ class Server:
         self.connection_manager = ConnectionManager(
             port=port, listen_backlog=listen_backlog
         )
-        self.connectedClients: Dict[ConnectionInterface, int] = {}
+        self.connectedClients: list[ConnectionInterface] = []
         self.is_running = True
         self.agencies_amount = agencies_amount
         self.processed_agencies = 0
@@ -28,9 +27,9 @@ class Server:
             while self.is_running and self.processed_agencies < self.agencies_amount:
                 try:
                     client_connection = self._connect_client()
-                    # TODO: convert to list since i dont really use the bet_counter here
-                    bet_counter = self.bet_handler.process_bets(client_connection)
-                    self.connectedClients[client_connection] = bet_counter
+                    bets = self.bet_handler.process_bets(client_connection)
+                    self.connectedClients.append(client_connection)
+                    self.bet_handler.send_winners(client_connection, bets)
                     self.processed_agencies += 1
                     logging.info(
                         f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
@@ -57,7 +56,7 @@ class Server:
     def _disconnect_client(self, client_connection: ConnectionInterface) -> None:
         """Disconnect a client from the server"""
         if client_connection in self.connectedClients:
-            del self.connectedClients[client_connection]
+            self.connectedClients.remove(client_connection)
         client_connection.close()
         logging.info(f"action: disconnect_client | result: success")
 
@@ -66,12 +65,10 @@ class Server:
         pass
 
     def _announce_winners(self) -> None:
-        winners_count = self.bet_handler.get_winning_numbers()
+        winners = self.bet_handler.get_all_winners()
         logging.info(
-            f"action: sorteo | result: success | winners_count: {winners_count}"
+            f"action: sorteo | result: success | winners: {winners}"
         )
-        for client_connection in self.connectedClients:
-            self.bet_handler.send_winning_numbers(client_connection, winners_count)
 
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
