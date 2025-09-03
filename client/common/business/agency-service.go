@@ -1,80 +1,35 @@
 package business
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
-
-	"github.com/op/go-logging"
 )
 
-var log = logging.MustGetLogger("log")
-
 type AgencyService struct {
-	agency_id      uint8
-	agencyFile     *os.File
-	has_data       bool
-	scanner        *bufio.Scanner
-	maxBatchAmount int
+	bet       string
+	agency_id uint8
 }
 
-func NewAgencyService(agencyFilePath string, maxBatchAmount int, agency_id uint8) (*AgencyService, error) {
-	file, err := os.Open(agencyFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %v", err)
-	}
+func NewAgencyService(bet string, agency_id uint8) (*AgencyService, error) {
 
 	return &AgencyService{
-		agency_id:      agency_id,
-		agencyFile:     file,
-		has_data:       true,
-		scanner:        bufio.NewScanner(file),
-		maxBatchAmount: maxBatchAmount,
+		bet:       bet,
+		agency_id: agency_id,
 	}, nil
 }
 
-func (a *AgencyService) ReadBets(batchSize int) (string, error) {
+func (a *AgencyService) ReadBets() (string, error) {
 
-	var betBatchMessage string
-
-	for i := 0; i < a.maxBatchAmount; i++ {
-
-		canRead := a.scanner.Scan()
-
-		if err := a.scanner.Err(); err != nil {
-			return betBatchMessage, fmt.Errorf("error reading file: %v", err)
-		}
-
-		if !canRead {
-			a.has_data = false
-			return betBatchMessage, nil
-		}
-
-		line := strings.TrimSpace(a.scanner.Text())
-
-		if line == "" || !is_valid_bet(line) {
-			continue
-		}
-
-		betMessage := fmt.Sprintf("%d,%s,", a.agency_id, line)
-		betBatchMessage += betMessage
+	if !a.validateBet() {
+		return "", fmt.Errorf("invalid bet format: %s", a.bet)
 	}
-	return betBatchMessage, nil
+
+	return a.bet, nil
 }
 
-func is_valid_bet(bet string) bool {
-	parts := strings.Split(bet, ",")
-	return len(parts) == 5
-}
+func (a *AgencyService) validateBet() bool {
 
-func (a *AgencyService) HasData() bool {
-	return a.has_data
-}
+	bets := strings.Split(a.bet, ",")
 
-func (a *AgencyService) Close() error {
-	if a.agencyFile != nil {
-		return a.agencyFile.Close()
-	}
-	return nil
+	return len(bets) == 6
 }

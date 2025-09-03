@@ -37,6 +37,7 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
       - CLIENT_FIRST_NAME=John
       - CLIENT_LAST_NAME=Doe
       - CLIENT_BIRTHDATE=1990-01-01
+      - CLI_CONFIG_FILE_PATH=./config.yaml
     networks:
       - testing_net
     volumes:

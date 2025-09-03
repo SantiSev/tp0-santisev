@@ -24,7 +24,7 @@ type Client struct {
 }
 
 func NewClient(config ClientConfig) *Client {
-	agencyService, err := business.NewAgencyService(config.AgencyFilePath, config.MaxBatchAmount, config.Id)
+	agencyService, err := business.NewAgencyService(config.Bet, config.Id)
 	if err != nil {
 		log.Errorf("action: init_agency_service | result: fail | client_id: %v | error: %v", config.Id, err)
 		return nil
@@ -49,40 +49,24 @@ func (c *Client) Run() error {
 		return err
 	}
 
-	for {
-		batch, err := c.agencyService.ReadBets(c.config.MaxBatchAmount)
-		if err != nil {
-			log.Errorf("action: read_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			c.Shutdown()
-			return err
-		}
-
-		err = c.betHandler.SendBets(batch, c.connInterface)
-		if err != nil {
-			log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			c.Shutdown()
-			return err
-		}
-
-		err = c.betHandler.RecvConfirmation(c.connInterface)
-		if err != nil {
-			log.Errorf("action: recv_confirmation | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			c.Shutdown()
-			return err
-		}
-
-		if !c.agencyService.HasData() {
-			break
-		}
-	}
-
-	err = c.betHandler.SendDone(c.connInterface)
+	bet, err := c.agencyService.ReadBets()
 
 	if err != nil {
-		log.Errorf("action: send_done | result: fail | client_id: %v | error: %v",
-			c.config.Id,
-			err,
-		)
+		log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
+		c.Shutdown()
+		return err
+	}
+
+	err = c.betHandler.SendBets(bet, c.connInterface)
+	if err != nil {
+		log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
+		c.Shutdown()
+		return err
+	}
+
+	err = c.betHandler.RecvConfirmation(c.connInterface)
+	if err != nil {
+		log.Errorf("action: recv_confirmation | result: fail | client_id: %v | error: %v", c.config.Id, err)
 		c.Shutdown()
 		return err
 	}
@@ -108,6 +92,5 @@ func (c *Client) setupGracefulShutdown() {
 func (c *Client) Shutdown() {
 	time.Sleep(100 * time.Millisecond)
 	c.connInterface.Close()
-	c.agencyService.Close()
 	log.Infof("action: exit | result: success")
 }

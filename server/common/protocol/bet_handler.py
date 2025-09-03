@@ -13,50 +13,38 @@ class BetHandler:
     def __init__(self):
         self.bet_parser = BetParser()
 
-    def get_bets(
-        self, client_connection: ConnectionInterface
-    ) -> tuple[list[Bet], bool]:
+    def get_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
 
         header = client_connection.receive(HEADER_SIZE)
-
-        if header == EOF:
-            logging.info("action: end of transmission | result: success")
-            return [], False
 
         if header != BET_HEADER:
             raise Exception(f"Unexpected header: {header}")
 
-        batchBets = self.bet_parser.parse_batch(client_connection)
-        return batchBets, True
+        bet = self.bet_parser.parse_bet(client_connection)
+        return bet
 
-    def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:
+    def confirm_bet(
+        self, bets: list[Bet], connection: ConnectionInterface, status: bool
+    ) -> None:
         """
         Confirm the bet with the client
         """
         try:
             if status:
                 connection.send(SUCCESS_HEADER)
+
+                bet = bets[0]
+                bet_message = f"{bet.document},{bet.number},"
+                message_bytes = bet_message.encode()
+                message_length = len(message_bytes)
+                length_bytes = bytes([message_length])
+
+                connection.send(length_bytes)
+                connection.send(message_bytes)
+
                 logging.debug(f"action: confirm_bet | result: success")
             else:
                 connection.send(FAIL)
                 logging.debug(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
-
-    def send_winners(self, connection: ConnectionInterface, winners: list[str]) -> None:
-        """
-        Send the winning numbers to the client
-        """
-        winners_string = ",".join(winners)
-
-        try:
-            connection.send(WINNERS_HEADER)
-            winners_bytes = struct.pack(">H", len(winners_string))
-            logging.debug("action: sending_winners_data | result: success | length: %d", len(winners_string))
-            connection.send(winners_bytes)
-            connection.send(winners_string.encode())
-            logging.debug(
-                f"action: sending_winners | result: success | winners: [{winners_string}]"
-            )
-        except Exception as e:
-            logging.error(f"action: sending_winners | result: fail | error: {e}")

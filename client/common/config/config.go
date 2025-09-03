@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -24,14 +25,20 @@ func InitConfig() (*client.ClientConfig, error) {
 		return nil, errors.Wrapf(err, "failed to read config file %s", configPath)
 	}
 
+	client_id := v.GetInt("CLI_ID")
+	bet_first_name := v.GetString("CLIENT_FIRST_NAME")
+	bet_last_name := v.GetString("CLIENT_LAST_NAME")
+	bet_birthdate := v.GetString("CLIENT_BIRTHDATE")
+	bet_document := v.GetString("CLIENT_DOCUMENT")
+	bet_number := v.GetInt("BET_NUMBER")
+
+	betString := fmt.Sprintf("%d,%s,%s,%d,%s,%d", client_id, bet_first_name, bet_last_name, bet_document, bet_birthdate, bet_number)
+
 	clientConfig := &client.ClientConfig{
-		ServerAddress:  v.GetString("server.address"),
-		Id:             uint8(v.GetInt("CLI_ID")),
-		LoopAmount:     v.GetInt("loop.amount"),
-		LoopPeriod:     v.GetDuration("loop.period"),
-		LogLevel:       v.GetString("log.level"),
-		MaxBatchAmount: v.GetInt("batch.maxAmount"),
-		AgencyFilePath: v.GetString("CLI_AGENCY_FILEPATH"),
+		ServerAddress: v.GetString("server.address"),
+		Id:            uint8(v.GetInt("CLI_ID")),
+		LogLevel:      v.GetString("log.level"),
+		Bet:           betString,
 	}
 
 	return clientConfig, nil
@@ -40,8 +47,11 @@ func InitConfig() (*client.ClientConfig, error) {
 func loadEnvVars() {
 	// if the env vars are present, there is no need to load .env
 	if os.Getenv("CLI_ID") != "" &&
-		os.Getenv("CLI_AGENCY_FILEPATH") != "" &&
-		os.Getenv("CLI_CONFIG_FILEPATH") != "" {
+		os.Getenv("CLIENT_FIRST_NAME") != "" &&
+		os.Getenv("CLIENT_LAST_NAME") != "" &&
+		os.Getenv("CLIENT_BIRTHDATE") != "" &&
+		os.Getenv("CLIENT_DOCUMENT") != "" &&
+		os.Getenv("BET_NUMBER") != "" {
 		return
 	}
 
