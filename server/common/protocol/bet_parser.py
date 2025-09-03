@@ -15,7 +15,6 @@ class BetParser:
             data_length = int.from_bytes(data_length_bytes, "big")
 
             if data_length == 0:
-                logging.warning(f"action: parse_batch | result: empty_data")
                 return []
 
             logging.debug(
