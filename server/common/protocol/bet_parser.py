@@ -12,11 +12,12 @@ class BetParser:
     def parse_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
         try:
             data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
+
+            if data_length_bytes == 0:
+                return []
+
             data_length = int.from_bytes(data_length_bytes, "big")
             data = client_connection.receive(data_length).decode("utf-8")
-
-            if not data or data is None:
-                return []
 
             return self._parse_batch_data(data)
 
