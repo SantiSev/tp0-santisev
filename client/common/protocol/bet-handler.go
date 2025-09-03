@@ -72,16 +72,24 @@ func (b *BetHandler) GetResults(connSock *network.ConnectionInterface) (string, 
 	}
 	success_header := string(headerData)
 
+	log.Debug("action: lottery_results_received | result: success")
+
 	if success_header == WINNERS_HEADER {
-		log.Infof("action: winner_confirmation | result: success")
-		winnerCountBytes := make([]byte, WINNER_COUNT_SIZE)
-		err := connSock.ReceiveData(winnerCountBytes)
+		winners_data_count := make([]byte, WINNER_COUNT_SIZE)
+		err := connSock.ReceiveData(winners_data_count)
 		if err != nil {
 			return "", fmt.Errorf("failed to receive length data: %v", err)
 		}
-		winnerCount := binary.BigEndian.Uint16(winnerCountBytes)
+		winnerCount := binary.BigEndian.Uint16(winners_data_count)
 
-		log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d", winnerCount)
+		winnerData := make([]byte, winnerCount)
+		err = connSock.ReceiveData(winnerData)
+		if err != nil {
+			return "", fmt.Errorf("failed to receive winner data: %v", err)
+		}
+		winnerStr := string(winnerData)
+
+		return winnerStr, nil
 
 	} else {
 		log.Errorf("action: winner_confirmation | result: fail")

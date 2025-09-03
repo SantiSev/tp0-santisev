@@ -3,7 +3,7 @@ import struct
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_parser import BetParser
-from common.utils.utils import Bet, has_won, load_bets, store_bets
+from common.utils.utils import Bet
 from common.protocol.protocol_constants import *
 
 
@@ -52,9 +52,11 @@ class BetHandler:
         try:
             connection.send(WINNERS_HEADER)
             winners_bytes = struct.pack(">H", len(winners_string))
+            logging.debug("action: sending_winners_data | result: success | length: %d", len(winners_string))
             connection.send(winners_bytes)
+            connection.send(winners_string.encode())
             logging.debug(
-                f"action: sending_winners | result: success | winners: {winners_string}"
+                f"action: sending_winners | result: success | winners: [{winners_string}]"
             )
         except Exception as e:
             logging.error(f"action: sending_winners | result: fail | error: {e}")

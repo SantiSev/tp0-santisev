@@ -14,4 +14,4 @@ class LotteryService:
     def announce_winners(self) -> None:
         bets = load_bets()
         winners = self.draw_winners(bets)
-        logging.info(f"action: sorteo | result: success | winners: {winners} | cantidad de ganadores: {len(winners)} / {len(bets)}")
+        logging.info(f"action: sorteo | result: success | winners: {winners}")

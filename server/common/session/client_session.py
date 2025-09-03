@@ -25,15 +25,16 @@ class ClientSession:
                 betBatch, more_bets_remaining = self.protocol_handler.get_bets(
                     self.connection_interface
                 )
+
+                if not more_bets_remaining:
+                    logging.info(f"action: all_bets_received | result: success")
+                    break
+
                 self.lottery_service.place_bets(betBatch)
                 self.protocol_handler.confirm_batch(self.connection_interface, True)
                 agencyBets.extend(betBatch)
 
                 logging.info(f"more_bets_remaining: {more_bets_remaining}")
-
-                if not more_bets_remaining:
-                    logging.info(f"action: all_bets_received | result: success")
-                    break
 
             except Exception as e:
                 logging.error(f"action: client_session | result: fail | error: {e}")
