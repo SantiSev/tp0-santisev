@@ -28,9 +28,7 @@ def initialize_config() -> ServerConfig:
             )
         )
         logging_level = os.getenv("LOGGING_LEVEL", config["DEFAULT"]["LOGGING_LEVEL"])
-        agencies_amount = int(
-            os.getenv("AGENCIES_AMOUNT", config["DEFAULT"]["AGENCIES_AMOUNT"])
-        )
+
     except KeyError as e:
         raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
     except ValueError as e:
@@ -41,7 +39,6 @@ def initialize_config() -> ServerConfig:
     return ServerConfig(
         port=port,
         listen_backlog=listen_backlog,
-        agencies_amount=agencies_amount,
         logging_level=logging_level,
     )
 

@@ -18,7 +18,7 @@ class ClientSession:
         self.lottery_service = lottery_service
         self.protocol_handler = BetHandler()
 
-    def begin(self) -> tuple[bool, list[Bet]]:
+    def begin(self) -> None:
         agencyBets = []
         while True:
             try:
@@ -39,13 +39,10 @@ class ClientSession:
             except Exception as e:
                 logging.error(f"action: client_session | result: fail | error: {e}")
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
-                return False, []
+                return
         logging.info(
             f"action: apuesta_recibida | result: success | cantidad: {len(agencyBets)}"
         )
-        winners = self.lottery_service.draw_winners(agencyBets)
-        self.protocol_handler.send_winners(self.connection_interface, winners)
-        return True, agencyBets
 
     def finish(self) -> None:
         self.connection_interface.close()

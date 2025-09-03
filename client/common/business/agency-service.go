@@ -65,27 +65,11 @@ func (a *AgencyService) ReadBets(batchSize int) (string, error) {
 
 func is_valid_bet(bet string) bool {
 	parts := strings.Split(bet, ",")
-	if len(parts) != 5 {
-		return false
-	}
-	return true
+	return len(parts) == 5
 }
 
 func (a *AgencyService) HasData() bool {
 	return a.has_data
-}
-
-func (a *AgencyService) ShowResults(results string) {
-
-	var amountWinners int
-	if strings.TrimSpace(results) == "" {
-		amountWinners = 0
-	} else {
-		amountWinners = len(strings.Split(results, ","))
-	}
-
-	log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d", amountWinners)
-	log.Infof("action: mostrar_ganadores | result: success | ganadores: %s", results)
 }
 
 func (a *AgencyService) Close() error {
