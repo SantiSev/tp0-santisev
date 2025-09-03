@@ -29,7 +29,9 @@ class ClientSession:
                 self.protocol_handler.confirm_batch(self.connection_interface, True)
                 agencyBets.extend(betBatch)
 
-                if more_bets_remaining is False:
+                logging.info(f"more_bets_remaining: {more_bets_remaining}")
+
+                if not more_bets_remaining:
                     logging.info(f"action: all_bets_received | result: success")
                     break
 
@@ -37,9 +39,12 @@ class ClientSession:
                 logging.error(f"action: client_session | result: fail | error: {e}")
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
                 return False, []
-
+        logging.info(
+            f"action: apuesta_recibida | result: success | cantidad: {len(agencyBets)}"
+        )
         winners = self.lottery_service.draw_winners(agencyBets)
         self.protocol_handler.send_winners(self.connection_interface, winners)
+        return True, agencyBets
 
     def finish(self) -> None:
         self.connection_interface.close()

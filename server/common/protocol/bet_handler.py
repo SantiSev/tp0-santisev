@@ -17,25 +17,17 @@ class BetHandler:
         self, client_connection: ConnectionInterface
     ) -> tuple[list[Bet], bool]:
 
-        more_bet_remaining = True
-
         header = client_connection.receive(HEADER_SIZE)
 
-        if header != BET_HEADER:
-            logging.warning(
-                f"action: process_bets | result: fail | error: unexpected_header | header: {header}"
-            )
-            raise Exception("Unexpected header received")
-
         if header == EOF:
-            more_bet_remaining = False
-            logging.info(f"action: end of transmission | result: success")
+            logging.info("action: end of transmission | result: success")
+            return [], False
+
+        if header != BET_HEADER:
+            raise Exception(f"Unexpected header: {header}")
 
         batchBets = self.bet_parser.parse_batch(client_connection)
-        logging.info(
-            f"action: apuesta_recibida | result: success | cantidad: {len(batchBets)}"
-        )
-        return batchBets, more_bet_remaining
+        return batchBets, True
 
     def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:
         """

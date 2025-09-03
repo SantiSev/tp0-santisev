@@ -48,7 +48,7 @@ class Server:
                             f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
                         )
                     else:
-                        logging.info(
+                        logging.error(
                             f"action: server_loop | result: fail | an error occured processing the client with {client.id} , halting client"
                         )
                         self.clientManager.remove_client(client.id)
