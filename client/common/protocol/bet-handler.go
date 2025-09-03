@@ -20,6 +20,10 @@ func NewBetHandler() *BetHandler {
 
 func (b *BetHandler) SendBets(bets string, connSock *network.ConnectionInterface) error {
 
+	if len(bets) > MAX_BATCH_SIZE {
+		return fmt.Errorf("bets size too big to send: %d bytes (max %d)", len(bets), MAX_BATCH_SIZE)
+	}
+
 	err := connSock.SendData([]byte(HEADER))
 	if err != nil {
 		return err
@@ -95,6 +99,4 @@ func (b *BetHandler) GetResults(connSock *network.ConnectionInterface) (string, 
 		log.Errorf("action: winner_confirmation | result: fail")
 		return "", fmt.Errorf("an error occurred tallying up the winners")
 	}
-
-	return "", nil
 }

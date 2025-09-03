@@ -65,10 +65,7 @@ func (a *AgencyService) ReadBets(batchSize int) (string, error) {
 
 func is_valid_bet(bet string) bool {
 	parts := strings.Split(bet, ",")
-	if len(parts) != 5 {
-		return false
-	}
-	return true
+	return len(parts) == 5
 }
 
 func (a *AgencyService) HasData() bool {
