@@ -39,7 +39,7 @@ class Server:
                         client_connection
                     )
 
-                    success, bets = client.begin()
+                    success = client.begin()
 
                     if success:
                         self.processed_agencies += 1

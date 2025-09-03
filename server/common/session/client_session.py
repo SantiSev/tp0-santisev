@@ -18,7 +18,7 @@ class ClientSession:
         self.lottery_service = lottery_service
         self.protocol_handler = BetHandler()
 
-    def begin(self) -> tuple[bool, list[Bet]]:
+    def begin(self) -> bool:
         agencyBets = []
         while True:
             try:
