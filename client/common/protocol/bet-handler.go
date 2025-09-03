@@ -53,7 +53,7 @@ func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) err
 	success_header := string(headerData)
 
 	if success_header == SUCCESS_HEADER {
-		log.Infof("action: batch_confirmation | result: success")
+		log.Debug("action: batch_confirmation | result: success")
 	} else {
 		log.Errorf("action: batch_confirmation | result: fail")
 		return fmt.Errorf("batch processing failed")
