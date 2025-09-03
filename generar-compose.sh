@@ -32,8 +32,11 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     entrypoint: /client
     environment:
       - CLI_ID=$i
-      - CLI_AGENCY_FILEPATH=/data/agency.csv
-      - CLI_CONFIG_FILEPATH=./config.yaml
+      - BET_NUMBER=67890
+      - CLIENT_DOCUMENT=11223344
+      - CLIENT_FIRST_NAME=John
+      - CLIENT_LAST_NAME=Doe
+      - CLIENT_BIRTHDATE=1990-01-01
     networks:
       - testing_net
     volumes:
