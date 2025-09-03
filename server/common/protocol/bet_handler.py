@@ -13,48 +13,31 @@ class BetHandler:
     def __init__(self):
         self.bet_parser = BetParser()
 
-    def process_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
+    def get_bets(
+        self, client_connection: ConnectionInterface
+    ) -> tuple[list[Bet], bool]:
 
-        bets = []
+        more_bet_remaining = True
 
-        while True:
-            try:
-                header = client_connection.receive(HEADER_SIZE)
+        header = client_connection.receive(HEADER_SIZE)
 
-                if header == EOF:
-                    logging.info(f"action: end of transmission | result: success")
-                    break
+        if header != BET_HEADER:
+            logging.warning(
+                f"action: process_bets | result: fail | error: unexpected_header | header: {header}"
+            )
+            raise Exception("Unexpected header received")
 
-                if header != BET_HEADER:
-                    logging.warning(
-                        f"action: process_bets | result: fail | error: unexpected_header | header: {header}"
-                    )
-                    raise Exception("Unexpected header received")
+        if header == EOF:
+            more_bet_remaining = False
+            logging.info(f"action: end of transmission | result: success")
 
-                batchBets = self.bet_parser.parse_batch(client_connection)
-                if batchBets:
-                    bets.extend(batchBets)
-                    self._confirmation_to_client(client_connection, True)
-
-                else:
-                    raise Exception("An Error occured proccesing bets")
-
-            except Exception as e:
-                self._confirmation_to_client(client_connection, False)
-                logging.error(f"action: process_bets | result: fail | error: {e}")
-                logging.critical(
-                    f"action: apuesta_recibida | result: fail | cantidad: {len(bets)}"
-                )
-                break
-        store_bets(bets)
+        batchBets = self.bet_parser.parse_batch(client_connection)
         logging.info(
-            f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
+            f"action: apuesta_recibida | result: success | cantidad: {len(batchBets)}"
         )
-        return bets
+        return batchBets, more_bet_remaining
 
-    def _confirmation_to_client(
-        self, connection: ConnectionInterface, status: bool
-    ) -> None:
+    def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:
         """
         Confirm the bet with the client
         """

@@ -43,7 +43,7 @@ class Server:
 
                     if success:
                         self.processed_agencies += 1
-                        self.lottery_service.store_bets(bets)
+                        self.lottery_service.place_bets(bets)
                         logging.info(
                             f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
                         )
