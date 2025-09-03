@@ -13,7 +13,8 @@ class BetParser:
         try:
             data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
 
-            if data_length_bytes == 0:
+            if not data_length_bytes or len(data_length_bytes) == 0:
+                logging.debug("action: parse_batch | result: no_data | reason: empty_length_bytes")
                 return []
 
             data_length = int.from_bytes(data_length_bytes, "big")
@@ -58,7 +59,7 @@ class BetParser:
                         f"action: parse_bet | result: incomplete_data | remaining_fields: {remaining_fields} | expected: {EXPECTED_FIELDS}"
                     )
 
-            logging.info(
+            logging.debug(
                 f"action: parse_bet_batch | result: success | total_bets: {len(bets)}"
             )
             return bets
