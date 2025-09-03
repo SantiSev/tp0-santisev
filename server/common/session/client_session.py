@@ -37,7 +37,9 @@ class ClientSession:
                 logging.info(f"more_bets_remaining: {more_bets_remaining}")
 
             except Exception as e:
-                logging.error(f"action: client_session | result: fail | error: {e}")
+                logging.error(
+                    f"action: apuesta_recibida | result: fail | cantidad: {len(agencyBets)}"
+                )
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
                 return False, []
         logging.info(
