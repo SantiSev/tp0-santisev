@@ -8,7 +8,6 @@ fi
 YAML_FILE="$1"
 AMOUNT_CLIENTS="$2"
 
-# Create the base compose file
 cat > docker-compose-dev.yaml << EOF
 name: tp0
 services:
@@ -33,6 +32,8 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     entrypoint: /client
     environment:
       - CLI_ID=$i
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:

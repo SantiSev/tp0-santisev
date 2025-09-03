@@ -1,60 +1,35 @@
 import logging
-from typing import List
+import struct
 
 from common.network.connection_interface import ConnectionInterface
-from common.protocol.bet_processor import BetProcessor
-from common.utils.utils import Bet, store_bets
-
-EOF = b"\xff"
-HEADER_SIZE = 1
-SUCCESS_HEADER = b"\x01"
-FAIL = b"\xff"
+from common.protocol.bet_parser import BetParser
+from common.utils.utils import Bet
+from common.protocol.protocol_constants import *
 
 
 class BetHandler:
     """Handles individual client connections"""
 
     def __init__(self):
-        self.message_handler = BetProcessor()
+        self.bet_parser = BetParser()
 
-    def process_bets(self, client_connection: ConnectionInterface) -> int:
-        """
-        Process the best being sent by the client - receive and store bets
-        """
-        bets = []
+    def get_bets(
+        self, client_connection: ConnectionInterface
+    ) -> tuple[list[Bet], bool]:
 
-        while True:
-            try:
-                header = client_connection.receive(HEADER_SIZE)
+        header = client_connection.receive(HEADER_SIZE)
 
-                if header == EOF:
-                    logging.info(f"action: end of transmission | result: success")
-                    break
+        if header == EOF:
+            logging.info("action: end of transmission | result: success")
+            return [], False
 
-                batchBets = self.message_handler.process_batch(client_connection)
-                if batchBets:
-                    bets.extend(batchBets)
-                    self.confirmation_to_client(client_connection, True)
+        if header != BET_HEADER:
+            raise Exception(f"Unexpected header: {header}")
 
-                else:
-                    raise Exception("An Error occured proccesing bets")
+        batchBets = self.bet_parser.parse_batch(client_connection)
+        return batchBets, True
 
-            except Exception as e:
-                self.confirmation_to_client(client_connection, False)
-                logging.error(f"action: process_bets | result: fail | error: {e}")
-                logging.critical(
-                    f"action: apuesta_recibida | result: fail | cantidad: {len(bets)}"
-                )
-                break
-        store_bets(bets)
-        logging.info(
-            f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
-        )
-        return len(bets)
-
-    def confirmation_to_client(
-        self, connection: ConnectionInterface, status: bool
-    ) -> None:
+    def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:
         """
         Confirm the bet with the client
         """
@@ -67,3 +42,21 @@ class BetHandler:
                 logging.debug(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")
+
+    def send_winners(self, connection: ConnectionInterface, winners: list[str]) -> None:
+        """
+        Send the winning numbers to the client
+        """
+        winners_string = ",".join(winners)
+
+        try:
+            connection.send(WINNERS_HEADER)
+            winners_bytes = struct.pack(">H", len(winners_string))
+            logging.debug("action: sending_winners_data | result: success | length: %d", len(winners_string))
+            connection.send(winners_bytes)
+            connection.send(winners_string.encode())
+            logging.debug(
+                f"action: sending_winners | result: success | winners: [{winners_string}]"
+            )
+        except Exception as e:
+            logging.error(f"action: sending_winners | result: fail | error: {e}")

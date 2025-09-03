@@ -1,30 +1,31 @@
 import logging
-from typing import List, Optional
+from typing import List
 
 from common.network.connection_interface import ConnectionInterface
 from common.utils.utils import Bet
-
-EXPECTED_FIELDS = 6
-DATA_LENGTH = 2
+from common.protocol.protocol_constants import *
 
 
-class BetProcessor:
+class BetParser:
     """Process bet data from clients"""
 
-    def process_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
+    def parse_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
         try:
-            data_length_bytes = client_connection.receive(DATA_LENGTH)
+            data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
             data_length = int.from_bytes(data_length_bytes, "big")
+
+            if data_length == 0:
+                return []
+
+            logging.debug(
+                f"action: parse_batch | result: success | data_length: {data_length}"
+            )
+
             data = client_connection.receive(data_length).decode("utf-8")
-
-            if not data:
-                logging.debug("action: receive_message | result: no_data")
-                raise Exception("No data was sent, stopping process . . .")
-
             return self._parse_batch_data(data)
 
         except Exception as e:
-            logging.error(f"action: receive_message | result: fail | error: {e}")
+            logging.warning(f"action: parse_batch | result: fail | error: {e}")
             return []
 
     def _parse_batch_data(self, data: str) -> List[Bet]:
@@ -60,7 +61,7 @@ class BetProcessor:
                         f"action: parse_bet | result: incomplete_data | remaining_fields: {remaining_fields} | expected: {EXPECTED_FIELDS}"
                     )
 
-            logging.info(
+            logging.debug(
                 f"action: parse_bet_batch | result: success | total_bets: {len(bets)}"
             )
             return bets
