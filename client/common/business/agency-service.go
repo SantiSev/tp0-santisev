@@ -53,13 +53,22 @@ func (a *AgencyService) ReadBets(batchSize int) (string, error) {
 
 		line := strings.TrimSpace(a.scanner.Text())
 
-		if line == "" {
+		if line == "" || !is_valid_bet(line) {
 			continue
 		}
+
 		betMessage := fmt.Sprintf("%d,%s,", a.agency_id, line)
 		betBatchMessage += betMessage
 	}
 	return betBatchMessage, nil
+}
+
+func is_valid_bet(bet string) bool {
+	parts := strings.Split(bet, ",")
+	if len(parts) != 5 {
+		return false
+	}
+	return true
 }
 
 func (a *AgencyService) HasData() bool {

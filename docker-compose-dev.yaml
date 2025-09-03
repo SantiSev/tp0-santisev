@@ -7,6 +7,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - AGENCIES_AMOUNT=5
+      - STORAGE_FILEPATH=./bets.csv
+      - LOTTERY_WINNER_NUMBER=7574
     networks:
       - testing_net
     volumes:
@@ -18,8 +20,8 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=1
-      - CLI_AGENCY_FILE_PATH=/data/agency.csv
-      - CLI_CONFIG_FILE_PATH=./config.yaml
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:
@@ -34,8 +36,8 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=2
-      - CLI_AGENCY_FILE_PATH=/data/agency.csv
-      - CLI_CONFIG_FILE_PATH=./config.yaml
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:
@@ -50,8 +52,8 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=3
-      - CLI_AGENCY_FILE_PATH=/data/agency.csv
-      - CLI_CONFIG_FILE_PATH=./config.yaml
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:
@@ -66,8 +68,8 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=4
-      - CLI_AGENCY_FILE_PATH=/data/agency.csv
-      - CLI_CONFIG_FILE_PATH=./config.yaml
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:
@@ -82,8 +84,8 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=5
-      - CLI_AGENCY_FILE_PATH=/data/agency.csv
-      - CLI_CONFIG_FILE_PATH=./config.yaml
+      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:

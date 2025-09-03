@@ -17,7 +17,7 @@ func InitConfig() (*client.ClientConfig, error) {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
-	configPath := os.Getenv("CLI_CONFIG_FILE")
+	configPath := os.Getenv("CLI_CONFIG_FILEPATH")
 
 	v.SetConfigFile(configPath)
 	if err := v.ReadInConfig(); err != nil {
@@ -31,7 +31,7 @@ func InitConfig() (*client.ClientConfig, error) {
 		LoopPeriod:     v.GetDuration("loop.period"),
 		LogLevel:       v.GetString("log.level"),
 		MaxBatchAmount: v.GetInt("batch.maxAmount"),
-		AgencyFilePath: v.GetString("CLI_AGENCY_FILE_PATH"),
+		AgencyFilePath: v.GetString("CLI_AGENCY_FILEPATH"),
 	}
 
 	return clientConfig, nil
@@ -40,8 +40,8 @@ func InitConfig() (*client.ClientConfig, error) {
 func loadEnvVars() {
 	// if the env vars are present, there is no need to load .env
 	if os.Getenv("CLI_ID") != "" &&
-		os.Getenv("CLI_AGENCY_FILE_PATH") != "" &&
-		os.Getenv("CLI_CONFIG_FILE_PATH") != "" {
+		os.Getenv("CLI_AGENCY_FILEPATH") != "" &&
+		os.Getenv("CLI_CONFIG_FILEPATH") != "" {
 		return
 	}
 

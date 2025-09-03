@@ -5,6 +5,7 @@ from common.network.connection_interface import ConnectionInterface
 from common.utils.utils import Bet
 from common.protocol.protocol_constants import *
 
+
 class BetParser:
     """Process bet data from clients"""
 
@@ -14,14 +15,13 @@ class BetParser:
             data_length = int.from_bytes(data_length_bytes, "big")
             data = client_connection.receive(data_length).decode("utf-8")
 
-            if not data:
-                logging.debug("action: receive_message | result: no_data")
-                raise Exception("No data was sent, stopping process . . .")
+            if not data or data is None:
+                return []
 
             return self._parse_batch_data(data)
 
         except Exception as e:
-            logging.error(f"action: receive_message | result: fail | error: {e}")
+            logging.error(f"action: parse_batch | result: fail | error: {e}")
             return []
 
     def _parse_batch_data(self, data: str) -> List[Bet]:
