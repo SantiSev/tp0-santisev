@@ -22,6 +22,7 @@ class BetParser:
             )
 
             data = client_connection.receive(data_length).decode("utf-8")
+            logging.info(f"action: parse_bet | result: success | data: {data}")
             return self._parse_bet_data(data)
 
         except Exception as e:
@@ -32,12 +33,13 @@ class BetParser:
         """Parse comma-separated data into list of Bet objects"""
         try:
             data = data.rstrip(",")
-            agency = data[0]
-            first_name = data[1]
-            last_name = data[2]
-            document = data[3]
-            birthdate = data[4]
-            number = data[5]
+            fields = data.split(",")
+            agency = fields[0]
+            first_name = fields[1]
+            last_name = fields[2]
+            document = fields[3]
+            birthdate = fields[4]
+            number = fields[5]
 
             bet = Bet(
                 agency=agency,

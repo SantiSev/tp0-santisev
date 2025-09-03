@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"encoding/binary"
 	"fmt"
 	"strings"
 
@@ -20,25 +19,24 @@ func NewBetHandler() *BetHandler {
 }
 
 func (b *BetHandler) SendBets(bet string, connSock *network.ConnectionInterface) error {
-
-	err := connSock.SendData([]byte(HEADER))
-	if err != nil {
+	// Send header
+	if err := connSock.SendData([]byte(HEADER)); err != nil {
 		return err
 	}
 
-	lenBytes := make([]byte, 2)
-	binary.BigEndian.PutUint16(lenBytes, uint16(len(bet)))
-	err = connSock.SendData(lenBytes)
-	if err != nil {
+	// Send length as single byte
+	betBytes := []byte(bet)
+	if err := connSock.SendData([]byte{byte(len(betBytes))}); err != nil {
 		return err
 	}
-	err = connSock.SendData([]byte(bet))
-	if err != nil {
-		return err
-	}
-	log.Debug("action: send_bet_batch | result: success | batch_length: %d Bytes", len(bet))
 
-	return err
+	// Send bet data
+	if err := connSock.SendData(betBytes); err != nil {
+		return err
+	}
+
+	log.Debugf("action: send_bet | result: success | batch_length: %d Bytes", len(betBytes))
+	return nil
 }
 
 func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) error {
@@ -51,24 +49,20 @@ func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) err
 
 	if success_header == SUCCESS_HEADER {
 
-		lengthData := make([]byte, 1)
-		err = connSock.ReceiveData(lengthData)
-
-		if err != nil {
+		lengthData := make([]byte, RESPONSE_DATA_SIZE)
+		if err := connSock.ReceiveData(lengthData); err != nil {
 			return fmt.Errorf("failed to receive message length: %v", err)
 		}
 
-		messageLength := int(lengthData[0])
-		messageData := make([]byte, messageLength)
-		err = connSock.ReceiveData(messageData)
-
-		if err != nil {
+		messageData := make([]byte, lengthData[0])
+		if err := connSock.ReceiveData(messageData); err != nil {
 			return fmt.Errorf("failed to receive message data: %v", err)
 		}
 
-		messageParts := strings.Split(string(messageData), ",")
-
-		log.Debug("action: apuesta_enviada | result: success | dni: %s | numero: %s", messageParts[0], messageParts[1])
+		parts := strings.Split(string(messageData), ",")
+		if len(parts) >= 2 {
+			log.Infof("action: apuesta_enviada | result: success | dni: %s | numero: %s", parts[0], parts[1])
+		}
 	} else {
 		log.Errorf("action: batch_confirmation | result: fail")
 		return fmt.Errorf("batch processing failed")

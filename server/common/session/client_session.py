@@ -20,18 +20,17 @@ class ClientSession:
 
     def begin(self) -> None:
         try:
-            betBatch, more_bets_remaining = self.protocol_handler.get_bets(
+            bets = self.protocol_handler.get_bets(
                 self.connection_interface
             )
 
-            self.lottery_service.place_bets(betBatch)
-            self.protocol_handler.confirm_bet(self.connection_interface, True)
+            self.lottery_service.place_bets(bets)
+            self.protocol_handler.confirm_bet(bets, self.connection_interface, True)
 
-            logging.info(f"more_bets_remaining: {more_bets_remaining}")
 
         except Exception as e:
             logging.error(f"action: client_session | result: fail | error: {e}")
-            self.protocol_handler.confirm_bet(self.connection_interface, False)
+            self.protocol_handler.confirm_bet(bets, self.connection_interface, False)
             return
 
     def finish(self) -> None:

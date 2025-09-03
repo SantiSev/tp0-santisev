@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const CONFIG_FILE_PATH = "./config.yaml"
+
 func InitConfig() (*client.ClientConfig, error) {
 	loadEnvVars()
 
@@ -18,7 +20,7 @@ func InitConfig() (*client.ClientConfig, error) {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
-	configPath := os.Getenv("CLI_CONFIG_FILEPATH")
+	configPath := CONFIG_FILE_PATH
 
 	v.SetConfigFile(configPath)
 	if err := v.ReadInConfig(); err != nil {
@@ -32,7 +34,7 @@ func InitConfig() (*client.ClientConfig, error) {
 	bet_document := v.GetString("CLIENT_DOCUMENT")
 	bet_number := v.GetInt("BET_NUMBER")
 
-	betString := fmt.Sprintf("%d,%s,%s,%d,%s,%d", client_id, bet_first_name, bet_last_name, bet_document, bet_birthdate, bet_number)
+	betString := fmt.Sprintf("%d,%s,%s,%s,%s,%d", client_id, bet_first_name, bet_last_name, bet_document, bet_birthdate, bet_number)
 
 	clientConfig := &client.ClientConfig{
 		ServerAddress: v.GetString("server.address"),
