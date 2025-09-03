@@ -77,7 +77,12 @@ func (a *AgencyService) HasData() bool {
 
 func (a *AgencyService) ShowResults(results string) {
 
-	amountWinners := len(strings.Split(results, ","))
+	var amountWinners int
+	if strings.TrimSpace(results) == "" {
+		amountWinners = 0
+	} else {
+		amountWinners = len(strings.Split(results, ","))
+	}
 
 	log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d", amountWinners)
 	log.Infof("action: mostrar_ganadores | result: success | ganadores: %s", results)
