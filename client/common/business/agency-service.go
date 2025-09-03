@@ -79,8 +79,8 @@ func (a *AgencyService) ShowResults(results string) {
 
 	amountWinners := len(strings.Split(results, ","))
 
-	log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d:", amountWinners)
-	log.Infof("action: mostrar_ganadores | result: success | ganadores: %s:", results)
+	log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d", amountWinners)
+	log.Infof("action: mostrar_ganadores | result: success | ganadores: %s", results)
 }
 
 func (a *AgencyService) Close() error {
