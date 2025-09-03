@@ -17,4 +17,5 @@ class ConnectionManager:
         self.socket.bind(("", self.port))
         self.socket.listen(self.backlog)
 
-
+    def shutdown(self) -> None:
+        self.socket.close()

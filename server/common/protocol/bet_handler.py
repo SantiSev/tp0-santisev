@@ -1,14 +1,10 @@
 import logging
+import struct
 
 from common.network.connection_interface import ConnectionInterface
-from common.protocol.bet_processor import BetProcessor
-from common.utils.utils import Bet, store_bets
-
-EOF = b"\xFF"
-HEADER_SIZE = 1
-SUCCESS_HEADER = b"\x01"
-SUCCESS_MESSAGE_SIZE = 64
-FAIL = b"\xFF"
+from common.protocol.bet_parser import BetParser
+from common.utils.utils import Bet
+from common.protocol.protocol_constants import *
 
 
 # TODO: DO THESE CHANGES:
@@ -20,52 +16,40 @@ class BetHandler:
     """Handles individual client connections"""
 
     def __init__(self):
-        self.message_handler = BetProcessor()
+        self.bet_parser = BetParser()
 
-    def process_bets(self, client_connection: ConnectionInterface) -> None:
-        """
-        Process the best being sent by the client - receive and store bets
-        """
-        header = HEADER_SIZE
+    def get_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
 
-        while True:
-            try:
-                header = client_connection.receive(HEADER_SIZE)
+        header = client_connection.receive(HEADER_SIZE)
 
-                if header == EOF:
-                    logging.info(f"action: end of transmission | result: success")
-                    break
+        if header != BET_HEADER:
+            raise Exception(f"Unexpected header: {header}")
 
-                bet = self.message_handler.process_bet(client_connection)
-                if bet:
-                    store_bets([bet])
-                    self.confirmation_to_client(client_connection, bet)
-                    logging.info(
-                        f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}"
-                    )
-                else:
-                    logging.info(
-                        "action: an error occured during the transmission | result: fail"
-                    )
-                    break
+        bet = self.bet_parser.parse_bet(client_connection)
+        return bet
 
-            except Exception as e:
-                self.confirmation_to_client(client_connection, False)
-                logging.error(f"action: handle_client | result: error | error: {e}")
-                break
-
-    def confirmation_to_client(self, connection: ConnectionInterface, bet: Bet) -> None:
+    def confirm_bet(
+        self, bets: list[Bet], connection: ConnectionInterface, status: bool
+    ) -> None:
         """
         Confirm the bet with the client
         """
         try:
-            if bet:
+            if status:
                 connection.send(SUCCESS_HEADER)
-                response_string = f"{bet.document},{bet.number}"
-                response_bytes = response_string.encode("utf-8")
-                padded_response = response_bytes.ljust(SUCCESS_MESSAGE_SIZE, b"\x00")
-                connection.send(padded_response)
+
+                bet = bets[0]
+                bet_message = f"{bet.document},{bet.number},"
+                message_bytes = bet_message.encode()
+                message_length = len(message_bytes)
+                length_bytes = bytes([message_length])
+
+                connection.send(length_bytes)
+                connection.send(message_bytes)
+
+                logging.debug(f"action: confirm_bet | result: success")
             else:
                 connection.send(FAIL)
+                logging.debug(f"action: confirm_bet | result: fail")
         except Exception as e:
             logging.error(f"action: confirm_bet | result: fail | error: {e}")

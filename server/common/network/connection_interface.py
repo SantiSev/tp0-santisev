@@ -19,7 +19,7 @@ class ConnectionInterface:
 
     def receive(self, buffer_size: int) -> Optional[bytes]:
         try:
-            if buffer_size <= 0:
+            if buffer_size < 0:
                 logging.error(
                     f"action: receive | result: fail | error: invalid_buffer_size"
                 )

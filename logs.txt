@@ -1,0 +1,23 @@
+docker compose -f docker-compose-dev.yaml logs -f
+server   | 2025-09-03 19:50:48 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG 
+server   | 2025-09-03 19:50:48 INFO     action: server_start | result: success
+server   | 2025-09-03 19:50:48 DEBUG    action: parse_batch | result: success | data_length: 36
+server   | 2025-09-03 19:50:48 INFO     action: parse_bet | result: success | data: 1,John,Doe,11223344,1990-01-01,67890
+server   | 2025-09-03 19:50:48 INFO     action: apuesta_almacenada | result: success | dni: 11223344 | numero: 67890
+server   | 2025-09-03 19:50:48 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 19:50:48 INFO     action: close | result: success
+server   | 2025-09-03 19:50:48 INFO     action: server_shutdown | result: success
+[Kclient1 exited with code 0
+client1  | 2025-09-03 19:50:48 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | log_level: DEBUG | bet: 1,John,Doe,11223344,1990-01-01,67890
+client1  | 2025-09-03 19:50:48 DEBUG     action: connect | result: success | server: server:12345
+client1  | 2025-09-03 19:50:48 DEBUG     action: send | result: success | bytes: 1
+client1  | 2025-09-03 19:50:48 DEBUG     action: send | result: success | bytes: 1
+client1  | 2025-09-03 19:50:48 DEBUG     action: send | result: success | bytes: 36
+client1  | 2025-09-03 19:50:48 DEBUG     action: send_bet | result: success | batch_length: 36 Bytes
+client1  | 2025-09-03 19:50:48 DEBUG     action: receive | result: success | bytes: 1
+client1  | 2025-09-03 19:50:48 DEBUG     action: receive | result: success | bytes: 1
+client1  | 2025-09-03 19:50:48 DEBUG     action: receive | result: success | bytes: 15
+client1  | 2025-09-03 19:50:48 INFO     action: apuesta_enviada | result: success | dni: 11223344 | numero: 67890
+client1  | 2025-09-03 19:50:48 INFO     action: transmission finished | result: success | client_id: 1
+client1  | 2025-09-03 19:50:48 DEBUG     action: close | result: success
+client1  | 2025-09-03 19:50:48 INFO     action: exit | result: success

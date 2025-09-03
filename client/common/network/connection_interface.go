@@ -9,24 +9,20 @@ type ConnectionInterface struct {
 	conn net.Conn
 }
 
-func NewConnectionInterface(conn net.Conn) *ConnectionInterface {
-	return &ConnectionInterface{
-		conn: conn,
-	}
+func NewConnectionInterface() *ConnectionInterface {
+	return &ConnectionInterface{}
 }
 
-func (c *ConnectionInterface) Connect(serverAddr string, connID string) error {
-	log.Infof("connecting . . . ")
+func (c *ConnectionInterface) Connect(serverAddr string) error {
 	conn, err := net.Dial("tcp", serverAddr)
-	log.Infof("connection established, starting bet transmission")
 	if err != nil {
 		log.Criticalf(
-			"action: connect | result: fail | client_id: %v | error: %v",
-			connID,
+			"action: connect | result: fail | error: %v",
 			err,
 		)
 		return err
 	}
+	log.Debugf("action: connect | result: success | server: %s", serverAddr)
 	c.conn = conn
 	return nil
 }
@@ -45,7 +41,6 @@ func (c *ConnectionInterface) ReceiveData(buffer []byte) error {
 }
 
 func (c *ConnectionInterface) SendData(data []byte) error {
-	log.Debugf("action: send | preparing to send | bytes: %d", len(data))
 	totalWritten := 0
 	for totalWritten < len(data) {
 		n, err := c.conn.Write(data[totalWritten:])
@@ -73,6 +68,6 @@ func (c *ConnectionInterface) Close() error {
 			return err
 		}
 	}
-	log.Infof("action: close | result: success")
+	log.Debugf("action: close | result: success")
 	return nil
 }
