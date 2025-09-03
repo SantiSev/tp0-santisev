@@ -6,8 +6,8 @@ import os
 
 config = ConfigParser(os.environ)
 config.read("config.ini")
-STORAGE_FILEPATH = os.getenv("STORAGE_FILEPATH", config["DEFAULT"]["STORAGE_FILEPATH"])
-LOTTERY_WINNER_NUMBER = int(os.getenv("LOTTERY_WINNER_NUMBER", config["DEFAULT"]["LOTTERY_WINNER_NUMBER"]))
+STORAGE_FILEPATH = "./bets.csv"
+LOTTERY_WINNER_NUMBER = 7574
 
 """ A lottery bet registry. """
 class Bet:

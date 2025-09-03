@@ -18,8 +18,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - AGENCIES_AMOUNT=$AMOUNT_CLIENTS 
-      - STORAGE_FILEPATH=./bets.csv
-      - LOTTERY_WINNER_NUMBER=7574
     networks:
       - testing_net
     volumes:

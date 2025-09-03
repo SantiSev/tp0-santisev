@@ -12,18 +12,21 @@ class BetParser:
     def parse_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
         try:
             data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
+            data_length = int.from_bytes(data_length_bytes, "big")
 
-            if not data_length_bytes or len(data_length_bytes) == 0:
-                logging.debug("action: parse_batch | result: no_data | reason: empty_length_bytes")
+            if data_length == 0:
+                logging.warning(f"action: parse_batch | result: empty_data")
                 return []
 
-            data_length = int.from_bytes(data_length_bytes, "big")
-            data = client_connection.receive(data_length).decode("utf-8")
+            logging.debug(
+                f"action: parse_batch | result: success | data_length: {data_length}"
+            )
 
+            data = client_connection.receive(data_length).decode("utf-8")
             return self._parse_batch_data(data)
 
         except Exception as e:
-            logging.error(f"action: parse_batch | result: fail | error: {e}")
+            logging.warning(f"action: parse_batch | result: fail | error: {e}")
             return []
 
     def _parse_batch_data(self, data: str) -> List[Bet]:

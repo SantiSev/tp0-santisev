@@ -6,9 +6,7 @@ services:
     entrypoint: python3 /main.py
     environment:
       - PYTHONUNBUFFERED=1
-      - AGENCIES_AMOUNT=5 
-      - STORAGE_FILEPATH=./bets.csv
-      - LOTTERY_WINNER_NUMBER=7574
+      - AGENCIES_AMOUNT=5
     networks:
       - testing_net
     volumes:
