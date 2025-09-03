@@ -40,21 +40,7 @@ func NewClient(config ClientConfig) *Client {
 
 func (c *Client) Run() {
 
-	sigChannel := make(chan os.Signal, 1)
-	signal.Notify(sigChannel, syscall.SIGTERM)
-	done := make(chan bool, 1)
-
-	go func() {
-		<-sigChannel
-		c.Shutdown()
-		done <- true
-	}()
-
-	select {
-	case <-done:
-		return
-	default:
-	}
+	c.setupGracefulShutdown()
 
 	c.connInterface, err = c.connManager.Connect(c.config.ServerAddress)
 
@@ -115,6 +101,19 @@ func (c *Client) Run() {
 
 	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
 	c.Shutdown()
+}
+
+func (c *Client) setupGracefulShutdown() {
+	/// This is a graceful non-blocking setup to shut down the process in case
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGTERM, syscall.SIGINT)
+
+	go func() {
+		<-sigChannel
+		log.Infof("action: shutdown_signal | result: received")
+		c.Shutdown()
+		os.Exit(0)
+	}()
 }
 
 func (c *Client) Shutdown() {
