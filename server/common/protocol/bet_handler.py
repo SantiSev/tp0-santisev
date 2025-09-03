@@ -52,7 +52,7 @@ class BetHandler:
         try:
             connection.send(WINNERS_HEADER)
             length = len(winners_string)
-            winners_bytes = length.to_bytes(2, byteorder='big')
+            winners_bytes = length.to_bytes(DATA_LENGTH_SIZE, byteorder="big")
             logging.debug("action: sending_winners_data | result: success | length: %d", len(winners_string))
             connection.send(winners_bytes)
             connection.send(winners_string.encode())
