@@ -13,30 +13,25 @@ import (
 func InitConfig() (*client.ClientConfig, error) {
 	loadEnvVars()
 
-	// Step 2: Setup viper
 	v := viper.New()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
-	configPath := os.Getenv("CLI_CONFIG_FILE_PATH")
+	configPath := os.Getenv("CLI_CONFIG_FILE")
 
 	v.SetConfigFile(configPath)
 	if err := v.ReadInConfig(); err != nil {
 		return nil, errors.Wrapf(err, "failed to read config file %s", configPath)
 	}
 
-	// Step 4: Bind env overrides
-	v.BindEnv("id", "CLI_ID")
-	v.BindEnv("betsFilePath", "CLI_AGENCY_FILE_PATH")
-
-	// Step 5: Build final config
 	clientConfig := &client.ClientConfig{
 		ServerAddress:  v.GetString("server.address"),
-		Id:             uint8(v.GetInt("id")),
+		Id:             uint8(v.GetInt("CLI_ID")),
 		LoopAmount:     v.GetInt("loop.amount"),
 		LoopPeriod:     v.GetDuration("loop.period"),
 		LogLevel:       v.GetString("log.level"),
 		MaxBatchAmount: v.GetInt("batch.maxAmount"),
+		AgencyFilePath: v.GetString("CLI_AGENCY_FILE"),
 	}
 
 	return clientConfig, nil
@@ -45,7 +40,7 @@ func InitConfig() (*client.ClientConfig, error) {
 func loadEnvVars() {
 	// if the env vars are present, there is no need to load .env
 	if os.Getenv("CLI_ID") != "" &&
-		os.Getenv("CLI_AGENCY_FILE_PATH") != "" &&
+		os.Getenv("CLI_AGENCY_FILE") != "" &&
 		os.Getenv("CLI_CONFIG_FILE_PATH") != "" {
 		return
 	}

@@ -24,7 +24,6 @@ func NewAgencyService(agencyFilePath string, maxBatchAmount int, agency_id uint8
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %v", err)
 	}
-	defer file.Close()
 
 	return &AgencyService{
 		agency_id:      agency_id,
@@ -73,4 +72,11 @@ func (a *AgencyService) ShowResults(results string) {
 
 	log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %d:", amountWinners)
 	log.Infof("action: mostrar_ganadores | result: success | ganadores: %s:", results)
+}
+
+func (a *AgencyService) Close() error {
+	if a.agencyFile != nil {
+		return a.agencyFile.Close()
+	}
+	return nil
 }
