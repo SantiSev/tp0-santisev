@@ -10,7 +10,7 @@ import (
 var log = logging.MustGetLogger("log")
 
 const CONNECTION_RETRIES = 3
-const CONNECTION_SLEEP_AMOUNT = 100 * time.Millisecond
+const CONNECTION_SLEEP_AMOUNT = 100
 
 type ConnectionManager struct {
 }
@@ -32,7 +32,7 @@ func (c *ConnectionManager) Connect(serverAddr string) (*ConnectionInterface, er
 		log.Warningf("action: connect | result: fail | attempt: %d/%d | server: %s",
 			attempt, CONNECTION_RETRIES, serverAddr)
 
-		sleepDuration := time.Duration(attempt) * CONNECTION_SLEEP_AMOUNT
+		sleepDuration := time.Duration(CONNECTION_SLEEP_AMOUNT)
 		log.Infof("action: retry_connect | duration: %v", sleepDuration)
 		time.Sleep(sleepDuration)
 	}

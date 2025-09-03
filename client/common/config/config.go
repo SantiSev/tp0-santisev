@@ -1,59 +1,38 @@
 package config
 
 import (
-	"fmt"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/client"
 	"github.com/op/go-logging"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
-var log = logging.MustGetLogger("log")
+func InitConfig() (*client.ClientConfig, error) {
+	loadEnvVars()
 
-func InitConfig() (*ClientConfig, error) {
+	// Step 2: Setup viper
 	v := viper.New()
-	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
 
-	v.SetConfigFile("./config.yaml")
+	configPath := os.Getenv("CLI_CONFIG_FILE_PATH")
+
+	v.SetConfigFile(configPath)
 	if err := v.ReadInConfig(); err != nil {
-		return nil, errors.Wrap(err, "Failed to read config.yaml")
+		return nil, errors.Wrapf(err, "failed to read config file %s", configPath)
 	}
 
-	if _, err := os.Stat(".env"); err == nil {
-		envViper := viper.New()
-		envViper.SetConfigFile(".env")
-		if err := envViper.ReadInConfig(); err != nil {
-			fmt.Printf("Warning: .env file exists but could not be read: %v\n", err)
-		} else {
-			fmt.Printf(".env file loaded successfully.\n")
-			if cliId := envViper.GetString("CLI_ID"); cliId != "" {
-				os.Setenv("CLI_ID", cliId)
-			}
-		}
-	}
+	// Step 4: Bind env overrides
+	v.BindEnv("id", "CLI_ID")
+	v.BindEnv("betsFilePath", "CLI_AGENCY_FILE_PATH")
 
-	if _, err := time.ParseDuration(v.GetString("loop.period")); err != nil {
-		return nil, errors.Wrapf(err, "Could not parse loop.period '%s' as time.Duration", v.GetString("loop.period"))
-	}
-
-	cliIdStr := os.Getenv("CLI_ID")
-	var cliId int64
-	if cliIdStr != "" {
-		var err error
-		cliId, err = strconv.ParseInt(cliIdStr, 10, 64)
-		if err != nil {
-			return nil, errors.Wrapf(err, "Failed to parse CLI_ID '%s' as int64", cliIdStr)
-		}
-	}
-
-	clientConfig := &ClientConfig{
+	// Step 5: Build final config
+	clientConfig := &client.ClientConfig{
 		ServerAddress:  v.GetString("server.address"),
-		Id:             cliId,
+		Id:             uint8(v.GetInt("id")),
 		LoopAmount:     v.GetInt("loop.amount"),
 		LoopPeriod:     v.GetDuration("loop.period"),
 		LogLevel:       v.GetString("log.level"),
@@ -61,6 +40,28 @@ func InitConfig() (*ClientConfig, error) {
 	}
 
 	return clientConfig, nil
+}
+
+func loadEnvVars() {
+	// if the env vars are present, there is no need to load .env
+	if os.Getenv("CLI_ID") != "" &&
+		os.Getenv("CLI_AGENCY_FILE_PATH") != "" &&
+		os.Getenv("CLI_CONFIG_FILE_PATH") != "" {
+		return
+	}
+
+	if _, err := os.Stat(".env"); err == nil {
+		envViper := viper.New()
+		envViper.SetConfigFile(".env")
+		if err := envViper.ReadInConfig(); err == nil {
+			for _, key := range envViper.AllKeys() {
+				envKey := strings.ToUpper(key)
+				if os.Getenv(envKey) == "" {
+					os.Setenv(envKey, envViper.GetString(key))
+				}
+			}
+		}
+	}
 }
 
 func InitLogger(logLevel string) error {
@@ -77,7 +78,6 @@ func InitLogger(logLevel string) error {
 	}
 	backendLeveled.SetLevel(logLevelCode, "")
 
-	// Set the backends to be used.
 	logging.SetBackend(backendLeveled)
 	return nil
 }
