@@ -1,0 +1,46 @@
+docker compose -f docker-compose-dev.yaml logs -f
+client1  | 2025-09-03 08:06:33 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 500 | loop_period: 150ms | log_level: INFO | max_batch_amount: 10 | agency_file_path: /data/agency.csv
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: batch_confirmation | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: transmission finished | result: success | client_id: 1
+[Kserver exited with code 0
+server   | 2025-09-03 08:06:33 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG 
+server   | 2025-09-03 08:06:33 INFO     action: server_start | result: success
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 373
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 380
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 380
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 380
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 380
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_batch | result: success | data_length: 380
+server   | 2025-09-03 08:06:33 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-03 08:06:33 INFO     more_bets_remaining: True
+server   | 2025-09-03 08:06:33 INFO     action: end of transmission | result: success
+server   | 2025-09-03 08:06:33 INFO     action: all_bets_received | result: success
+server   | 2025-09-03 08:06:33 INFO     action: apuesta_recibida | result: success | cantidad: 60
+server   | 2025-09-03 08:06:33 INFO     action: close | result: success
+server   | 2025-09-03 08:06:33 INFO     action: server_shutdown | result: success
+client1  | 2025-09-03 08:06:33 INFO     action: exit | result: success
+[Kclient1 exited with code 0
