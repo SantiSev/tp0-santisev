@@ -41,13 +41,13 @@ class ClientSession:
                     f"action: apuesta_recibida | result: fail | cantidad: {len(agencyBets)}"
                 )
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
-                return False, []
+                return False
         logging.info(
             f"action: apuesta_recibida | result: success | cantidad: {len(agencyBets)}"
         )
         winners = self.lottery_service.draw_winners(agencyBets)
         self.protocol_handler.send_winners(self.connection_interface, winners)
-        return True, agencyBets
+        return True
 
     def finish(self) -> None:
         self.connection_interface.close()
