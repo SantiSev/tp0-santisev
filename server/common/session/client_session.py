@@ -32,8 +32,6 @@ class ClientSession:
                 self.lottery_service.place_bets(betBatch)
                 self.protocol_handler.confirm_batch(self.connection_interface, True)
 
-                logging.info(f"more_bets_remaining: {more_bets_remaining}")
-
             except Exception as e:
                 agencyBets = self.lottery_service.get_bets_by_agency(self.agency_id)
                 logging.error(
@@ -47,10 +45,12 @@ class ClientSession:
         )
         return True
 
-    def tally_results(self):
+    def send_results(self):
         """Tally and log the results of the lottery"""
         winners = self.lottery_service.draw_winners(self.agency_id)
+        logging.info(f"action: send_results | result: success | winners: {winners}")
         self.protocol_handler.send_winners(self.connection_interface, winners)
+
 
     def finish(self) -> None:
         self.connection_interface.close()

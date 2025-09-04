@@ -35,6 +35,8 @@ class Server:
                         self.connection_manager.accept_connection()
                     )
 
+                    self.processed_agencies += 1
+
                     client: ClientSession = self.clientManager.add_client(
                         client_connection
                     )
@@ -53,7 +55,7 @@ class Server:
                     self._shutdown()
                     continue
 
-            self.lottery_service.announce_winners()
+            self._tally_results()
 
         except Exception as e:
             logging.error(f"action: server_run | result: critical_error | error: {e}")
@@ -66,9 +68,9 @@ class Server:
 
     def _tally_results(self):
         """Tally and log the results of the lottery"""
-
-        for client in self.clientManager.connected_clients():
-            client.tally_results()
+        for client in self.clientManager.connected_clients:
+            client.send_results()
+        logging.info("action: send_results_to_all_clients | result: success")
 
         self.lottery_service.announce_winners()
 

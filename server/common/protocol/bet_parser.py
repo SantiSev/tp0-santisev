@@ -46,7 +46,6 @@ class BetParser:
                     document = fields[i + 2]
                     birthdate = fields[i + 3]
                     number = fields[i + 4]
-
                     bet = Bet(
                         agency=str(agency_id),
                         first_name=first_name,
