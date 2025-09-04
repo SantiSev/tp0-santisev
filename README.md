@@ -12,7 +12,7 @@ Seccion Modificada para el cliente:
 
 ```bash
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
-    cat >> docker-compose-dev.yaml << EOF
+    cat >> "$YAML_FILE" << EOF
 
   client$i:
     container_name: client$i
@@ -31,7 +31,7 @@ done
 ```
 
 ```bash
-cat > docker-compose-dev.yaml << EOF
+cat > "$YAML_FILE" << EOF
 name: tp0
 services:
   server:
