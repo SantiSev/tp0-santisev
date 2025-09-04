@@ -32,9 +32,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = client.Run()
-	if err != nil {
-		log.Fatalf("%s", err)
-		os.Exit(1)
-	}
+	client.Run()
 }

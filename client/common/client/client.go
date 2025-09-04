@@ -37,7 +37,7 @@ func NewClient(config ClientConfig) *Client {
 	return client
 }
 
-func (c *Client) Run() error {
+func (c *Client) Run() {
 
 	c.setupGracefulShutdown()
 
@@ -47,26 +47,26 @@ func (c *Client) Run() error {
 
 	if err != nil {
 		log.Infof("action: connect | result: fail | client_id: %v", c.config.Id)
-		return err
+		return
 	}
 
 	for {
 		batch, err := c.agencyService.ReadBets(c.config.MaxBatchAmount)
 		if err != nil {
 			log.Errorf("action: read_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			return err
+			return
 		}
 
 		err = c.betHandler.SendBets(batch, c.connInterface)
 		if err != nil {
 			log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			return err
+			return
 		}
 
 		err = c.betHandler.RecvConfirmation(c.connInterface)
 		if err != nil {
 			log.Errorf("action: recv_confirmation | result: fail | client_id: %v | error: %v", c.config.Id, err)
-			return err
+			return
 		}
 
 		if !c.agencyService.HasData() {
@@ -82,7 +82,7 @@ func (c *Client) Run() error {
 			err,
 		)
 
-		return err
+		return
 	}
 	results, err := c.betHandler.GetResults(c.connInterface)
 
@@ -92,14 +92,14 @@ func (c *Client) Run() error {
 			err,
 		)
 
-		return err
+		return
 	}
 
 	c.agencyService.ShowResults(results)
 
 	log.Infof("action: transmission finished | result: success | client_id: %v", c.config.Id)
 
-	return nil
+	return
 }
 
 func (c *Client) setupGracefulShutdown() {
