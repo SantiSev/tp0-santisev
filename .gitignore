@@ -19,3 +19,5 @@ dataset_test/
 # Virtual environment
 venv/
 .venv
+
+logs.txt
