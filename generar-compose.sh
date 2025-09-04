@@ -19,6 +19,8 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - testing_net
+    volumes:
+      - ./server/config.ini:/config.ini
 EOF
 
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
@@ -32,6 +34,8 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
       - CLI_ID=$i
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 EOF
