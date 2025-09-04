@@ -1,37 +1,37 @@
 docker compose -f docker-compose-dev.yaml logs -f
-server  | 2025-09-04 04:19:32 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG 
-client1  | 2025-09-04 04:19:32 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 500 | loop_period: 150ms | log_level: INFO | max_batch_amount: 10 | agency_file_path: /data/agency.csv
-server   | 2025-09-04 04:19:32 INFO     action: server_start | result: success
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 373
-client1  | 2025-09-04 04:19:32 INFO     action: transmission finished | result: success | client_id: 1
-client1  | 2025-09-04 04:19:32 INFO     action: exit | result: success
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 380
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 380
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 380
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 380
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_batch | result: success | data_length: 380
-server   | 2025-09-04 04:19:32 DEBUG    action: parse_bet_batch | result: success | total_bets: 10
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 DEBUG    action: confirm_bet | result: success
-server   | 2025-09-04 04:19:32 INFO     more_bets_remaining: True
-server   | 2025-09-04 04:19:32 INFO     action: end of transmission | result: success
-server   | 2025-09-04 04:19:32 INFO     action: all_bets_received | result: success
-server   | 2025-09-04 04:19:32 INFO     action: apuesta_recibida | result: success | cantidad: 60
-server   | 2025-09-04 04:19:32 INFO     action: close | result: success
-server   | 2025-09-04 04:19:32 INFO     action: server_shutdown | result: success
+client1  | 2025-09-04 04:41:30 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 3 | loop_period: 50ms | log_level: INFO | max_batch_amount: 99 | agency_file_path: /data/agency.csv
+client1  | 2025-09-04 04:41:30 INFO     action: transmission finished | result: success | client_id: 1
+client1  | 2025-09-04 04:41:30 INFO     action: exit | result: success
+server   | 2025-09-04 04:41:30 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG 
+server   | 2025-09-04 04:41:30 INFO     action: server_start | result: success
+server   | 2025-09-04 04:41:30 DEBUG    action: parse_batch | result: success | data_length: 557
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000000, birthdate: 2000-01-01, number: 0
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000001, birthdate: 2000-01-01, number: 1
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000002, birthdate: 2000-01-01, number: 2
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000003, birthdate: 2000-01-01, number: 3
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000004, birthdate: 2000-01-01, number: 4
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000005, birthdate: 2000-01-01, number: 5
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000006, birthdate: 2000-01-01, number: 6
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000007, birthdate: 2000-01-01, number: 7
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000008, birthdate: 2000-01-01, number: 8
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000009, birthdate: 2000-01-01, number: 9
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000010, birthdate: 2000-01-01, number: 10
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000011, birthdate: 2000-01-01, number: 11
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000012, birthdate: 2000-01-01, number: 12
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000013, birthdate: 2000-01-01, number: 13
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000014, birthdate: 2000-01-01, number: 14
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000015, birthdate: 2000-01-01, number: 15
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000016, birthdate: 2000-01-01, number: 16
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000017, birthdate: 2000-01-01, number: 17
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000018, birthdate: 2000-01-01, number: 18
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000019, birthdate: 2000-01-01, number: 19
+server   | agency_id: 1, first_name: A, last_name: B, document: 00000020, birthdate: 2000-01-01, number: 20
+server   | 2025-09-04 04:41:30 DEBUG    action: parse_bet_batch | result: success | total_bets: 21
+server   | 2025-09-04 04:41:30 DEBUG    action: confirm_bet | result: success
+server   | 2025-09-04 04:41:30 INFO     more_bets_remaining: True
+server   | 2025-09-04 04:41:30 INFO     action: end of transmission | result: success
+server   | 2025-09-04 04:41:30 INFO     action: all_bets_received | result: success
+server   | 2025-09-04 04:41:30 INFO     action: apuesta_recibida | result: success | cantidad: 21
+server   | 2025-09-04 04:41:30 INFO     action: close | result: success
+server   | 2025-09-04 04:41:30 INFO     action: server_shutdown | result: success
+[Kclient1 exited with code 0
