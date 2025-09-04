@@ -8,21 +8,19 @@ import (
 )
 
 type AgencyService struct {
-	agency_id      uint8
 	agencyFile     *os.File
 	has_data       bool
 	scanner        *bufio.Scanner
 	maxBatchAmount int
 }
 
-func NewAgencyService(agencyFilePath string, maxBatchAmount int, agency_id uint8) (*AgencyService, error) {
+func NewAgencyService(agencyFilePath string, maxBatchAmount int) (*AgencyService, error) {
 	file, err := os.Open(agencyFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %v", err)
 	}
 
 	return &AgencyService{
-		agency_id:      agency_id,
 		agencyFile:     file,
 		has_data:       true,
 		scanner:        bufio.NewScanner(file),
@@ -53,7 +51,7 @@ func (a *AgencyService) ReadBets(batchSize int) (string, error) {
 			continue
 		}
 
-		betMessage := fmt.Sprintf("%d,%s,", a.agency_id, line)
+		betMessage := fmt.Sprintf("%s,", line)
 		betBatchMessage += betMessage
 	}
 	return betBatchMessage, nil

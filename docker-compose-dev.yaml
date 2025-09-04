@@ -18,7 +18,6 @@ services:
     environment:
       - CLI_ID=1
       - CLI_AGENCY_FILEPATH=/data/agency.csv
-      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:

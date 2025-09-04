@@ -14,7 +14,7 @@ class AgencyHandler:
         self.bet_parser = BetParser()
 
     def get_bets(
-        self, client_connection: ConnectionInterface
+        self, client_connection: ConnectionInterface, agency_id: int
     ) -> tuple[list[Bet], bool]:
 
         header = client_connection.receive(HEADER_SIZE)
@@ -26,7 +26,7 @@ class AgencyHandler:
         if header != BET_HEADER:
             raise Exception(f"Unexpected header: {header}")
 
-        batchBets = self.bet_parser.parse_batch(client_connection)
+        batchBets = self.bet_parser.parse_batch(client_connection, agency_id)
         return batchBets, True
 
     def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:

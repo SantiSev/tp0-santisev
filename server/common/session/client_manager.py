@@ -9,8 +9,8 @@ class ClientManager:
         self.lottery_service = lottery_service
 
     def add_client(self, connection: ConnectionInterface) -> ClientSession:
-        client_id = len(self.connected_clients) + 1
-        client = ClientSession(client_id, connection, self.lottery_service)
+        agency_id = len(self.connected_clients) + 1
+        client = ClientSession(agency_id, connection, self.lottery_service)
         self.connected_clients.append(client)
         return client
 

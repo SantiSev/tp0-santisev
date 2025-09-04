@@ -24,7 +24,7 @@ type Client struct {
 }
 
 func NewClient(config ClientConfig) *Client {
-	agencyService, err := business.NewAgencyService(config.AgencyFilePath, config.MaxBatchAmount, config.Id)
+	agencyService, err := business.NewAgencyService(config.AgencyFilePath, config.MaxBatchAmount)
 	if err != nil {
 		log.Errorf("action: init_agency_service | result: fail | client_id: %v | error: %v", config.Id, err)
 		return nil
