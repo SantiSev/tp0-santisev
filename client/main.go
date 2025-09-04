@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/op/go-logging"
 
@@ -12,6 +13,8 @@ import (
 var log = logging.MustGetLogger("log")
 
 func main() {
+
+	time.Sleep(2 * time.Second)
 
 	clientConfig, err := config.InitConfig()
 	if err != nil {
