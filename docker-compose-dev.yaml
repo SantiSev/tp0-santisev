@@ -8,6 +8,8 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - testing_net
+    volumes:
+      - ./server/config.ini:/config.ini
 
   client1:
     container_name: client1
@@ -17,6 +19,8 @@ services:
       - CLI_ID=1
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 
@@ -28,6 +32,8 @@ services:
       - CLI_ID=2
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 
@@ -39,6 +45,8 @@ services:
       - CLI_ID=3
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 
@@ -50,6 +58,8 @@ services:
       - CLI_ID=4
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 
@@ -61,6 +71,8 @@ services:
       - CLI_ID=5
     networks:
       - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
     depends_on:
       - server
 

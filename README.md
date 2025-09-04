@@ -108,3 +108,6 @@ Ejemplo de uso:
 ```bash
 ./generar-compose.sh docker-compose-dev.yaml 5
 ```
+
+# Comentarios Adicionales
+Para ejecutar los tests del ejercicio 1 fue necesario agregar la funcionalidad de volúmenes, que se explicará en la documentación del ejercicio 2.
