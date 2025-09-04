@@ -8,6 +8,36 @@ Las secciones de repaso del trabajo práctico plantean un caso de uso denominado
 
 > Todo el código está redactado en inglés, con excepción de algunos logs específicos que permanecen en español para garantizar la compatibilidad con los tests proporcionados.
 
+# Cambios en script de `generar-compose.sh`
+
+Para evitar hardcodear un bet, se lo agrega como variable de entorno, que por el momento esta hardcodead en el script pero es modificable una vez tenida el archivo de docker-compose
+
+```bash
+for i in $(seq 1 "$AMOUNT_CLIENTS"); do
+    cat >> docker-compose-dev.yaml << EOF
+
+  client$i:
+    container_name: client$i
+    image: client:latest
+    entrypoint: /client
+    environment:
+      - CLI_ID=$i
+      - BET_NUMBER=67890
+      - CLIENT_DOCUMENT=1
+      - CLIENT_FIRST_NAME=Santi
+      - CLIENT_LAST_NAME=Sev
+      - CLIENT_BIRTHDATE=2000-08-10
+    networks:
+      - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
+    depends_on:
+      - server
+EOF
+done
+```
+
+
 # Arquitectura del Servidor
 
 ## Estructura de Directorios

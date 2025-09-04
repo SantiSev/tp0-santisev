@@ -8,7 +8,7 @@ fi
 YAML_FILE="$1"
 AMOUNT_CLIENTS="$2"
 
-cat > docker-compose-dev.yaml << EOF
+cat > "$YAML_FILE" << EOF
 name: tp0
 services:
   server:
@@ -24,7 +24,7 @@ services:
 EOF
 
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
-    cat >> docker-compose-dev.yaml << EOF
+    cat >> "$YAML_FILE" << EOF
 
   client$i:
     container_name: client$i
@@ -33,10 +33,10 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     environment:
       - CLI_ID=$i
       - BET_NUMBER=67890
-      - CLIENT_DOCUMENT=11223344
-      - CLIENT_FIRST_NAME=John
-      - CLIENT_LAST_NAME=Doe
-      - CLIENT_BIRTHDATE=1990-01-01
+      - CLIENT_DOCUMENT=1
+      - CLIENT_FIRST_NAME=Santi
+      - CLIENT_LAST_NAME=Sev
+      - CLIENT_BIRTHDATE=2000-08-10
     networks:
       - testing_net
     volumes:
@@ -46,7 +46,7 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
 EOF
 done
 
-cat >> docker-compose-dev.yaml << EOF
+cat >> "$YAML_FILE" << EOF
 
 networks:
   testing_net:
