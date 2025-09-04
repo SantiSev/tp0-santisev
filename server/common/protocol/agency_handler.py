@@ -1,5 +1,4 @@
 import logging
-import struct
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_parser import BetParser
@@ -13,11 +12,11 @@ class AgencyHandler:
     def __init__(self):
         self.bet_parser = BetParser()
 
-    def get_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
+    def get_bets(self, connection: ConnectionInterface) -> list[Bet]:
 
-        self._process_header(client_connection)
+        self._process_header(connection)
 
-        bet = self.bet_parser.parse_bet(client_connection)
+        bet = self.bet_parser.parse_bet(connection)
         return bet
 
     def _process_header(self, client_connection: ConnectionInterface):

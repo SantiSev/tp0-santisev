@@ -9,9 +9,9 @@ from common.protocol.protocol_constants import *
 class BetParser:
     """Process bet data from clients"""
 
-    def parse_bet(self, client_connection: ConnectionInterface) -> List[Bet]:
+    def parse_bet(self, connection: ConnectionInterface) -> List[Bet]:
         try:
-            data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
+            data_length_bytes = connection.receive(DATA_LENGTH_SIZE)
             data_length = int.from_bytes(data_length_bytes, "big")
 
             if data_length == 0:
@@ -21,7 +21,7 @@ class BetParser:
                 f"action: parse_batch | result: success | data_length: {data_length}"
             )
 
-            data = client_connection.receive(data_length).decode("utf-8")
+            data = connection.receive(data_length).decode("utf-8")
             logging.info(f"action: parse_bet | result: success | data: {data}")
             return self._parse_bet_data(data)
 

@@ -10,15 +10,15 @@ import (
 
 var log = logging.MustGetLogger("log")
 
-type BetHandler struct {
+type AgencyHandler struct {
 	MaxBatchAmount int
 }
 
-func NewAgencyHandler() *BetHandler {
-	return &BetHandler{}
+func NewAgencyHandler() *AgencyHandler {
+	return &AgencyHandler{}
 }
 
-func (b *BetHandler) SendBets(bet string, connSock *network.ConnectionInterface) error {
+func (b *AgencyHandler) SendBets(bet string, connSock *network.ConnectionInterface) error {
 
 	// Send header
 	if err := connSock.SendData([]byte(HEADER)); err != nil {
@@ -40,7 +40,7 @@ func (b *BetHandler) SendBets(bet string, connSock *network.ConnectionInterface)
 	return nil
 }
 
-func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) error {
+func (b *AgencyHandler) RecvConfirmation(connSock *network.ConnectionInterface) error {
 	headerData := make([]byte, SUCCESS_HEADER_SIZE)
 	err := connSock.ReceiveData(headerData)
 	if err != nil {
