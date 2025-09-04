@@ -1,11 +1,12 @@
 import logging
+from multiprocessing import Lock
 from common.utils.utils import Bet, has_won, load_bets, store_bets
 
 
 class LotteryService:
 
-    def __init__(self, file_lock):
-        self.file_lock = file_lock
+    def __init__(self, lock: Lock):
+        self.file_lock = lock
 
     def place_bets(self, bets: list[Bet]) -> None:
         with self.file_lock:

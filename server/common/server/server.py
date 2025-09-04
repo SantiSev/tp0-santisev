@@ -1,4 +1,6 @@
 import logging
+from multiprocessing import Lock
+from multiprocessing.dummy import Process
 import signal
 import sys
 from multiprocessing import Lock, Process
@@ -19,6 +21,7 @@ class Server:
         self.connection_manager = ConnectionManager(
             port=server_config.port, listen_backlog=server_config.listen_backlog
         )
+
         self.lottery_service = LotteryService(self.file_lock)
         self.clientManager: ClientManager = ClientManager(self.lottery_service)
 
