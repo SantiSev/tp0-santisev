@@ -8,6 +8,7 @@ from common.server.server_config import ServerConfig
 from common.session.client_manager import ClientManager
 from common.session.client_session import ClientSession
 
+
 class Server:
     def __init__(self, server_config: ServerConfig):
         self.connection_manager = ConnectionManager(
