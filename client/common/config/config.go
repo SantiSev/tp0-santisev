@@ -14,7 +14,6 @@ import (
 const CONFIG_FILE_PATH = "./config.yaml"
 
 func InitConfig() (*client.ClientConfig, error) {
-	loadEnvVars()
 
 	v := viper.New()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -44,31 +43,6 @@ func InitConfig() (*client.ClientConfig, error) {
 	}
 
 	return clientConfig, nil
-}
-
-func loadEnvVars() {
-	// if the env vars are present, there is no need to load .env
-	if os.Getenv("CLI_ID") != "" &&
-		os.Getenv("CLIENT_FIRST_NAME") != "" &&
-		os.Getenv("CLIENT_LAST_NAME") != "" &&
-		os.Getenv("CLIENT_BIRTHDATE") != "" &&
-		os.Getenv("CLIENT_DOCUMENT") != "" &&
-		os.Getenv("BET_NUMBER") != "" {
-		return
-	}
-
-	if _, err := os.Stat(".env"); err == nil {
-		envViper := viper.New()
-		envViper.SetConfigFile(".env")
-		if err := envViper.ReadInConfig(); err == nil {
-			for _, key := range envViper.AllKeys() {
-				envKey := strings.ToUpper(key)
-				if os.Getenv(envKey) == "" {
-					os.Setenv(envKey, envViper.GetString(key))
-				}
-			}
-		}
-	}
 }
 
 func InitLogger(logLevel string) error {

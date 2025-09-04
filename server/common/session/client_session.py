@@ -1,7 +1,7 @@
 import logging
 from common.business.lottery_service import LotteryService
 from common.network.connection_interface import ConnectionInterface
-from common.protocol.bet_handler import BetHandler
+from tp0.server.common.protocol.agency_handler import AgencyHandler
 from common.utils.utils import Bet
 
 
@@ -16,7 +16,7 @@ class ClientSession:
         self.id = agency_id
         self.connection_interface = connection_interface
         self.lottery_service = lottery_service
-        self.protocol_handler = BetHandler()
+        self.protocol_handler = AgencyHandler()
 
     def begin(self) -> None:
         try:

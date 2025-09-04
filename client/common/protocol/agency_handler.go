@@ -14,11 +14,12 @@ type BetHandler struct {
 	MaxBatchAmount int
 }
 
-func NewBetHandler() *BetHandler {
+func NewAgencyHandler() *BetHandler {
 	return &BetHandler{}
 }
 
 func (b *BetHandler) SendBets(bet string, connSock *network.ConnectionInterface) error {
+
 	// Send header
 	if err := connSock.SendData([]byte(HEADER)); err != nil {
 		return err

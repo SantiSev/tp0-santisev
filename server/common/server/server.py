@@ -8,9 +8,6 @@ from common.server.server_config import ServerConfig
 from common.session.client_manager import ClientManager
 from common.session.client_session import ClientSession
 
-# TODO: change the client bet path to be a .env variable insted of a hardcoded value
-
-
 class Server:
     def __init__(self, server_config: ServerConfig):
         self.connection_manager = ConnectionManager(
@@ -43,7 +40,6 @@ class Server:
 
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
-        self.is_running = False
         self.clientManager.shutdown()
         self.connection_manager.shutdown()
         logging.info("action: server_shutdown | result: success")

@@ -19,7 +19,7 @@ type Client struct {
 	config        ClientConfig
 	connManager   network.ConnectionManager
 	connInterface *network.ConnectionInterface
-	betHandler    protocol.BetHandler
+	agencyHandler protocol.BetHandler
 	agencyService business.AgencyService
 }
 
@@ -32,7 +32,7 @@ func NewClient(config ClientConfig) *Client {
 	client := &Client{
 		config:        config,
 		connManager:   *network.NewConnectionManager(),
-		betHandler:    *protocol.NewBetHandler(),
+		agencyHandler: *protocol.NewAgencyHandler(),
 		agencyService: *agencyService,
 	}
 	return client
@@ -52,19 +52,19 @@ func (c *Client) Run() error {
 	bet, err := c.agencyService.ReadBets()
 
 	if err != nil {
-		log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
+		log.Errorf("action: read_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
 		c.Shutdown()
 		return err
 	}
 
-	err = c.betHandler.SendBets(bet, c.connInterface)
+	err = c.agencyHandler.SendBets(bet, c.connInterface)
 	if err != nil {
 		log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
 		c.Shutdown()
 		return err
 	}
 
-	err = c.betHandler.RecvConfirmation(c.connInterface)
+	err = c.agencyHandler.RecvConfirmation(c.connInterface)
 	if err != nil {
 		log.Errorf("action: recv_confirmation | result: fail | client_id: %v | error: %v", c.config.Id, err)
 		c.Shutdown()
@@ -77,7 +77,6 @@ func (c *Client) Run() error {
 }
 
 func (c *Client) setupGracefulShutdown() {
-	/// This is a graceful non-blocking setup to shut down the process in case
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGTERM, syscall.SIGINT)
 

@@ -7,12 +7,7 @@ from common.utils.utils import Bet
 from common.protocol.protocol_constants import *
 
 
-# TODO: DO THESE CHANGES:
-# 1. REMOVE THE CLIENT MESSAGE LOOP, THE EXERCISE STATES TO SEND 1 BET, sending multiple times the same bet doesnt make sense
-# 2. DONT PADD OUT THE MESSAGES, HAVE IT SEND FIRST THE LENGTH AND THEN THE DATA
-# 3. ( Optional )Check to see if you can refactort the connectionINterface so you don't have to send the length and then data, have it send the length and then the data all at once
-
-class BetHandler:
+class AgencyHandler:
     """Handles individual client connections"""
 
     def __init__(self):
@@ -20,13 +15,21 @@ class BetHandler:
 
     def get_bets(self, client_connection: ConnectionInterface) -> list[Bet]:
 
-        header = client_connection.receive(HEADER_SIZE)
-
-        if header != BET_HEADER:
-            raise Exception(f"Unexpected header: {header}")
+        self._process_header(client_connection)
 
         bet = self.bet_parser.parse_bet(client_connection)
         return bet
+
+    def _process_header(self, client_connection: ConnectionInterface):
+
+        headerData = client_connection.receive(HEADER_SIZE)
+
+        header_byte = headerData[0:1]
+
+        if header_byte != BET_HEADER:
+            raise Exception(f"Unexpected header: {header_byte}, expected: {BET_HEADER}")
+
+        logging.debug(f"action: process_header | result: success")
 
     def confirm_bet(
         self, bets: list[Bet], connection: ConnectionInterface, status: bool
