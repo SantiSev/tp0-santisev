@@ -370,10 +370,17 @@ Recibe y procesa la confirmación del servidor:
 
 # Cómo Ejecutar
 
-1. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
-2. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
-3. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
-4. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
+1. generar un archivo .yaml de docker-compose mediante la funcion
+
+```bash
+./generar-compose.sh docker-compose-dev.yaml 1
+```
+> **IMPORTANTE**: para este ejercicio es primordial testear con 1 solo client debido a que el server solo procesa un cliente y finaliza
+
+2. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
+3. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
+4. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
+5. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
 
 ## Script de Automatización
 
