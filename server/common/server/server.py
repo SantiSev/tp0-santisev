@@ -1,5 +1,5 @@
 import logging
-from multiprocessing import Lock
+from multiprocessing import Lock, process
 from multiprocessing.dummy import Process
 import signal
 import sys
@@ -25,7 +25,7 @@ class Server:
         self.lottery_service = LotteryService(self.file_lock)
         self.clientManager: ClientManager = ClientManager(self.lottery_service)
 
-        self.processes = []
+        self.processes = {}
 
         signal.signal(signal.SIGTERM, self._shutdown)
         signal.signal(signal.SIGINT, self._shutdown)
@@ -49,15 +49,17 @@ class Server:
                     )
 
                     process = Process(target=handle_client, args=(client,))
-                    self.processes.append(process)
+                    self.processes[client.agency_id] = process
                     process.start()
 
                 except Exception as e:
                     logging.error(f"action: server_loop | result: error | error: {e}")
                     self._shutdown()
 
-            for process in self.processes:
+            for client_id, process in self.processes.items():
                 process.join()
+                if process.exitcode != 0:
+                    self.clientManager.remove_client(client_id)
 
             self._tally_results()
 
@@ -72,10 +74,8 @@ class Server:
 
     def _tally_results(self):
         """Tally and log the results of the lottery"""
-        for client in self.clientManager.connected_clients:
-            client.send_results()
+        self.clientManager.send_results_to_all()
         logging.info("action: send_results_to_all_clients | result: success")
-
         self.lottery_service.announce_winners()
 
     def _shutdown(self, signum=None, frame=None) -> None:
@@ -93,6 +93,6 @@ def handle_client(client: ClientSession) -> None:
         client.begin()
     except Exception as e:
         logging.error(
-            f"action: handle_client | result: error | client_id: {client.id} | error: {e}"
+            f"action: handle_client | result: error | client_id: {client.agency_id} | error: {e}"
         )
-        client.finish()
+        sys.exit(1)

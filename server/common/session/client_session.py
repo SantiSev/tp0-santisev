@@ -18,7 +18,7 @@ class ClientSession:
         self.lottery_service = lottery_service
         self.protocol_handler = AgencyHandler()
 
-    def begin(self) -> bool:
+    def begin(self):
         while True:
             try:
                 betBatch, more_bets_remaining = self.protocol_handler.get_bets(
@@ -37,12 +37,11 @@ class ClientSession:
                     f"action: apuesta_recibida | result: fail | cliente se ha desconectado"
                 )
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
-                return False
+                raise e
         agencyBets = self.lottery_service.get_bets_by_agency(self.agency_id)
         logging.info(
             f"action: apuesta_recibida | result: success | cantidad: {len(agencyBets)}"
         )
-        return True
 
     def send_results(self):
         """Tally and log the results of the lottery"""
