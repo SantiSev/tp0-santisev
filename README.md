@@ -8,7 +8,7 @@ El objetivo de este ejercicio es permitir que los cambios en los archivos de con
 
 Este ejercicio se resolvio mediante un branch desde la rama ej1 y realizando una breve modificacion al script generar-compose.sh y simplemente agregandole un volumen al servicio del cliente que en si agrega al cliente
 
-Seccion Modificada:
+Seccion Modificada para el cliente:
 
 ```bash
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
@@ -28,6 +28,23 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
       - server
 EOF
 done
+```
+
+```bash
+cat > docker-compose-dev.yaml << EOF
+name: tp0
+services:
+  server:
+    container_name: server
+    image: server:latest
+    entrypoint: python3 /main.py
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - testing_net
+    volumes:  < --- [ESTO FUE AGREGADO]
+      - ./server/config.ini:/config.ini
+EOF
 ```
 ### ¿Por qué agregar un volumen?
 Sin el volumen, el archivo config.yaml queda copiado estáticamente dentro de la imagen durante el proceso de build mediante instrucciones como COPY. Esto significa que cualquier modificación al archivo de configuración en el host requiere:
