@@ -54,6 +54,9 @@ class Server:
                     self._shutdown()
                     continue
 
+            for process in self.processes:
+                process.join()
+
             self.lottery_service.announce_winners()
 
         except Exception as e:
@@ -68,8 +71,6 @@ class Server:
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
         self.is_running = False
-        for process in self.processes:
-            process.join()
         self.clientManager.shutdown()
         self.connection_manager.shutdown()
         logging.info("action: server_shutdown | result: success")
