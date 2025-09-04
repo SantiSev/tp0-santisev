@@ -198,6 +198,7 @@ Este módulo contiene el archivo `agency_service.go` que implementa la clase `Ag
 
 **Limitación Actual:** La implementación actual procesa únicamente apuestas individuales obtenidas desde la configuración. En ejercicios posteriores, esta arquitectura se expandirá para leer múltiples apuestas desde archivos de agencias, manteniendo la misma estructura modular.
 
+
 ## Client
 
 ## Business
@@ -223,23 +224,7 @@ Ahora en lugar de procesar una apuesta individual desde variables de entorno, se
 
 ## Protocol
 
-Define e implementa el protocolo de comunicación desde la perspectiva del cliente. Maneja la serialización de datos de apuestas, el formato de mensajes enviados al servidor y el procesamiento de las respuestas de confirmación recibidas.
-
-Este módulo contiene la clase `AgencyHandler` que gestiona el intercambio de mensajes con el servidor:
-
-### AgencyHandler
-
-Implementa el protocolo de comunicación cliente-servidor para el envío de apuestas y recepción de confirmaciones. Utiliza la instancia de ConnectionInterface para manejar envio y recepcion de datos
-
-**Métodos principales:**
-
-#### `SendBets(bet string, connSock *ConnectionInterface)`
-
-Envía apuestas al servidor siguiendo el protocolo definido:
-
-1. **Header**: Envía el byte identificador del tipo de mensaje (`HEADER`)
-2. **Longitud**: Envía un byte indicando la longitud de los datos de la apuesta
-3. **Datos**: Envía los datos de la apuesta en formato string
+El protocolo se mantiene igual, pero a diferencia con el ejercicio anterior se envia batches de Bets en vez de un solo bet
 
 **Protocolo de envío:**
 

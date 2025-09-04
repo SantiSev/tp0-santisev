@@ -19,7 +19,7 @@ type Client struct {
 	config        ClientConfig
 	connManager   network.ConnectionManager
 	connInterface *network.ConnectionInterface
-	betHandler    protocol.AgencyHandler
+	agencyHandler protocol.AgencyHandler
 	agencyService business.AgencyService
 }
 
@@ -32,7 +32,7 @@ func NewClient(config ClientConfig) *Client {
 	client := &Client{
 		config:        config,
 		connManager:   *network.NewConnectionManager(),
-		betHandler:    *protocol.NewBetHandler(),
+		agencyHandler: *protocol.NewAgencyHandler(),
 		agencyService: *agencyService,
 	}
 	return client
@@ -57,14 +57,14 @@ func (c *Client) Run() error {
 			return err
 		}
 
-		err = c.betHandler.SendBets(batch, c.connInterface)
+		err = c.agencyHandler.SendBets(batch, c.connInterface)
 		if err != nil {
 			log.Errorf("action: send_bets | result: fail | client_id: %v | error: %v", c.config.Id, err)
 			c.Shutdown()
 			return err
 		}
 
-		err = c.betHandler.RecvConfirmation(c.connInterface)
+		err = c.agencyHandler.RecvConfirmation(c.connInterface)
 		if err != nil {
 			log.Errorf("action: recv_confirmation | result: fail | client_id: %v | error: %v", c.config.Id, err)
 			c.Shutdown()
@@ -76,7 +76,7 @@ func (c *Client) Run() error {
 		}
 	}
 
-	err = c.betHandler.SendDone(c.connInterface)
+	err = c.agencyHandler.SendDone(c.connInterface)
 
 	if err != nil {
 		log.Errorf("action: send_done | result: fail | client_id: %v | error: %v",

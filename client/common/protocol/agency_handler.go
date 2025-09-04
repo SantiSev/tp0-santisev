@@ -14,7 +14,7 @@ type AgencyHandler struct {
 	MaxBatchAmount int
 }
 
-func NewBetHandler() *AgencyHandler {
+func NewAgencyHandler() *AgencyHandler {
 	return &AgencyHandler{}
 }
 
