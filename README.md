@@ -1,101 +1,112 @@
-# TP0 | Parte 1: Introducción a Docker | Ejercicio 3
+# TP0 | Parte 1: Introducción a Docker | Ejercicio 4
 
 Esta documentación sirve como referencia sobre el funcionamiento del código y las decisiones tomadas para resolver los ejercicios.
 
 # Decisiones Tomadas
 
-El objetivo de este ejercicio es permitir que los cambios en los archivos de configuración sean efectivos sin necesidad de reconstruir las imágenes de Docker.
+Este ejercio consiste en modificar servidor y cliente para que ambos sistemas terminen de forma graceful al recibir la signal SIGTERM.
 
-Este ejercicio se resolvio mediante un branch desde la rama ej2 y crear un script para verificar el correcto funcionamiento del servidor utilizando el comando netcat para interactuar con el mismo
+## Server Implementacion
 
-Seccion Modificada:
+En el archivo [`server.py`](https://github.com/SantiSev/tp0-santisev/blob/e8065e4c7eb929eee945424698e593b9a7902405/server/common/server.py) agrege lo siguiente en la seccion de inicalizacion del server:
 
-```bash
-#!/bin/bash
-SERVER_PORT=$(grep 'SERVER_PORT' server/config.ini | cut -d'=' -f2)
+```py
+class Server:
+    def __init__(self, port, listen_backlog):
+        # Initialize server socket
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server_socket.bind(('', port))
+        self._server_socket.listen(listen_backlog)
 
-PING_MESSAGE="hello darkness my old friend..."
-
-SERVER_RESPONSE=$(echo "$PING_MESSAGE" | docker run --rm -i --network container:server busybox nc server $SERVER_PORT)
-
-echo "Received response: '$SERVER_RESPONSE'"
-
-RESULT="fail"
-if [ "$SERVER_RESPONSE" = "$PING_MESSAGE" ]; then
-    RESULT="success"
-fi
-
-echo "action: test_echo_server | result: $RESULT"
+        signal.signal(signal.SIGTERM, self.__handle_shutdown)
 ```
 
-### Como funciona el script
+y luego agrege este metodo del server:
 
-## 1. Obtención del puerto del servidor
+```py
+    def __handle_shutdown(self, signal_number, frame):
+        """
+        Handle server shutdown
 
-```bash
-SERVER_PORT=$(grep 'SERVER_PORT' server/config.ini | cut -d'=' -f2)
+        This function is called to gracefully shutdown the server,
+        closing all active connections and freeing resources.
+        """
+        logging.debug(f"Signal received at frame: {frame}")
+
+        if signal_number == signal.SIGTERM:
+            logging.info('action: shutdown | result: in_progress')
+            self._server_socket.close()
+            logging.info('action: shutdown | result: success')
+            exit(0)
 ```
 
-- Busca la línea que contiene 'SERVER_PORT' en el archivo server/config.ini
-- Extrae el valor después del signo '=' usando cut
+Esta implementación establece un mecanismo de graceful shutdown para el servidor. Durante la inicialización, se registra un manejador de señales que asocia la señal SIGTERM con el método `__handle_shutdown`. 
 
-> Por ejemplo, si el archivo contiene SERVER_PORT=8080, obtendrá 8080
+Cuando el servidor recibe esta señal, intercepta la terminación abrupta, cierra el socket servidor de manera controlada y termina el proceso limpiamente.
 
-## 2. Definición del mensaje de prueba
-```bash
-PING_MESSAGE="hello darkness my old friend..."
+## Client Implementacion
+
+En el archivo [`client.py`](https://github.com/SantiSev/tp0-santisev/blob/d3386781721e1823b58647269191beb9235d39c5/client/common/client.go) agrege lo siguiente en la seccion del processo principal del cliente:
+
+
+```go
+func (c *Client) StartClientLoop() {
+
+	// This is how i handle SIGTERM signals
+
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGTERM)
+	done := make(chan bool, 1)
+
+	go func() {
+		<-sigChannel
+		c.HandleShutdown()
+		done <- true
+	}()
+
+	// There is an autoincremental msgID to identify every message sent
+	// Messages if the message amount threshold has not been surpassed
+	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
+
+		select {
+		case <-done:
+			log.Infof("action: exit | result: success | client_id: %v", c.config.ID)
+			return
+		default:
+		}
+    // . . . REST OF CODE
 ```
 
-Define un mensaje específico que se enviará al servidor para la prueba
+Esta implementación establece un mecanismo de **graceful shutdown** para el cliente utilizando goroutines y canales. 
 
-## 3. Envío del mensaje y captura de respuesta
-   ```bash
-   SERVER_RESPONSE=$(echo "$PING_MESSAGE" | docker run --rm -i --network container:server busybox nc server $SERVER_PORT)
-   ```
-   Esta es la parte más compleja:
+Se crean dos canales: 
+- **sigChannel:** para capturar señales del sistema operativo
+- **done:** para coordinar la terminación. Una goroutine separada queda en espera de SIGTERM, y cuando la recibe, ejecuta el método de limpieza y señaliza la terminación a través del canal done.
+Select statement en Go
 
-- `echo "$PING_MESSAGE"` envía el mensaje a través de un pipe
-- `docker run --rm -i --network container:server busybox` ejecuta un contenedor temporal de **busybox**, 
+El `select` statement en Go es una construcción de control que permite a una **goroutine esperar en múltiples operaciones de canal simultáneamente**. 
 
-> **busybox** una imagen ligera de Linux que incluye utilidades básicas de Unix en un solo ejecutable. Esto permite ejecutar comandos como `nc` (netcat) sin necesidad de instalar herramientas adicionales en el sistema anfitrión.
+Funciona de manera similar a un switch, pero específicamente para **operaciones de canal**. En este caso, el **select verifica en cada iteración del loop si se ha recibido una señal de terminación a través del canal done.**
 
-- `--rm`: elimina el contenedor al finalizar
-- `-i`: modo interactivo (permite recibir entrada por pipe)
-- `--network container:server`: usa la misma red que el contenedor llamado "server"
-- `nc server $SERVER_PORT:` usa **netcat** para conectarse al servidor en el puerto especificado
+La estructura select evalúa todos los casos disponibles:
 
-Finalmente, la respuesta del servidor se captura en SERVER_RESPONSE
+- `case <-done`: se ejecuta si hay un valor disponible en el canal done (señal de terminación)
 
-## 4. Evaluación del resultado
-   ```bash
-   RESULT="fail"
-   if [ "$SERVER_RESPONSE" = "$PING_MESSAGE" ]; then
-   RESULT="success"
-   fi
-   ```
+- `default`: se ejecuta si ningún canal tiene datos disponibles, permitiendo que el loop continúe normalmente
 
-Por defecto asume que falló
-Si la respuesta del servidor es exactamente igual al mensaje enviado, marca como exitoso
-Esto confirma que el servidor está funcionando como un __"echo server"__ (devuelve lo que recibe)
+Esta implementación permite que el cliente responda inmediatamente a señales de terminación sin tener que esperar a que termine la iteración actual del loop principal, proporcionando un shutdown más responsivo y controlado.
 
-## 5. Reporte final
-   ```bash
-   echo "action: test_echo_server | result: $RESULT"
-   ```
-
-Muestra el resultado final en un formato estructurado
 
 # Como Ejectuar
 
-El script se encuentra en la raíz del proyecto, primero se debe levantar el server con el commando:
+1. Crear el archivo de docker-compose mediante el uso del script `generar-compose.sh`
 
-```bash
-make docker-compose-up
-```
+2. Correr el commando `make docker-compose-up` para iniciar los containers
 
-Luego, correr el script
+    > **Opcional:** Podes ver el estado de los containers mediante el comando `docker ps`
 
-```bash
-./validar-echo-server.sh
-```
+3. Ejecutar `make docker-compose-logs` para ver los logs del servidor (se recomienda configurar el cliente para enviar mensajes durante un tiempo prolongado).
 
+4. En otra terminal, correr `make docker-compose-down` para finalizar los procesos de forma controlada.
+
+5. Volver a la terminal de logs para verificar que ambos procesos finalizaron con código de salida 0, indicando una terminación exitosa.)
