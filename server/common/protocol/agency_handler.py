@@ -1,5 +1,4 @@
 import logging
-import struct
 
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.bet_parser import BetParser
@@ -7,14 +6,14 @@ from common.utils.utils import Bet
 from common.protocol.protocol_constants import *
 
 
-class BetHandler:
+class AgencyHandler:
     """Handles individual client connections"""
 
     def __init__(self):
         self.bet_parser = BetParser()
 
     def get_bets(
-        self, client_connection: ConnectionInterface
+        self, client_connection: ConnectionInterface, agency_id: int
     ) -> tuple[list[Bet], bool]:
 
         header = client_connection.receive(HEADER_SIZE)
@@ -26,7 +25,7 @@ class BetHandler:
         if header != BET_HEADER:
             raise Exception(f"Unexpected header: {header}")
 
-        batchBets = self.bet_parser.parse_batch(client_connection)
+        batchBets = self.bet_parser.parse_batch(client_connection, agency_id)
         return batchBets, True
 
     def confirm_batch(self, connection: ConnectionInterface, status: bool) -> None:

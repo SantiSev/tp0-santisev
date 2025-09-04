@@ -41,16 +41,11 @@ class Server:
 
                     success = client.begin()
 
-                    if success:
-                        self.processed_agencies += 1
-                        logging.info(
-                            f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
-                        )
-                    else:
+                    if not success:
                         logging.error(
-                            f"action: server_loop | result: fail | an error occured processing the client with {client.id} , halting client"
+                            f"action: server_loop | result: fail | an error occured processing the client with {client.agency_id} , halting client"
                         )
-                        self.clientManager.remove_client(client.id)
+                        self.clientManager.remove_client(client.agency_id)
                         continue
 
                 except Exception as e:
@@ -68,6 +63,14 @@ class Server:
 
     def _running(self):
         return self.is_running and self.processed_agencies < self.agencies_amount
+
+    def _tally_results(self):
+        """Tally and log the results of the lottery"""
+
+        for client in self.clientManager.connected_clients():
+            client.tally_results()
+
+        self.lottery_service.announce_winners()
 
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
