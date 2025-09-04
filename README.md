@@ -25,7 +25,7 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     entrypoint: /client
     environment:
       - CLI_ID=$i
-      - CLI_AGENCY_FILEPATH=/data/agency.csv
+      - CLI_AGENCY_FILEPATH=/data/agency.csv  <-- [ ruta de agency csv filepath ]
     networks:
       - testing_net
     volumes:
@@ -36,6 +36,7 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
 EOF
 done
 ```
+También se agrega la variable de entorno `CLI_AGENCY_FILEPATH=/data/agency.csv` que especifica la ruta donde el contenedor debe buscar el archivo CSV de la agencia. **Importante:** Esta ruta debe coincidir exactamente con el punto de montaje del volumen, de lo contrario la aplicación fallará al no encontrar el archivo de datos.
 
 El mapeo de volúmenes `./.data/agency-$i.csv:/data/agency.csv` permite que cada cliente acceda a su archivo de agencia específico (agency-1.csv, agency-2.csv, etc.) mientras mantiene una ruta estándar (`/data/agency.csv`) en el código.  Esto proporciona aislamiento de datos entre clientes.
 
@@ -56,34 +57,7 @@ Se agrega un nuevo método al servicio `LotteryService` para consultar apuestas 
 
 ## Config
 
-Maneja la configuración del sistema, incluyendo la lectura de archivos de configuración, variables de entorno, parámetros de inicialización e inicializacion de logs. Centraliza toda la gestión de configuración.
-
-Esta carpeta solo tiene el archivo `config.py` que tiene 2 funcionciones:
-
-`def initialize_config() -> ServerConfig`: Lee el archivo de configuración y las variables de entorno, creando una instancia de `ServerConfig` con todos los parámetros necesarios para el servidor. Esta instancia se utiliza para inicializar correctamente el servidor.
-
-`def initialize_log(logging_level)`: Inicializa el sistema de logs del servidor según el nivel de logging especificado:
-
-- **INFO**: Muestra mensajes de tipo INFO, ERROR y CRITICAL.
-- **DEBUG**: Además de los anteriores, incluye mensajes de tipo DEBUG.
-
-## Network
-
-Proporciona las abstracciones y funcionalidades de red de bajo nivel. Maneja conexiones TCP, sockets y operaciones de comunicación básicas entre procesos.
-
-Este modulo contiene 2 clases fundamnetales al server:
-
-**ConnectionInterface**: Proporciona una abstracción de los servicios de sockets, permitiendo el uso de `send()`, `recv()` y `close()` sin la necesidad de manipular sockets directamente.
-
-**ConnectionManager**: Implementa el patrón Acceptor del sistema. Permanece a la espera de conexiones entrantes y, una vez que un cliente se conecta al servidor, devuelve una instancia de `ConnectionInterface` para gestionar correctamente el envío y recepción de mensajes entre servidor y cliente.
-
-### Manejo de Short Read/Write
-
-La clase ConnectionInterface implementan mecanismos robustos para manejar lecturas y escrituras parciales:
-
-- `receive function`: Utiliza el método `_receive_all()` para garantizar la recepción completa de datos mediante un bucle que continúa hasta obtener exactamente la cantidad de bytes solicitada, evitando problemas de short reads.
-
-- `send function`: Utiliza `sendall()` para asegurar el envío completo de datos, manejando automáticamente las escrituras parciales que pueden ocurrir en redes congestionadas.
+Ahora en lugar de procesar una apuesta individual desde variables de entorno, se configura la instancia de `ClientConfig` con un nuevo parámetro llamado `AgencyFilePath`. Esta ruta de archivo se utiliza posteriormente en `AgencyService` para leer múltiples apuestas desde archivos CSV.
 
 ## Protocol
 
