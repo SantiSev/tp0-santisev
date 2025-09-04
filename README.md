@@ -132,12 +132,7 @@ Este módulo contiene 2 clases fundamentales:
   4. **Delegación**: Transfiere el control al cliente para procesamiento de apuestas
   5. **Finalización**: Ejecuta shutdown graceful liberando todos los recursos
 
-  **Gestión de Recursos:**
-  - Coordina la comunicación entre todos los componentes del sistema
-  - Garantiza la limpieza ordenada de conexiones y recursos al recibir señales de terminación
-  - Implementa un patrón de responsabilidad única donde cada componente maneja su dominio específico
-
-  **Limitación Actual:** La implementación procesa clientes de forma **secuencial** (uno a la vez), requiriendo modificación para soporte concurrente en ejercicios posteriores.
+  **Limitación Actual:** Segun los requisitos de este ejercicio, por el momento solo procesa un solo bet de un solo cliente, pero esta arquitectura se va a escalar en los proximos ejercicios para
 
 ## Session
 

@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/business"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/network"
@@ -89,7 +88,6 @@ func (c *Client) setupGracefulShutdown() {
 }
 
 func (c *Client) Shutdown() {
-	time.Sleep(100 * time.Millisecond)
 	c.connInterface.Close()
 	log.Infof("action: exit | result: success")
 }
