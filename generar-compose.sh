@@ -8,8 +8,7 @@ fi
 YAML_FILE="$1"
 AMOUNT_CLIENTS="$2"
 
-# Create the base compose file
-cat > docker-compose-dev.yaml << EOF
+cat > "$YAML_FILE" << EOF
 name: tp0
 services:
   server:
@@ -25,7 +24,7 @@ services:
 EOF
 
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
-    cat >> docker-compose-dev.yaml << EOF
+    cat >> "$YAML_FILE" << EOF
 
   client$i:
     container_name: client$i
@@ -42,7 +41,7 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
 EOF
 done
 
-cat >> docker-compose-dev.yaml << EOF
+cat >> "$YAML_FILE" << EOF
 
 networks:
   testing_net:
