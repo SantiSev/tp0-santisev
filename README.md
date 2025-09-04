@@ -49,11 +49,19 @@ El mapeo de volúmenes `./.data/agency-$i.csv:/data/agency.csv` permite que cada
 
 ## Business
 
-Se agrega un nuevo método al servicio `LotteryService` para consultar apuestas procesadas:
+Se modifica el servicio `AgencyService` para procesar múltiples apuestas desde archivos CSV:
 
-`def get_bets_by_agency(self, agency_id: int) -> list[Bet]:` que lee el archivo `bets.csv` y retorna todas las apuestas correspondientes a una agencia específica, permitiendo contar cuántas apuestas fueron procesadas por cada agencia.
+**Funcionalidad principal:**
+- **Inicialización**: Recibe la ruta del archivo CSV de la agencia durante la construcción del servicio
+- **Lectura de datos**: Utiliza `bufio.Scanner` de la librería estándar de Go para leer línea por línea el archivo de apuestas
+- **Gestión de recursos**: Implementa el método `Close()` para liberar correctamente los recursos del scanner al finalizar
 
-**Decisión de diseño:** Se optó por almacenar todas las apuestas en archivo y realizar consultas directas desde el sistema de archivos para evitar mantener grandes volúmenes de datos en memoria, optimizando el uso de recursos del servidor.
+**Métodos implementados:**
+- `NewAgencyService(filePath string)`: Constructor que inicializa el servicio con la ruta del archivo CSV
+- `ReadBets()`: Lee y valida todas las apuestas del archivo, retornando una lista de apuestas estructuradas
+- `Close()`: Cierra el scanner y libera recursos asociados
+
+**Decisión de diseño:** Se optó por utilizar `bufio.Scanner` para manejar archivos de gran tamaño de forma eficiente, procesando línea por línea sin cargar todo el archivo en memoria simultáneamente.
 
 ## Config
 
@@ -192,33 +200,26 @@ Este módulo contiene el archivo `agency_service.go` que implementa la clase `Ag
 
 ## Client
 
+## Business
+
+Se modifica el servicio `AgencyService` para procesar múltiples apuestas desde archivos CSV:
+
+**Funcionalidad principal:**
+- **Inicialización**: Recibe la ruta del archivo CSV de la agencia durante la construcción del servicio
+- **Lectura de datos**: Utiliza `bufio.Scanner` de la librería estándar de Go para leer línea por línea el archivo de apuestas
+- **Gestión de recursos**: Implementa el método `Close()` para liberar correctamente los recursos del scanner al finalizar
+
+**Métodos implementados:**
+- `NewAgencyService(filePath string)`: Constructor que inicializa el servicio con la ruta del archivo CSV
+- `ReadBets()`: Lee y valida todas las apuestas del archivo, retornando una lista de apuestas estructuradas
+- `Close()`: Cierra el scanner y libera recursos asociados
+
+**Decisión de diseño:** Se optó por utilizar `bufio.Scanner` para manejar archivos de gran tamaño de forma eficiente, procesando línea por línea sin cargar todo el archivo en memoria simultáneamente.
+
 ## Config
 
-Administra la configuración del cliente, incluyendo la lectura del archivo `config.yaml`, parámetros de conexión y inicialización del sistema de logging.
+Ahora en lugar de procesar una apuesta individual desde variables de entorno, se configura la instancia de `ClientConfig` con un nuevo parámetro llamado `AgencyFilePath`. Esta ruta de archivo se utiliza posteriormente en `AgencyService` para leer múltiples apuestas desde archivos CSV.
 
-Este módulo contiene el archivo `config.go` con dos funciones principales:
-
-**`InitConfig()`**: Inicializa la configuración del cliente mediante la lectura de archivos de config y variables de entorno
-
-> **Nota:** Para el alcance de este ejercicio, los atributos de la apuesta enviada al servidor se almacenan en variables de entorno. En ejercicios posteriores, esta implementación será reemplazada por la lectura de archivos de apuestas para mayor escalabilidad.
-
-**`InitLogger()`**: Configura el sistema de logging con niveles de verbosidad (INFO / DEBUG)
-
-## Network
-
-Proporciona las abstracciones de red para el lado cliente. Implementa las funcionalidades de conexión TCP, envío y recepción de datos, y manejo de la comunicación de bajo nivel con el servidor.
-
-Este módulo contiene 2 clases fundamentales:
-
-- **ConnectionManager**: Gestiona la establecimiento de conexiones TCP hacia el servidor con retry automático (máximo 3 intentos con intervalos de 100ms). Cuando logra conectarse al server, devuelve una instancia de `ConnectionInterface`
-
-- **ConnectionInterface**: Abstrae las operaciones de socket TCP proporcionando métodos `Connect()`, `SendData()`, `ReceiveData()` y `Close()` para comunicación confiable con el servidor.
-
-### Manejo de Short Read/Write
-
-- `SendData()` utiliza un loop que continúa escribiendo hasta enviar todos los bytes
-
-- **`ReceiveData()`**: Utiliza la función estándar de Go `io.ReadFull()` que garantiza lectura completa del buffer
 
 ## Protocol
 
