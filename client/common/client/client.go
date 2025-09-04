@@ -18,7 +18,7 @@ type Client struct {
 	config        ClientConfig
 	connManager   network.ConnectionManager
 	connInterface *network.ConnectionInterface
-	betHandler    protocol.BetHandler
+	betHandler    protocol.AgencyHandler
 	agencyService business.AgencyService
 }
 
@@ -31,7 +31,7 @@ func NewClient(config ClientConfig) *Client {
 	client := &Client{
 		config:        config,
 		connManager:   *network.NewConnectionManager(),
-		betHandler:    *protocol.NewBetHandler(),
+		betHandler:    *protocol.NewAgencyHandler(),
 		agencyService: *agencyService,
 	}
 	return client
