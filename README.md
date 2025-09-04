@@ -1,180 +1,325 @@
-# TP0: Docker + Comunicaciones + Concurrencia
+# TP0 | Parte 2: Repaso de Comunicaciones | Ejercicio 7
 
-En el presente repositorio se provee un esqueleto básico de cliente/servidor, en donde todas las dependencias del mismo se encuentran encapsuladas en containers. Los alumnos deberán resolver una guía de ejercicios incrementales, teniendo en cuenta las condiciones de entrega descritas al final de este enunciado.
+Esta documentación sirve como referencia sobre el funcionamiento del código y las decisiones tomadas para resolver los ejercicios.
 
- El cliente (Golang) y el servidor (Python) fueron desarrollados en diferentes lenguajes simplemente para mostrar cómo dos lenguajes de programación pueden convivir en el mismo proyecto con la ayuda de containers, en este caso utilizando [Docker Compose](https://docs.docker.com/compose/).
+# Decisiones Tomadas
 
-## Instrucciones de uso
-El repositorio cuenta con un **Makefile** que incluye distintos comandos en forma de targets. Los targets se ejecutan mediante la invocación de:  **make \<target\>**. Los target imprescindibles para iniciar y detener el sistema son **docker-compose-up** y **docker-compose-down**, siendo los restantes targets de utilidad para el proceso de depuración.
+Las secciones de repaso del trabajo práctico plantean un caso de uso denominado Lotería Nacional. Para la resolución de las mismas se utiliza como base el código fuente provisto en la primera parte, con las modificaciones agregadas en el ejercicio 4.
 
-Los targets disponibles son:
+> Todo el código está redactado en inglés, con excepción de algunos logs específicos que permanecen en español para garantizar la compatibilidad con los tests proporcionados.
 
-| target  | accion  |
-|---|---|
-|  `docker-compose-up`  | Inicializa el ambiente de desarrollo. Construye las imágenes del cliente y el servidor, inicializa los recursos a utilizar (volúmenes, redes, etc) e inicia los propios containers. |
-| `docker-compose-down`  | Ejecuta `docker-compose stop` para detener los containers asociados al compose y luego  `docker-compose down` para destruir todos los recursos asociados al proyecto que fueron inicializados. Se recomienda ejecutar este comando al finalizar cada ejecución para evitar que el disco de la máquina host se llene de versiones de desarrollo y recursos sin liberar. |
-|  `docker-compose-logs` | Permite ver los logs actuales del proyecto. Acompañar con `grep` para lograr ver mensajes de una aplicación específica dentro del compose. |
-| `docker-image`  | Construye las imágenes a ser utilizadas tanto en el servidor como en el cliente. Este target es utilizado por **docker-compose-up**, por lo cual se lo puede utilizar para probar nuevos cambios en las imágenes antes de arrancar el proyecto. |
-| `build` | Compila la aplicación cliente para ejecución en el _host_ en lugar de en Docker. De este modo la compilación es mucho más veloz, pero requiere contar con todo el entorno de Golang y Python instalados en la máquina _host_. |
+# Arquitectura del Servidor
 
-### Servidor
+## Estructura de Directorios
 
-Se trata de un "echo server", en donde los mensajes recibidos por el cliente se responden inmediatamente y sin alterar. 
+El servidor se encuentra en la carpeta [server](https://github.com/SantiSev/tp0-santisev/blob/8a1db90ec3edaf039c5237e04bcac69bc3339ed7/server) en la raíz del repositorio que contiene estos componentes:
 
-Se ejecutan en bucle las siguientes etapas:
-
-1. Servidor acepta una nueva conexión.
-2. Servidor recibe mensaje del cliente y procede a responder el mismo.
-3. Servidor desconecta al cliente.
-4. Servidor retorna al paso 1.
-
-
-### Cliente
- se conecta reiteradas veces al servidor y envía mensajes de la siguiente forma:
- 
-1. Cliente se conecta al servidor.
-2. Cliente genera mensaje incremental.
-3. Cliente envía mensaje al servidor y espera mensaje de respuesta.
-4. Servidor responde al mensaje.
-5. Servidor desconecta al cliente.
-6. Cliente verifica si aún debe enviar un mensaje y si es así, vuelve al paso 2.
-
-### Ejemplo
-
-Al ejecutar el comando `make docker-compose-up`  y luego  `make docker-compose-logs`, se observan los siguientes logs:
-
-```
-client1  | 2024-08-21 22:11:15 INFO     action: config | result: success | client_id: 1 | server_address: server:12345 | loop_amount: 5 | loop_period: 5s | log_level: DEBUG
-client1  | 2024-08-21 22:11:15 INFO     action: receive_message | result: success | client_id: 1 | msg: [CLIENT 1] Message N°1
-server   | 2024-08-21 22:11:14 DEBUG    action: config | result: success | port: 12345 | listen_backlog: 5 | logging_level: DEBUG
-server   | 2024-08-21 22:11:14 INFO     action: accept_connections | result: in_progress
-server   | 2024-08-21 22:11:15 INFO     action: accept_connections | result: success | ip: 172.25.125.3
-server   | 2024-08-21 22:11:15 INFO     action: receive_message | result: success | ip: 172.25.125.3 | msg: [CLIENT 1] Message N°1
-server   | 2024-08-21 22:11:15 INFO     action: accept_connections | result: in_progress
-server   | 2024-08-21 22:11:20 INFO     action: accept_connections | result: success | ip: 172.25.125.3
-server   | 2024-08-21 22:11:20 INFO     action: receive_message | result: success | ip: 172.25.125.3 | msg: [CLIENT 1] Message N°2
-server   | 2024-08-21 22:11:20 INFO     action: accept_connections | result: in_progress
-client1  | 2024-08-21 22:11:20 INFO     action: receive_message | result: success | client_id: 1 | msg: [CLIENT 1] Message N°2
-server   | 2024-08-21 22:11:25 INFO     action: accept_connections | result: success | ip: 172.25.125.3
-server   | 2024-08-21 22:11:25 INFO     action: receive_message | result: success | ip: 172.25.125.3 | msg: [CLIENT 1] Message N°3
-client1  | 2024-08-21 22:11:25 INFO     action: receive_message | result: success | client_id: 1 | msg: [CLIENT 1] Message N°3
-server   | 2024-08-21 22:11:25 INFO     action: accept_connections | result: in_progress
-server   | 2024-08-21 22:11:30 INFO     action: accept_connections | result: success | ip: 172.25.125.3
-server   | 2024-08-21 22:11:30 INFO     action: receive_message | result: success | ip: 172.25.125.3 | msg: [CLIENT 1] Message N°4
-server   | 2024-08-21 22:11:30 INFO     action: accept_connections | result: in_progress
-client1  | 2024-08-21 22:11:30 INFO     action: receive_message | result: success | client_id: 1 | msg: [CLIENT 1] Message N°4
-server   | 2024-08-21 22:11:35 INFO     action: accept_connections | result: success | ip: 172.25.125.3
-server   | 2024-08-21 22:11:35 INFO     action: receive_message | result: success | ip: 172.25.125.3 | msg: [CLIENT 1] Message N°5
-client1  | 2024-08-21 22:11:35 INFO     action: receive_message | result: success | client_id: 1 | msg: [CLIENT 1] Message N°5
-server   | 2024-08-21 22:11:35 INFO     action: accept_connections | result: in_progress
-client1  | 2024-08-21 22:11:40 INFO     action: loop_finished | result: success | client_id: 1
-client1 exited with code 0
+```bash
+    server
+    ├── common
+    ├── config.ini
+    ├── Dockerfile
+    ├── main.py
+    └── tests
 ```
 
+- `common`: Módulo base que agrupa la lógica de negocio, protocolos de comunicación, configuración y utilidades esenciales del servidor.
 
-## Parte 1: Introducción a Docker
-En esta primera parte del trabajo práctico se plantean una serie de ejercicios que sirven para introducir las herramientas básicas de Docker que se utilizarán a lo largo de la materia. El entendimiento de las mismas será crucial para el desarrollo de los próximos TPs.
+- `config.ini`: Archivo de configuración.
 
-### Ejercicio N°1:
-Definir un script de bash `generar-compose.sh` que permita crear una definición de Docker Compose con una cantidad configurable de clientes.  El nombre de los containers deberá seguir el formato propuesto: client1, client2, client3, etc. 
+- `Dockerfile`: Archivo usado para construir la imagen de Docker para el servidor _(provisto por la cátedra, no se modifica)._
 
-El script deberá ubicarse en la raíz del proyecto y recibirá por parámetro el nombre del archivo de salida y la cantidad de clientes esperados:
+- `main`: Entrypoint del Server
 
-`./generar-compose.sh docker-compose-dev.yaml 5`
+- `tests`: Carpeta que contiene pruebas automatizadas para verificar que el código funciona correctamente. _(provisto por la cátedra, no se modifica)._
 
-Considerar que en el contenido del script pueden invocar un subscript de Go o Python:
+## Directorio Common
 
+Dentro de la seccion common tenemos los siguientes modulos:
+
+```bash
+server
+├── common
+│   ├── business
+│   ├── config
+│   ├── network
+│   ├── protocol
+│   ├── server
+│   ├── session
+│   └── utils
 ```
-#!/bin/bash
-echo "Nombre del archivo de salida: $1"
-echo "Cantidad de clientes: $2"
-python3 mi-generador.py $1 $2
+
+## Business
+
+Contiene la lógica de negocio principal de la aplicación. Define las reglas y procesos específicos del dominio, separando la lógica empresarial de los detalles de implementación técnica.
+
+Esta carpeta solo tiene el archivo `lottery_service.py` Que tiene como objetivo gestionar la lógica de negocio de las loterías.
+
+En el alcance actual del ejercicio, se encarga exclusivamente de almacenar las apuestas utilizando la función `store_bets()` del archivo `utils.py`.
+
+## Config
+
+Maneja la configuración del sistema, incluyendo la lectura de archivos de configuración, variables de entorno, parámetros de inicialización e inicializacion de logs. Centraliza toda la gestión de configuración.
+
+Esta carpeta solo tiene el archivo `config.py` que tiene 2 funcionciones:
+
+`def initialize_config() -> ServerConfig`: Lee el archivo de configuración y las variables de entorno, creando una instancia de `ServerConfig` con todos los parámetros necesarios para el servidor. Esta instancia se utiliza para inicializar correctamente el servidor.
+
+`def initialize_log(logging_level)`: Inicializa el sistema de logs del servidor según el nivel de logging especificado:
+
+- **INFO**: Muestra mensajes de tipo INFO, ERROR y CRITICAL.
+- **DEBUG**: Además de los anteriores, incluye mensajes de tipo DEBUG.
+
+## Network
+
+Proporciona las abstracciones y funcionalidades de red de bajo nivel. Maneja conexiones TCP, sockets y operaciones de comunicación básicas entre procesos.
+
+Este modulo contiene 2 clases fundamnetales al server:
+
+**ConnectionInterface**: Proporciona una abstracción de los servicios de sockets, permitiendo el uso de `send()`, `recv()` y `close()` sin la necesidad de manipular sockets directamente.
+
+**ConnectionManager**: Implementa el patrón Acceptor del sistema. Permanece a la espera de conexiones entrantes y, una vez que un cliente se conecta al servidor, devuelve una instancia de `ConnectionInterface` para gestionar correctamente el envío y recepción de mensajes entre servidor y cliente.
+
+### Manejo de Short Read/Write
+
+La clase ConnectionInterface implementan mecanismos robustos para manejar lecturas y escrituras parciales:
+
+- `receive function`: Utiliza el método `_receive_all()` para garantizar la recepción completa de datos mediante un bucle que continúa hasta obtener exactamente la cantidad de bytes solicitada, evitando problemas de short reads.
+
+- `send function`: Utiliza `sendall()` para asegurar el envío completo de datos, manejando automáticamente las escrituras parciales que pueden ocurrir en redes congestionadas.
+
+## Protocol
+
+Define el protocolo de comunicación específico de la aplicación. Especifica el formato de mensajes, serialización/deserialización y las reglas de intercambio de datos entre cliente y servidor.
+
+Este módulo contiene 2 clases fundamentales del servidor:
+
+- **AgencyHandler**: Gestiona el protocolo de comunicación con clientes utilizando `ConnectionInterface`. Se encarga de:
+
+  - Procesar headers de mensajes entrantes
+  - Coordinar la recepción de apuestas mediante `BetParser`
+  - Enviar confirmaciones de éxito/fallo al cliente
+  - Manejar errores de comunicación durante el intercambio de datos
+
+- **BetParser**: Responsable del procesamiento y transformación de datos. Funciones principales:
+  - Parsear datos CSV recibidos como strings
+  - Convertir información cruda en objetos `Bet` estructurados
+  - Validar integridad de los datos antes de la conversión
+  - Manejar casos de error en el parsing de apuestas
+
+### Estructura del Protocolo
+
+**Mensaje de Envío (Cliente → Servidor):**
+```bash
+[BET_HEADER][DATA_LENGTH][BET_DATA]
 ```
 
-En el archivo de Docker Compose de salida se pueden definir volúmenes, variables de entorno y redes con libertad, pero recordar actualizar este script cuando se modifiquen tales definiciones en los sucesivos ejercicios.
+**Mensaje de Confirmación (Servidor → Cliente):**
+```bash
+[STATUS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
+```
 
-### Ejercicio N°2:
-Modificar el cliente y el servidor para lograr que realizar cambios en el archivo de configuración no requiera reconstruír las imágenes de Docker para que los mismos sean efectivos. La configuración a través del archivo correspondiente (`config.ini` y `config.yaml`, dependiendo de la aplicación) debe ser inyectada en el container y persistida por fuera de la imagen (hint: `docker volumes`).
+## Server
+
+Implementa la funcionalidad del servidor, incluyendo el manejo de conexiones entrantes, procesamiento de requests y la lógica específica del lado servidor.
+
+Este módulo contiene 2 clases fundamentales:
+
+- **ServerConfig**: Clase de configuración que encapsula todos los parámetros necesarios para la inicialización del servidor. Almacena información como el puerto de escucha, el número máximo de conexiones pendientes (backlog) y el nivel de logging. Actúa como un objeto de transferencia de datos que centraliza la configuración del sistema, eliminando la necesidad de pasar múltiples parámetros individuales entre componentes.
+
+- **Server**: Clase principal que actúa como el núcleo orquestador del sistema servidor. Sus responsabilidades incluyen:
+
+  **Inicialización del Sistema:**
+  - Configura el `ConnectionManager` para gestionar conexiones TCP entrantes
+  - Instancia `LotteryService` para manejar la lógica de negocio de apuestas
+  - Establece `ClientManager` para administrar sesiones activas de clientes
+  - Registra manejadores de señales (`SIGTERM`, `SIGINT`) para garantizar terminación controlada
+
+  > **Nota:** El manejo de `SIGINT` no es requerido por el enunciado, pero se agregó para facilitar el debugging local y verificar el correcto funcionamiento del shutdown graceful durante el desarrollo.
+
+  **Ciclo de Vida del Servidor:**
+  1. **Inicio**: Activa la escucha en el puerto configurado
+  2. **Aceptación**: Permanece bloqueado esperando conexiones entrantes
+  3. **Sesión**: Crea una instancia `ClientSession` para cada cliente conectado
+  4. **Delegación**: Transfiere el control al cliente para procesamiento de apuestas
+  5. **Finalización**: Ejecuta shutdown graceful liberando todos los recursos
+
+  **Limitación Actual:** Según los requisitos de este ejercicio, la implementación procesa únicamente un cliente de forma secuencial. Esta arquitectura será escalada en ejercicios posteriores.
+
+## Session
+
+Gestiona las sesiones de usuario o conexión. Mantiene el estado de las interacciones, autenticación y el contexto de cada cliente conectado.
+
+Este módulo contiene 2 clases fundamentales:
+
+- **ClientSession**: Representa una sesión individual de cliente y maneja todo el ciclo de vida de la comunicación con una agencia. Sus responsabilidades incluyen:
+
+  **Inicialización:**
+  - Almacena la referencia de conexión (`ConnectionInterface`) para comunicación directa
+  - Mantiene un ID único de agencia para identificación
+  - Configura el `AgencyHandler` para manejar el protocolo de comunicación
+  - Establece la referencia al `LotteryService` para procesamiento de apuestas
+
+  **Procesamiento Principal (`begin`):**
+  1. **Recepción**: Utiliza `AgencyHandler` para recibir apuestas del cliente
+  2. **Almacenamiento**: Delega al `LotteryService` para persistir las apuestas
+  3. **Confirmación**: Envía confirmación de éxito al cliente
+  4. **Manejo de errores**: Captura excepciones y envía confirmación de fallo
+
+  **Finalización (`finish`):**
+  - Cierra la conexión de red de forma controlada
+  - Libera recursos asociados a la sesión
+
+- **ClientManager**: Actúa como un registro centralizado y coordinador de todas las sesiones activas. Sus funciones principales son:
+
+  **Gestión de Sesiones:**
+  - Mantiene una lista de todas las sesiones de cliente activas
+  - Asigna IDs únicos secuenciales a cada nueva sesión
+  - Proporciona una interfaz unificada para administrar múltiples clientes
+
+  **Ciclo de Vida de Clientes:**
+  - **`add_client()`**: Crea nuevas instancias de `ClientSession` para conexiones entrantes
+  - **`remove_client()`**: Finaliza sesiones específicas y las elimina del registro
+  - **`shutdown()`**: Termina todas las sesiones activas durante el cierre del servidor
+
+  **Coordinación:**
+  - Comparte la misma instancia de `LotteryService` entre todos los clientes
+  - Garantiza que cada cliente tenga acceso a la lógica de negocio común
+  - Facilita la gestión centralizada de recursos
+
+  **Limitación Actual:** Para la escala de este ejercicio, la implementación de `ClientManager` no era estrictamente necesaria, sin embargo, proporciona una base sólida y escalable para resolver ejercicios posteriores que requerirán el manejo de múltiples clientes.
+
+## Utils
+
+Contiene utilidades auxiliares y funciones helper proporcionadas por la catedra para poder leer / escribir el archivo donde se almacenan los **Bets** (apuestas).
+
+Contiene únicamente el archivo `utils.py` proporcionado por la cátedra, el cual no puede ser modificado según las especificaciones del enunciado.
+
+# Arquitectura del Cliente
+
+## Estructura de Directorios
+
+El servidor se encuentra en la carpeta [client](https://github.com/SantiSev/tp0-santisev/blob/050d2ac88f9682d9b8b60ad64b0c1c16bc8196da/client) en la raíz del repositorio que contiene estos componentes:
+
+```bash
+  client/
+  ├── common
+  ├── config.yaml
+  ├── Dockerfile
+  └── main.go
+```
+
+- `common`: Módulo base que agrupa la lógica de negocio, protocolos de comunicación, configuración y utilidades esenciales del cliente.
+
+- `config.ini`: Archivo de configuración.
+
+- `Dockerfile`: Archivo usado para construir la imagen de Docker para el cliente _(provisto por la cátedra, no se modifica)._
+
+- `main`: Entrypoint del Client
+
+- `tests`: Carpeta que contiene pruebas automatizadas para verificar que el código funciona correctamente. _(provisto por la cátedra, no se modifica)._
+
+## Directorio Common
+
+```bash
+client
+├── common
+│   ├── business
+│   ├── client
+│   ├── config
+│   ├── network
+│   └── protocol
+```
+
+## Business
+Contiene la lógica de negocio específica del cliente. Maneja las reglas y procesos relacionados con la generación, validación y preparación de apuestas para su envío al servidor.
+
+Este módulo contiene el archivo `agency_service.go` que implementa la clase `AgencyService` con las siguientes responsabilidades:
+
+- **Validación de apuestas**: Verifica que el formato de las apuestas sea correcto (6 campos separados por comas)
+- **Lectura de datos**: Proporciona una interfaz para obtener las apuestas validadas
+- **Gestión de agencia**: Mantiene el ID único de la agencia para identificación
+
+**Limitación Actual:** La implementación actual procesa únicamente apuestas individuales obtenidas desde la configuración. En ejercicios posteriores, esta arquitectura se expandirá para leer múltiples apuestas desde archivos de agencias, manteniendo la misma estructura modular.
+
+## Client
 
 
-### Ejercicio N°3:
-Crear un script de bash `validar-echo-server.sh` que permita verificar el correcto funcionamiento del servidor utilizando el comando `netcat` para interactuar con el mismo. Dado que el servidor es un echo server, se debe enviar un mensaje al servidor y esperar recibir el mismo mensaje enviado.
+## Config
+Administra la configuración del cliente, incluyendo la lectura del archivo `config.yaml`, parámetros de conexión y inicialización del sistema de logging.
 
-En caso de que la validación sea exitosa imprimir: `action: test_echo_server | result: success`, de lo contrario imprimir:`action: test_echo_server | result: fail`.
+Este módulo contiene el archivo `config.go` con dos funciones principales:
 
-El script deberá ubicarse en la raíz del proyecto. Netcat no debe ser instalado en la máquina _host_ y no se pueden exponer puertos del servidor para realizar la comunicación (hint: `docker network`). `
+**`InitConfig()`**: Inicializa la configuración del cliente mediante la lectura de archivos de config y variables de entorno
 
+> **Nota:** Para el alcance de este ejercicio, los atributos de la apuesta enviada al servidor se almacenan en variables de entorno. En ejercicios posteriores, esta implementación será reemplazada por la lectura de archivos de apuestas para mayor escalabilidad.
 
-### Ejercicio N°4:
-Modificar servidor y cliente para que ambos sistemas terminen de forma _graceful_ al recibir la signal SIGTERM. Terminar la aplicación de forma _graceful_ implica que todos los _file descriptors_ (entre los que se encuentran archivos, sockets, threads y procesos) deben cerrarse correctamente antes que el thread de la aplicación principal muera. Loguear mensajes en el cierre de cada recurso (hint: Verificar que hace el flag `-t` utilizado en el comando `docker compose down`).
+**`InitLogger()`**: Configura el sistema de logging con niveles de verbosidad (INFO / DEBUG)
 
-## Parte 2: Repaso de Comunicaciones
+## Network
+Proporciona las abstracciones de red para el lado cliente. Implementa las funcionalidades de conexión TCP, envío y recepción de datos, y manejo de la comunicación de bajo nivel con el servidor.
 
-Las secciones de repaso del trabajo práctico plantean un caso de uso denominado **Lotería Nacional**. Para la resolución de las mismas deberá utilizarse como base el código fuente provisto en la primera parte, con las modificaciones agregadas en el ejercicio 4.
+Este módulo contiene 2 clases fundamentales:
 
-### Ejercicio N°5:
-Modificar la lógica de negocio tanto de los clientes como del servidor para nuestro nuevo caso de uso.
+- **ConnectionManager**: Gestiona la establecimiento de conexiones TCP hacia el servidor con retry automático (máximo 3 intentos con intervalos de 100ms). Cuando logra conectarse al server, devuelve una instancia de `ConnectionInterface`
 
-#### Cliente
-Emulará a una _agencia de quiniela_ que participa del proyecto. Existen 5 agencias. Deberán recibir como variables de entorno los campos que representan la apuesta de una persona: nombre, apellido, DNI, nacimiento, numero apostado (en adelante 'número'). Ej.: `NOMBRE=Santiago Lionel`, `APELLIDO=Lorca`, `DOCUMENTO=30904465`, `NACIMIENTO=1999-03-17` y `NUMERO=7574` respectivamente.
+- **ConnectionInterface**: Abstrae las operaciones de socket TCP proporcionando métodos `Connect()`, `SendData()`, `ReceiveData()` y `Close()` para comunicación confiable con el servidor.
 
-Los campos deben enviarse al servidor para dejar registro de la apuesta. Al recibir la confirmación del servidor se debe imprimir por log: `action: apuesta_enviada | result: success | dni: ${DNI} | numero: ${NUMERO}`.
+### Manejo de Short Read/Write
 
+- `SendData()` utiliza un loop que continúa escribiendo hasta enviar todos los bytes
 
+- **`ReceiveData()`**: Utiliza la función estándar de Go `io.ReadFull()` que garantiza lectura completa del buffer
 
-#### Servidor
-Emulará a la _central de Lotería Nacional_. Deberá recibir los campos de la cada apuesta desde los clientes y almacenar la información mediante la función `store_bet(...)` para control futuro de ganadores. La función `store_bet(...)` es provista por la cátedra y no podrá ser modificada por el alumno.
-Al persistir se debe imprimir por log: `action: apuesta_almacenada | result: success | dni: ${DNI} | numero: ${NUMERO}`.
+## Protocol
+Define e implementa el protocolo de comunicación desde la perspectiva del cliente. Maneja la serialización de datos de apuestas, el formato de mensajes enviados al servidor y el procesamiento de las respuestas de confirmación recibidas.
 
-#### Comunicación:
-Se deberá implementar un módulo de comunicación entre el cliente y el servidor donde se maneje el envío y la recepción de los paquetes, el cual se espera que contemple:
-* Definición de un protocolo para el envío de los mensajes.
-* Serialización de los datos.
-* Correcta separación de responsabilidades entre modelo de dominio y capa de comunicación.
-* Correcto empleo de sockets, incluyendo manejo de errores y evitando los fenómenos conocidos como [_short read y short write_](https://cs61.seas.harvard.edu/site/2018/FileDescriptors/).
+Este módulo contiene la clase `AgencyHandler` que gestiona el intercambio de mensajes con el servidor:
 
+### AgencyHandler
+Implementa el protocolo de comunicación cliente-servidor para el envío de apuestas y recepción de confirmaciones. Utiliza la instancia de ConnectionInterface para manejar envio y recepcion de datos
 
-### Ejercicio N°6:
-Modificar los clientes para que envíen varias apuestas a la vez (modalidad conocida como procesamiento por _chunks_ o _batchs_). 
-Los _batchs_ permiten que el cliente registre varias apuestas en una misma consulta, acortando tiempos de transmisión y procesamiento.
+**Métodos principales:**
 
-La información de cada agencia será simulada por la ingesta de su archivo numerado correspondiente, provisto por la cátedra dentro de `.data/datasets.zip`.
-Los archivos deberán ser inyectados en los containers correspondientes y persistido por fuera de la imagen (hint: `docker volumes`), manteniendo la convencion de que el cliente N utilizara el archivo de apuestas `.data/agency-{N}.csv` .
+#### `SendBets(bet string, connSock *ConnectionInterface)`
+Envía apuestas al servidor siguiendo el protocolo definido:
 
-En el servidor, si todas las apuestas del *batch* fueron procesadas correctamente, imprimir por log: `action: apuesta_recibida | result: success | cantidad: ${CANTIDAD_DE_APUESTAS}`. En caso de detectar un error con alguna de las apuestas, debe responder con un código de error a elección e imprimir: `action: apuesta_recibida | result: fail | cantidad: ${CANTIDAD_DE_APUESTAS}`.
+1. **Header**: Envía el byte identificador del tipo de mensaje (`HEADER`)
+2. **Longitud**: Envía un byte indicando la longitud de los datos de la apuesta
+3. **Datos**: Envía los datos de la apuesta en formato string
 
-La cantidad máxima de apuestas dentro de cada _batch_ debe ser configurable desde config.yaml. Respetar la clave `batch: maxAmount`, pero modificar el valor por defecto de modo tal que los paquetes no excedan los 8kB. 
+**Protocolo de envío:**
+```bash
+[HEADER_BYTE] [LENGTH_BYTE] [BET_DATA]
+```
 
-Por su parte, el servidor deberá responder con éxito solamente si todas las apuestas del _batch_ fueron procesadas correctamente.
+#### `RecvConfirmation(connSock *ConnectionInterface)`
+Recibe y procesa la confirmación del servidor:
 
-### Ejercicio N°7:
+1. **Verificación de header**: Lee el header de respuesta (`SUCCESS_HEADER`)
+2. **Longitud del mensaje**: Obtiene la longitud de la respuesta
+3. **Datos de confirmación**: Lee los datos de confirmación (DNI y número de apuesta)
+4. **Logging**: Registra el resultado de la operación
 
-Modificar los clientes para que notifiquen al servidor al finalizar con el envío de todas las apuestas y así proceder con el sorteo.
-Inmediatamente después de la notificacion, los clientes consultarán la lista de ganadores del sorteo correspondientes a su agencia.
-Una vez el cliente obtenga los resultados, deberá imprimir por log: `action: consulta_ganadores | result: success | cant_ganadores: ${CANT}`.
+**Protocolo de recepción:**
+```
+[SUCCESS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
+```
 
-El servidor deberá esperar la notificación de las 5 agencias para considerar que se realizó el sorteo e imprimir por log: `action: sorteo | result: success`.
-Luego de este evento, podrá verificar cada apuesta con las funciones `load_bets(...)` y `has_won(...)` y retornar los DNI de los ganadores de la agencia en cuestión. Antes del sorteo no se podrán responder consultas por la lista de ganadores con información parcial.
+# Cómo Ejecutar
 
-Las funciones `load_bets(...)` y `has_won(...)` son provistas por la cátedra y no podrán ser modificadas por el alumno.
+1. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
+2. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
+3. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
+4. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
 
-No es correcto realizar un broadcast de todos los ganadores hacia todas las agencias, se espera que se informen los DNIs ganadores que correspondan a cada una de ellas.
+## Script de Automatización
 
-## Parte 3: Repaso de Concurrencia
-En este ejercicio es importante considerar los mecanismos de sincronización a utilizar para el correcto funcionamiento de la persistencia.
+> **Alternativa conveniente:** Se incluye el script `run_local_test.sh` que automatiza los primeros 3 comandos y genera un archivo `logs.txt` con el output de `make docker-compose-logs` para visualización offline.
 
-### Ejercicio N°8:
+### Uso del script:
+```bash
+./run_local_test.sh
+```
 
-Modificar el servidor para que permita aceptar conexiones y procesar mensajes en paralelo. En caso de que el alumno implemente el servidor en Python utilizando _multithreading_,  deberán tenerse en cuenta las [limitaciones propias del lenguaje](https://wiki.python.org/moin/GlobalInterpreterLock).
-
-## Condiciones de Entrega
-Se espera que los alumnos realicen un _fork_ del presente repositorio para el desarrollo de los ejercicios y que aprovechen el esqueleto provisto tanto (o tan poco) como consideren necesario.
-
-Cada ejercicio deberá resolverse en una rama independiente con nombres siguiendo el formato `ej${Nro de ejercicio}`. Se permite agregar commits en cualquier órden, así como crear una rama a partir de otra, pero al momento de la entrega deberán existir 8 ramas llamadas: ej1, ej2, ..., ej7, ej8.
- (hint: verificar listado de ramas y últimos commits con `git ls-remote`)
-
-Se espera que se redacte una sección del README en donde se indique cómo ejecutar cada ejercicio y se detallen los aspectos más importantes de la solución provista, como ser el protocolo de comunicación implementado (Parte 2) y los mecanismos de sincronización utilizados (Parte 3).
-
-Se proveen [pruebas automáticas](https://github.com/7574-sistemas-distribuidos/tp0-tests) de caja negra. Se exige que la resolución de los ejercicios pase tales pruebas, o en su defecto que las discrepancias sean justificadas y discutidas con los docentes antes del día de la entrega. El incumplimiento de las pruebas es condición de desaprobación, pero su cumplimiento no es suficiente para la aprobación. Respetar las entradas de log planteadas en los ejercicios, pues son las que se chequean en cada uno de los tests.
-
-La corrección personal tendrá en cuenta la calidad del código entregado y casos de error posibles, se manifiesten o no durante la ejecución del trabajo práctico. Se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección informados  [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
+Este script ejecuta automáticamente toda la secuencia de testing y guarda los logs en un archivo para análisis posterior.
