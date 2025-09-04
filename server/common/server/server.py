@@ -47,7 +47,7 @@ class Server:
                         logging.error(
                             f"action: server_loop | result: fail | an error occured processing the client with {client.agency_id} , halting client"
                         )
-                        self.clientManager.remove_client(client.agency_id)
+                        self.clientManager.remove_client(client)
                         continue
 
                 except Exception as e:

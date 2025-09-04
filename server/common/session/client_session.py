@@ -33,9 +33,8 @@ class ClientSession:
                 self.protocol_handler.confirm_batch(self.connection_interface, True)
 
             except Exception as e:
-                agencyBets = self.lottery_service.get_bets_by_agency(self.agency_id)
                 logging.error(
-                    f"action: apuesta_recibida | result: fail | cantidad: {len(agencyBets)} | error: {e}"
+                    f"action: apuesta_recibida | result: fail | error: {e}"
                 )
                 self.protocol_handler.confirm_batch(self.connection_interface, False)
                 return False
