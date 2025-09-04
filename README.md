@@ -76,7 +76,7 @@ Proporciona las abstracciones y funcionalidades de red de bajo nivel. Maneja con
 
 Este modulo contiene 2 clases fundamnetales al server:
 
-**ConnectionInterface**: Proporciona una abstracción de los servicios de sockets, permitiendo el uso de `send()` y `recv()` de información sin necesidad de manipular sockets directamente.
+**ConnectionInterface**: Proporciona una abstracción de los servicios de sockets, permitiendo el uso de `send()`, `recv()` y `close()` sin la necesidad de manipular sockets directamente.
 
 **ConnectionManager**: Implementa el patrón Acceptor del sistema. Permanece a la espera de conexiones entrantes y, una vez que un cliente se conecta al servidor, devuelve una instancia de `ConnectionInterface` para gestionar correctamente el envío y recepción de mensajes entre servidor y cliente.
 
@@ -106,6 +106,18 @@ Este módulo contiene 2 clases fundamentales del servidor:
   - Convertir información cruda en objetos `Bet` estructurados
   - Validar integridad de los datos antes de la conversión
   - Manejar casos de error en el parsing de apuestas
+
+### Estructura del Protocolo
+
+**Mensaje de Envío (Cliente → Servidor):**
+```bash
+[BET_HEADER][DATA_LENGTH][BET_DATA]
+```
+
+**Mensaje de Confirmación (Servidor → Cliente):**
+```bash
+[STATUS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
+```
 
 ## Server
 
@@ -232,26 +244,82 @@ Este módulo contiene el archivo `agency_service.go` que implementa la clase `Ag
 
 ## Client
 
+
 ## Config
+Administra la configuración del cliente, incluyendo la lectura del archivo `config.yaml`, parámetros de conexión y inicialización del sistema de logging.
 
+Este módulo contiene el archivo `config.go` con dos funciones principales:
 
+**`InitConfig()`**: Inicializa la configuración del cliente mediante la lectura de archivos de config y variables de entorno
+
+> **Nota:** Para el alcance de este ejercicio, los atributos de la apuesta enviada al servidor se almacenan en variables de entorno. En ejercicios posteriores, esta implementación será reemplazada por la lectura de archivos de apuestas para mayor escalabilidad.
+
+**`InitLogger()`**: Configura el sistema de logging con niveles de verbosidad (INFO / DEBUG)
 
 ## Network
+Proporciona las abstracciones de red para el lado cliente. Implementa las funcionalidades de conexión TCP, envío y recepción de datos, y manejo de la comunicación de bajo nivel con el servidor.
+
+Este módulo contiene 2 clases fundamentales:
+
+- **ConnectionManager**: Gestiona la establecimiento de conexiones TCP hacia el servidor con retry automático (máximo 3 intentos con intervalos de 100ms). Cuando logra conectarse al server, devuelve una instancia de `ConnectionInterface`
+
+- **ConnectionInterface**: Abstrae las operaciones de socket TCP proporcionando métodos `Connect()`, `SendData()`, `ReceiveData()` y `Close()` para comunicación confiable con el servidor.
+
+### Manejo de Short Read/Write
+
+- `SendData()` utiliza un loop que continúa escribiendo hasta enviar todos los bytes
+
+- **`ReceiveData()`**: Utiliza la función estándar de Go `io.ReadFull()` que garantiza lectura completa del buffer
 
 ## Protocol
+Define e implementa el protocolo de comunicación desde la perspectiva del cliente. Maneja la serialización de datos de apuestas, el formato de mensajes enviados al servidor y el procesamiento de las respuestas de confirmación recibidas.
 
+Este módulo contiene la clase `AgencyHandler` que gestiona el intercambio de mensajes con el servidor:
 
+### AgencyHandler
+Implementa el protocolo de comunicación cliente-servidor para el envío de apuestas y recepción de confirmaciones. Utiliza la instancia de ConnectionInterface para manejar envio y recepcion de datos
 
-# Como Ejectuar
+**Métodos principales:**
 
-1. Crear el archivo de docker-compose mediante el uso del script `generar-compose.sh`
+#### `SendBets(bet string, connSock *ConnectionInterface)`
+Envía apuestas al servidor siguiendo el protocolo definido:
 
-2. Correr el commando `make docker-compose-up` para iniciar los containers
+1. **Header**: Envía el byte identificador del tipo de mensaje (`HEADER`)
+2. **Longitud**: Envía un byte indicando la longitud de los datos de la apuesta
+3. **Datos**: Envía los datos de la apuesta en formato string
 
-   > **Opcional:** Podes ver el estado de los containers mediante el comando `docker ps`
+**Protocolo de envío:**
+```bash
+[HEADER_BYTE] [LENGTH_BYTE] [BET_DATA]
+```
 
-3. Ejecutar `make docker-compose-logs` para ver los logs del servidor (se recomienda configurar el cliente para enviar mensajes durante un tiempo prolongado).
+#### `RecvConfirmation(connSock *ConnectionInterface)`
+Recibe y procesa la confirmación del servidor:
 
-4. En otra terminal, correr `make docker-compose-down` para finalizar los procesos de forma controlada.
+1. **Verificación de header**: Lee el header de respuesta (`SUCCESS_HEADER`)
+2. **Longitud del mensaje**: Obtiene la longitud de la respuesta
+3. **Datos de confirmación**: Lee los datos de confirmación (DNI y número de apuesta)
+4. **Logging**: Registra el resultado de la operación
 
-5. Volver a la terminal de logs para verificar que ambos procesos finalizaron con código de salida 0, indicando una terminación exitosa.)
+**Protocolo de recepción:**
+```
+[SUCCESS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
+```
+
+# Cómo Ejecutar
+
+1. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
+2. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
+3. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
+4. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
+
+## Script de Automatización
+
+> **Alternativa conveniente:** Se incluye el script `run_local_test.sh` que automatiza los primeros 3 comandos y genera un archivo `logs.txt` con el output de `make docker-compose-logs` para visualización offline.
+
+### Uso del script:
+```bash
+./run_local_test.sh
+```
+
+Este script ejecuta automáticamente toda la secuencia de testing y guarda los logs en un archivo para análisis posterior.
