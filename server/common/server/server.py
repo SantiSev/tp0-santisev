@@ -1,4 +1,6 @@
 import logging
+from multiprocessing import Lock
+from multiprocessing.dummy import Process
 import signal
 import sys
 from common.network.connection_manager import ConnectionManager
@@ -13,11 +15,13 @@ class Server:
     def __init__(self, server_config: ServerConfig):
         self.is_running = True
         self.processed_agencies = 0
+        self.file_lock = Lock()
         self.agencies_amount = server_config.agencies_amount
         self.connection_manager = ConnectionManager(
             port=server_config.port, listen_backlog=server_config.listen_backlog
         )
-        self.lottery_service = LotteryService()
+        self.processes = []
+        self.lottery_service = LotteryService(self.file_lock)
         self.clientManager: ClientManager = ClientManager(self.lottery_service)
 
         signal.signal(signal.SIGTERM, self._shutdown)
@@ -35,23 +39,15 @@ class Server:
                         self.connection_manager.accept_connection()
                     )
 
+                    self.processed_agencies += 1
+
                     client: ClientSession = self.clientManager.add_client(
                         client_connection
                     )
 
-                    success = client.begin()
-
-                    if success:
-                        self.processed_agencies += 1
-                        logging.info(
-                            f"action: server_loop | result: success | agencies_processed: {self.processed_agencies} / {self.agencies_amount}"
-                        )
-                    else:
-                        logging.error(
-                            f"action: server_loop | result: fail | an error occured processing the client with {client.id} , halting client"
-                        )
-                        self.clientManager.remove_client(client.id)
-                        continue
+                    process = Process(target=handle_client, args=(client,))
+                    self.processes.append(process)
+                    process.start()
 
                 except Exception as e:
                     logging.error(f"action: server_loop | result: error | error: {e}")
@@ -72,7 +68,20 @@ class Server:
     def _shutdown(self, signum=None, frame=None) -> None:
         """Shutdown the server gracefully"""
         self.is_running = False
+        for process in self.processes:
+            process.join()
         self.clientManager.shutdown()
         self.connection_manager.shutdown()
         logging.info("action: server_shutdown | result: success")
         sys.exit(0)
+
+
+def handle_client(client: ClientSession) -> None:
+    """Handle a client connection"""
+    try:
+        client.begin()
+    except Exception as e:
+        logging.error(
+            f"action: handle_client | result: error | client_id: {client.id} | error: {e}"
+        )
+        client.finish()
