@@ -10,16 +10,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-const CLIENT_CONFIG_FILEPATH = "./config.yaml"
+const CONFIG_FILE_PATH = "./config.yaml"
 
 func InitConfig() (*client.ClientConfig, error) {
-	loadEnvVars()
 
 	v := viper.New()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
-	configPath := CLIENT_CONFIG_FILEPATH
+	configPath := CONFIG_FILE_PATH
 
 	v.SetConfigFile(configPath)
 	if err := v.ReadInConfig(); err != nil {
@@ -37,28 +36,6 @@ func InitConfig() (*client.ClientConfig, error) {
 	}
 
 	return clientConfig, nil
-}
-
-func loadEnvVars() {
-	// if the env vars are present, there is no need to load .env
-	if os.Getenv("CLI_ID") != "" &&
-		os.Getenv("CLI_AGENCY_FILEPATH") != "" &&
-		os.Getenv("CLI_CONFIG_FILEPATH") != "" {
-		return
-	}
-
-	if _, err := os.Stat(".env"); err == nil {
-		envViper := viper.New()
-		envViper.SetConfigFile(".env")
-		if err := envViper.ReadInConfig(); err == nil {
-			for _, key := range envViper.AllKeys() {
-				envKey := strings.ToUpper(key)
-				if os.Getenv(envKey) == "" {
-					os.Setenv(envKey, envViper.GetString(key))
-				}
-			}
-		}
-	}
 }
 
 func InitLogger(logLevel string) error {

@@ -9,7 +9,9 @@ from common.protocol.protocol_constants import *
 class BetParser:
     """Process bet data from clients"""
 
-    def parse_batch(self, client_connection: ConnectionInterface) -> List[Bet]:
+    def parse_batch(
+        self, client_connection: ConnectionInterface, agency_id: int
+    ) -> List[Bet]:
         try:
             data_length_bytes = client_connection.receive(DATA_LENGTH_SIZE)
             data_length = int.from_bytes(data_length_bytes, "big")
@@ -22,13 +24,13 @@ class BetParser:
             )
 
             data = client_connection.receive(data_length).decode("utf-8")
-            return self._parse_batch_data(data)
+            return self._parse_batch_data(data, agency_id)
 
         except Exception as e:
             logging.warning(f"action: parse_batch | result: fail | error: {e}")
             return []
 
-    def _parse_batch_data(self, data: str) -> List[Bet]:
+    def _parse_batch_data(self, data: str, agency_id: int) -> List[Bet]:
         """Parse comma-separated data into list of Bet objects"""
         try:
             data = data.rstrip(",")
@@ -39,15 +41,13 @@ class BetParser:
 
             for i in range(0, len(fields), EXPECTED_FIELDS):
                 if i + EXPECTED_FIELDS <= len(fields):
-                    agency = fields[i]
-                    first_name = fields[i + 1]
-                    last_name = fields[i + 2]
-                    document = fields[i + 3]
-                    birthdate = fields[i + 4]
-                    number = fields[i + 5]
-
+                    first_name = fields[i + 0]
+                    last_name = fields[i + 1]
+                    document = fields[i + 2]
+                    birthdate = fields[i + 3]
+                    number = fields[i + 4]
                     bet = Bet(
-                        agency=agency,
+                        agency=str(agency_id),
                         first_name=first_name,
                         last_name=last_name,
                         document=document,
