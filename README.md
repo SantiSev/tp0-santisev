@@ -14,7 +14,7 @@ Para evitar hardcodear un bet, se lo agrega como variable de entorno, que por el
 
 ```bash
 for i in $(seq 1 "$AMOUNT_CLIENTS"); do
-    cat >> docker-compose-dev.yaml << EOF
+    cat >> "$YAML_FILE" << EOF
 
   client$i:
     container_name: client$i

@@ -18,10 +18,46 @@ services:
     environment:
       - CLI_ID=1
       - BET_NUMBER=67890
-      - CLIENT_DOCUMENT=11223344
-      - CLIENT_FIRST_NAME=John
-      - CLIENT_LAST_NAME=Doe
-      - CLIENT_BIRTHDATE=1990-01-01
+      - CLIENT_DOCUMENT=1
+      - CLIENT_FIRST_NAME=Santi
+      - CLIENT_LAST_NAME=Sev
+      - CLIENT_BIRTHDATE=2000-08-10
+    networks:
+      - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
+    depends_on:
+      - server
+
+  client2:
+    container_name: client2
+    image: client:latest
+    entrypoint: /client
+    environment:
+      - CLI_ID=2
+      - BET_NUMBER=67890
+      - CLIENT_DOCUMENT=1
+      - CLIENT_FIRST_NAME=Santi
+      - CLIENT_LAST_NAME=Sev
+      - CLIENT_BIRTHDATE=2000-08-10
+    networks:
+      - testing_net
+    volumes:
+      - ./client/config.yaml:/config.yaml
+    depends_on:
+      - server
+
+  client3:
+    container_name: client3
+    image: client:latest
+    entrypoint: /client
+    environment:
+      - CLI_ID=3
+      - BET_NUMBER=67890
+      - CLIENT_DOCUMENT=1
+      - CLIENT_FIRST_NAME=Santi
+      - CLIENT_LAST_NAME=Sev
+      - CLIENT_BIRTHDATE=2000-08-10
     networks:
       - testing_net
     volumes:
