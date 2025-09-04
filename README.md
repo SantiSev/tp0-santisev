@@ -185,6 +185,63 @@ Contiene únicamente el archivo `utils.py` proporcionado por la cátedra, el cua
 
 # Arquitectura del Cliente
 
+## Estructura de Directorios
+
+El servidor se encuentra en la carpeta [client](https://github.com/SantiSev/tp0-santisev/blob/050d2ac88f9682d9b8b60ad64b0c1c16bc8196da/client) en la raíz del repositorio que contiene estos componentes:
+
+```bash
+  client/
+  ├── common
+  ├── config.yaml
+  ├── Dockerfile
+  └── main.go
+```
+
+- `common`: Módulo base que agrupa la lógica de negocio, protocolos de comunicación, configuración y utilidades esenciales del cliente.
+
+- `config.ini`: Archivo de configuración.
+
+- `Dockerfile`: Archivo usado para construir la imagen de Docker para el cliente _(provisto por la cátedra, no se modifica)._
+
+- `main`: Entrypoint del Client
+
+- `tests`: Carpeta que contiene pruebas automatizadas para verificar que el código funciona correctamente. _(provisto por la cátedra, no se modifica)._
+
+## Directorio Common
+
+```bash
+client
+├── common
+│   ├── business
+│   ├── client
+│   ├── config
+│   ├── network
+│   └── protocol
+```
+
+## Business
+Contiene la lógica de negocio específica del cliente. Maneja las reglas y procesos relacionados con la generación, validación y preparación de apuestas para su envío al servidor.
+
+Este módulo contiene el archivo `agency_service.go` que implementa la clase `AgencyService` con las siguientes responsabilidades:
+
+- **Validación de apuestas**: Verifica que el formato de las apuestas sea correcto (6 campos separados por comas)
+- **Lectura de datos**: Proporciona una interfaz para obtener las apuestas validadas
+- **Gestión de agencia**: Mantiene el ID único de la agencia para identificación
+
+**Limitación Actual:** La implementación actual procesa únicamente apuestas individuales obtenidas desde la configuración. En ejercicios posteriores, esta arquitectura se expandirá para leer múltiples apuestas desde archivos de agencias, manteniendo la misma estructura modular.
+
+## Client
+
+## Config
+
+
+
+## Network
+
+## Protocol
+
+
+
 # Como Ejectuar
 
 1. Crear el archivo de docker-compose mediante el uso del script `generar-compose.sh`
