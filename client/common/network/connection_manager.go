@@ -10,7 +10,7 @@ import (
 var log = logging.MustGetLogger("log")
 
 const CONNECTION_RETRIES = 5
-const CONNECTION_SLEEP_AMOUNT = 1000
+const CONNECTION_SLEEP_AMOUNT = 5000
 
 type ConnectionManager struct {
 }
