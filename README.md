@@ -44,15 +44,63 @@ El mapeo de volúmenes `./.data/agency-$i.csv:/data/agency.csv` permite que cada
 
 # Cambios en la Arquitectura del Servidor
 
-## Business
-
-## Config
-
 ## Protocol
 
-## Server
+Se modifica el protocolo de comunicación para soportar procesamiento de múltiples lotes de apuestas con control de finalización explícito.
+
+### Cambios Implementados
+
+- **Procesamiento de lotes**: `AgencyHandler` ahora procesa múltiples batches de apuestas en secuencia hasta recibir señal de finalización
+- **Control de flujo**: Utiliza header `EOF` para indicar cuándo el cliente ha terminado de enviar datos
+- **Parser mejorado**: `BetParser` procesa múltiples apuestas por lote en lugar de apuestas individuales
+- **Detección de fin**: El método `get_bets()` retorna un booleano indicando si hay más datos por procesar
+
+### Flujo del Protocolo
+
+1. Bucle de recepción de lotes:
+   - Leer header → BET_HEADER (continuar) o EOF (finalizar)
+   - Si BET_HEADER → BetParser.parse_batch(multiple_bets)
+   - Confirmar procesamiento → confirm_batch(SUCCESS/FAIL)
+   - Repetir hasta recibir EOF
+2. Condición de salida → header == EOF
+3. Retorno → (bets_list, more_bets_remaining)
+
+### Estructura del Protocolo Mejorado
+
+**Protocolo de lotes:**
+```bash
+[BET_HEADER][DATA_LENGTH][BATCH_DATA] → Continuar procesando
+[EOF_HEADER] → Finalizar transmisión
+```
+
+**BetParser mejoras:**
+- **`parse_batch()`**: Procesa múltiples apuestas por lote (5 campos por apuesta)
+
+
 
 ## Session
+
+Se modifica el manejo de sesiones para procesar múltiples batches de apuestas hasta que el cliente indique finalización mediante el protocolo.
+
+### Cambios Implementados
+
+- **Procesamiento continuo**: `ClientSession` ahora lee batches de apuestas en un bucle hasta recibir señal de finalización
+- **Protocolo de control**: Utiliza `more_bets_remaining` para determinar cuándo el cliente ha terminado de enviar datos
+- **Conteo por agencia**: Al finalizar, registra la cantidad total de apuestas procesadas por cada agencia
+
+### Flujo de la Sesión
+
+```
+1. Bucle de recepción:
+   a. Recibir lote → AgencyHandler.get_bets()
+   b. Verificar continuidad → more_bets_remaining
+   c. Procesar apuestas → LotteryService.place_bets()
+   d. Confirmar recepción → confirm_batch(SUCCESS/FAIL)
+2. Condición de salida → more_bets_remaining = False
+3. Conteo final → get_bets_by_agency() + logging
+4. Cierre de sesión → connection.close()
+```
+
 
 # Cambios en la Arquitectura del Cliente
 
@@ -80,7 +128,7 @@ Ahora en lugar de procesar una apuesta individual desde variables de entorno, se
 
 ## Client
 
-Se modifica la funcionalidad principal del cliente para procesar archivos CSV de apuestas en lotes y enviar una señal de finalización al servidor.
+Se modifica la funcionalidad principal del cliente para procesar archivos CSV de apuestas en batches y enviar una señal de finalización al servidor.
 
 ### Cambios Implementados
 
@@ -105,7 +153,7 @@ El protocolo mantiene la misma estructura base, pero incorpora mejoras para el p
 
 **Cambios principales:**
 
-- **Envío masivo**: Se transmiten lotes de apuestas (batches) en lugar de apuestas individuales
+- **Envío masivo**: Se transmiten batches de apuestas (batches) en lugar de apuestas individuales
 - **Confirmación simplificada**: La función `RecvConfirmation()` ahora recibe únicamente un header de estado en lugar de información detallada de cada batch enviada
 
 ### Estructura del Protocolo
