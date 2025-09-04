@@ -62,12 +62,12 @@ func (c *ConnectionInterface) Close() error {
 		err := c.conn.Close()
 		if err != nil {
 			log.Criticalf(
-				"action: close | result: fail | error: %v",
+				"action: close_connection | result: fail | error: %v",
 				err,
 			)
 			return err
 		}
 	}
-	log.Debugf("action: close | result: success")
+	log.Debugf("action: close_connection | result: success")
 	return nil
 }

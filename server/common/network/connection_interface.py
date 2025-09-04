@@ -55,6 +55,6 @@ class ConnectionInterface:
     def close(self) -> None:
         try:
             self.socket.close()
-            logging.info("action: close | result: success")
+            logging.info("action: close_connection | result: success")
         except Exception as e:
-            logging.error(f"action: close | result: fail | error: {e}")
+            logging.error(f"action: close_connection | result: fail | error: {e}")
