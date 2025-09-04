@@ -22,14 +22,14 @@ AMOUNT_CLIENTS="$2"
 ```
 El script requiere exactamente 2 parámetros:
 
-- **yaml_file:** Archivo YAML de entrada (aunque no se utiliza en el código actual)
+- **yaml_file:** Nombre del Archivo Yaml que se va a crear
 - **amount_clients:** Número de clientes que se desean crear
 
 Si no se proporcionan exactamente 2 argumentos, el script muestra el mensaje de uso y termina con código de error 1.
 
 ### 2. Creación del Servicio Servidor
 ```bash
-cat > docker-compose-dev.yaml << EOF
+cat > "$YAML_FILE" << EOF
 name: tp0
 services:
   server:
@@ -58,7 +58,7 @@ Esta sección crea la estructura base del archivo Docker Compose con:
 ### 3. Creación de Clientes Dinámicos
 ```bash
 bashfor i in $(seq 1 "$AMOUNT_CLIENTS"); do
-    cat >> docker-compose-dev.yaml << EOF
+    cat >> "$YAML_FILE" << EOF
 
   client$i:
     container_name: client$i
