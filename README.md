@@ -273,7 +273,39 @@ Este módulo contiene el archivo `agency_service.go` que implementa la clase `Ag
 **Limitación Actual:** La implementación actual procesa únicamente apuestas individuales obtenidas desde la configuración. En ejercicios posteriores, esta arquitectura se expandirá para leer múltiples apuestas desde archivos de agencias, manteniendo la misma estructura modular.
 
 ## Client
+Implementa la funcionalidad principal del cliente. Gestiona el ciclo de vida de la aplicación cliente, incluyendo la conexión al servidor, el envío de datos de apuestas y el manejo de respuestas del servidor.
 
+Este módulo contiene 2 archivos fundamentales:
+
+### client.go
+Contiene la clase `Client` que orquesta todo el funcionamiento del sistema cliente:
+
+**Inicialización (`NewClient`):**
+- Configura `AgencyService` para manejo de apuestas
+- Inicializa `ConnectionManager` para gestión de conexiones
+- Establece `AgencyHandler` para protocolo de comunicación
+- Configura manejo de señales para shutdown graceful
+
+**Flujo Principal (`Run`):**
+1. **Conexión**: Establece conexión TCP con el servidor
+2. **Lectura**: Obtiene apuestas desde `AgencyService`
+3. **Envío**: Transmite apuestas al servidor usando `AgencyHandler`
+4. **Confirmación**: Recibe y procesa respuesta del servidor
+5. **Finalización**: Cierra conexión y libera recursos
+
+**Características Clave:**
+- **Graceful shutdown**: Maneja señales `SIGTERM` y `SIGINT`
+- **Gestión de errores**: Logging detallado y cleanup automático
+- **Arquitectura modular**: Delega responsabilidades a componentes especializados
+
+### client_config.go
+Define la estructura `ClientConfig` que encapsula la configuración del cliente:
+
+**Parámetros de configuración:**
+- `Id`: Identificador único del cliente (0-255)
+- `ServerAddress`: Dirección del servidor (host:puerto)
+- `LogLevel`: Nivel de logging (INFO/DEBUG)
+- `Bet`: Datos de la apuesta en formato CSV
 
 ## Config
 Administra la configuración del cliente, incluyendo la lectura del archivo `config.yaml`, parámetros de conexión y inicialización del sistema de logging.
