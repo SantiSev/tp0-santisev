@@ -8,7 +8,6 @@ fi
 YAML_FILE="$1"
 AMOUNT_CLIENTS="$2"
 
-# Create the base compose file
 cat > docker-compose-dev.yaml << EOF
 name: tp0
 services:
