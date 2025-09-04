@@ -80,6 +80,25 @@ Ahora en lugar de procesar una apuesta individual desde variables de entorno, se
 
 ## Client
 
+Se modifica la funcionalidad principal del cliente para procesar archivos CSV de apuestas en lotes y enviar una señal de finalización al servidor.
+
+### Cambios Implementados
+
+- **Integración con AgencyService**: El cliente ahora utiliza `AgencyService` para leer apuestas desde archivos CSV en lugar de variables de entorno
+- **Procesamiento por batches**: Lee y envía múltiples apuestas por transacción (batches configurables)
+
+### Flujo del Cliente
+
+1. Inicialización → AgencyService.NewAgencyService(filePath, batchSize)
+2. Conexión → ConnectionManager.Connect(serverAddress)
+3. Bucle de procesamiento:
+   - Leer batch → AgencyService.ReadBets(maxBatchAmount)
+   - Enviar al servidor → AgencyHandler.SendBets(batch)
+   - Recibir confirmación → AgencyHandler.RecvConfirmation()
+   - Verificar datos restantes → AgencyService.HasData()
+4. Señal de finalización → AgencyHandler.SendDone()
+5. Cierre de recursos → AgencyService.Close() + ConnectionInterface.Close()
+
 ## Protocol
 
 El protocolo mantiene la misma estructura base, pero incorpora mejoras para el procesamiento de múltiples apuestas:
@@ -87,19 +106,19 @@ El protocolo mantiene la misma estructura base, pero incorpora mejoras para el p
 **Cambios principales:**
 
 - **Envío masivo**: Se transmiten lotes de apuestas (batches) en lugar de apuestas individuales
-- **Confirmación simplificada**: La función `RecvConfirmation()` ahora recibe únicamente un header de estado en lugar de información detallada de cada apuesta
+- **Confirmación simplificada**: La función `RecvConfirmation()` ahora recibe únicamente un header de estado en lugar de información detallada de cada batch enviada
 
 ### Estructura del Protocolo
 
-**Protocolo de envío:**
+**Protocolo de envío de batches:**
 
 ```bash
 [HEADER_BYTE] [LENGTH_BYTE] [BET_DATA]
 ```
 
-**Protocolo de recepción:**
+**Protocolo de recepción de batches:**
 
-```
+```bash
 [SUCCESS_HEADER]
 ```
 

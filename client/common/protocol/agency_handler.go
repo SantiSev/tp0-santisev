@@ -53,9 +53,9 @@ func (b *AgencyHandler) RecvConfirmation(connSock *network.ConnectionInterface) 
 	success_header := string(headerData)
 
 	if success_header == SUCCESS_HEADER {
-		log.Debug("action: all_data_sent | result: success")
+		log.Debug("action: batch_confirmation | result: success")
 	} else {
-		log.Errorf("action: all_data_sent | result: fail")
+		log.Errorf("action: batch_confirmation | result: fail")
 		return fmt.Errorf("batch processing failed")
 	}
 
