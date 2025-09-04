@@ -132,11 +132,50 @@ Este módulo contiene 2 clases fundamentales:
   4. **Delegación**: Transfiere el control al cliente para procesamiento de apuestas
   5. **Finalización**: Ejecuta shutdown graceful liberando todos los recursos
 
-  **Limitación Actual:** Segun los requisitos de este ejercicio, por el momento solo procesa un solo bet de un solo cliente, pero esta arquitectura se va a escalar en los proximos ejercicios para
+  **Limitación Actual:** Según los requisitos de este ejercicio, la implementación procesa únicamente un cliente de forma secuencial. Esta arquitectura será escalada en ejercicios posteriores.
 
 ## Session
 
 Gestiona las sesiones de usuario o conexión. Mantiene el estado de las interacciones, autenticación y el contexto de cada cliente conectado.
+
+Este módulo contiene 2 clases fundamentales:
+
+- **ClientSession**: Representa una sesión individual de cliente y maneja todo el ciclo de vida de la comunicación con una agencia. Sus responsabilidades incluyen:
+
+  **Inicialización:**
+  - Almacena la referencia de conexión (`ConnectionInterface`) para comunicación directa
+  - Mantiene un ID único de agencia para identificación
+  - Configura el `AgencyHandler` para manejar el protocolo de comunicación
+  - Establece la referencia al `LotteryService` para procesamiento de apuestas
+
+  **Procesamiento Principal (`begin`):**
+  1. **Recepción**: Utiliza `AgencyHandler` para recibir apuestas del cliente
+  2. **Almacenamiento**: Delega al `LotteryService` para persistir las apuestas
+  3. **Confirmación**: Envía confirmación de éxito al cliente
+  4. **Manejo de errores**: Captura excepciones y envía confirmación de fallo
+
+  **Finalización (`finish`):**
+  - Cierra la conexión de red de forma controlada
+  - Libera recursos asociados a la sesión
+
+- **ClientManager**: Actúa como un registro centralizado y coordinador de todas las sesiones activas. Sus funciones principales son:
+
+  **Gestión de Sesiones:**
+  - Mantiene una lista de todas las sesiones de cliente activas
+  - Asigna IDs únicos secuenciales a cada nueva sesión
+  - Proporciona una interfaz unificada para administrar múltiples clientes
+
+  **Ciclo de Vida de Clientes:**
+  - **`add_client()`**: Crea nuevas instancias de `ClientSession` para conexiones entrantes
+  - **`remove_client()`**: Finaliza sesiones específicas y las elimina del registro
+  - **`shutdown()`**: Termina todas las sesiones activas durante el cierre del servidor
+
+  **Coordinación:**
+  - Comparte la misma instancia de `LotteryService` entre todos los clientes
+  - Garantiza que cada cliente tenga acceso a la lógica de negocio común
+  - Facilita la gestión centralizada de recursos
+
+  **Limitación Actual:** Para la escala de este ejercicio, la implementación de `ClientManager` no era estrictamente necesaria, sin embargo, proporciona una base sólida y escalable para resolver ejercicios posteriores que requerirán el manejo de múltiples clientes.
 
 ## Utils
 
