@@ -10,7 +10,6 @@ Una vez que todas las apuestas estan almacenadas exitosamente, envia un mensaje 
 
 > Todo el código está redactado en inglés, con excepción de algunos logs específicos que permanecen en español para garantizar la compatibilidad con los tests proporcionados.
 
-
 # Cambios en script de `generar-compose.sh`
 
 Para soportar el procesamiento de múltiples apuestas desde archivos CSV, se modificó el script de generación de `docker-compose` para asignar a cada cliente un archivo de agencia específico.
@@ -36,181 +35,39 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
 EOF
 done
 ```
+
 También se agrega la variable de entorno `CLI_AGENCY_FILEPATH=/data/agency.csv` que especifica la ruta donde el contenedor debe buscar el archivo CSV de la agencia. **Importante:** Esta ruta debe coincidir exactamente con el punto de montaje del volumen, de lo contrario la aplicación fallará al no encontrar el archivo de datos.
 
-El mapeo de volúmenes `./.data/agency-$i.csv:/data/agency.csv` permite que cada cliente acceda a su archivo de agencia específico (agency-1.csv, agency-2.csv, etc.) mientras mantiene una ruta estándar (`/data/agency.csv`) en el código.  Esto proporciona aislamiento de datos entre clientes.
+El mapeo de volúmenes `./.data/agency-$i.csv:/data/agency.csv` permite que cada cliente acceda a su archivo de agencia específico (agency-1.csv, agency-2.csv, etc.) mientras mantiene una ruta estándar (`/data/agency.csv`) en el código. Esto proporciona aislamiento de datos entre clientes.
 
 - **Limitaciones:** Si agregas mas clientes que archivos disponibles de agency, este script falla, lo mismo si los arvhivos csv no siguien la nomenclatura agency-{i}.csv
-
-
-
 
 # Cambios en la Arquitectura del Servidor
 
 ## Business
 
-Se modifica el servicio `AgencyService` para procesar múltiples apuestas desde archivos CSV:
-
-**Funcionalidad principal:**
-- **Inicialización**: Recibe la ruta del archivo CSV de la agencia durante la construcción del servicio
-- **Lectura de datos**: Utiliza `bufio.Scanner` de la librería estándar de Go para leer línea por línea el archivo de apuestas
-- **Gestión de recursos**: Implementa el método `Close()` para liberar correctamente los recursos del scanner al finalizar
-
-**Métodos implementados:**
-- `NewAgencyService(filePath string)`: Constructor que inicializa el servicio con la ruta del archivo CSV
-- `ReadBets()`: Lee y valida todas las apuestas del archivo, retornando una lista de apuestas estructuradas
-- `Close()`: Cierra el scanner y libera recursos asociados
-
-**Decisión de diseño:** Se optó por utilizar `bufio.Scanner` para manejar archivos de gran tamaño de forma eficiente, procesando línea por línea sin cargar todo el archivo en memoria simultáneamente.
-
 ## Config
-
-Ahora en lugar de procesar una apuesta individual desde variables de entorno, se configura la instancia de `ClientConfig` con un nuevo parámetro llamado `AgencyFilePath`. Esta ruta de archivo se utiliza posteriormente en `AgencyService` para leer múltiples apuestas desde archivos CSV.
 
 ## Protocol
 
-Define el protocolo de comunicación específico de la aplicación. Especifica el formato de mensajes, serialización/deserialización y las reglas de intercambio de datos entre cliente y servidor.
-
-Este módulo contiene 2 clases fundamentales del servidor:
-
-- **AgencyHandler**: Gestiona el protocolo de comunicación con clientes utilizando `ConnectionInterface`. Se encarga de:
-
-  - Procesar headers de mensajes entrantes
-  - Coordinar la recepción de apuestas mediante `BetParser`
-  - Enviar confirmaciones de éxito/fallo al cliente
-  - Manejar errores de comunicación durante el intercambio de datos
-
-- **BetParser**: Responsable del procesamiento y transformación de datos. Funciones principales:
-  - Parsear datos CSV recibidos como strings
-  - Convertir información cruda en objetos `Bet` estructurados
-  - Validar integridad de los datos antes de la conversión
-  - Manejar casos de error en el parsing de apuestas
-
-### Estructura del Protocolo
-
-**Mensaje de Envío (Cliente → Servidor):**
-
-```bash
-[BET_HEADER][DATA_LENGTH][BET_DATA]
-```
-
-**Mensaje de Confirmación (Servidor → Cliente):**
-
-```bash
-[STATUS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
-```
-
 ## Server
 
-Implementa la funcionalidad del servidor, incluyendo el manejo de conexiones entrantes, procesamiento de requests y la lógica específica del lado servidor.
-
-Este módulo contiene 2 clases fundamentales:
-
-- **ServerConfig**: Clase de configuración que encapsula todos los parámetros necesarios para la inicialización del servidor. Almacena información como el puerto de escucha, el número máximo de conexiones pendientes (backlog) y el nivel de logging. Actúa como un objeto de transferencia de datos que centraliza la configuración del sistema, eliminando la necesidad de pasar múltiples parámetros individuales entre componentes.
-
-- **Server**: Clase principal que actúa como el núcleo orquestador del sistema servidor. Sus responsabilidades incluyen:
-
-  **Inicialización del Sistema:**
-
-  - Configura el `ConnectionManager` para gestionar conexiones TCP entrantes
-  - Instancia `LotteryService` para manejar la lógica de negocio de apuestas
-  - Establece `ClientManager` para administrar sesiones activas de clientes
-  - Registra manejadores de señales (`SIGTERM`, `SIGINT`) para garantizar terminación controlada
-
-  > **Nota:** El manejo de `SIGINT` no es requerido por el enunciado, pero se agregó para facilitar el debugging local y verificar el correcto funcionamiento del shutdown graceful durante el desarrollo.
-
-  **Ciclo de Vida del Servidor:**
-
-  1. **Inicio**: Activa la escucha en el puerto configurado
-  2. **Aceptación**: Permanece bloqueado esperando conexiones entrantes
-  3. **Sesión**: Crea una instancia `ClientSession` para cada cliente conectado
-  4. **Delegación**: Transfiere el control al cliente para procesamiento de apuestas
-  5. **Finalización**: Ejecuta shutdown graceful liberando todos los recursos
-
-  **Limitación Actual:** Según los requisitos de este ejercicio, la implementación procesa únicamente un cliente de forma secuencial. Esta arquitectura será escalada en ejercicios posteriores.
-
 ## Session
-
-Gestiona las sesiones de usuario o conexión. Mantiene el estado de las interacciones, autenticación y el contexto de cada cliente conectado.
-
-Este módulo contiene 2 clases fundamentales:
-
-- **ClientSession**: Representa una sesión individual de cliente y maneja todo el ciclo de vida de la comunicación con una agencia. Sus responsabilidades incluyen:
-
-  **Inicialización:**
-
-  - Almacena la referencia de conexión (`ConnectionInterface`) para comunicación directa
-  - Mantiene un ID único de agencia para identificación
-  - Configura el `AgencyHandler` para manejar el protocolo de comunicación
-  - Establece la referencia al `LotteryService` para procesamiento de apuestas
-
-  **Procesamiento Principal (`begin`):**
-
-  1. **Recepción**: Utiliza `AgencyHandler` para recibir apuestas del cliente
-  2. **Almacenamiento**: Delega al `LotteryService` para persistir las apuestas
-  3. **Confirmación**: Envía confirmación de éxito al cliente
-  4. **Manejo de errores**: Captura excepciones y envía confirmación de fallo
-
-  **Finalización (`finish`):**
-
-  - Cierra la conexión de red de forma controlada
-  - Libera recursos asociados a la sesión
-
-- **ClientManager**: Actúa como un registro centralizado y coordinador de todas las sesiones activas. Sus funciones principales son:
-
-  **Gestión de Sesiones:**
-
-  - Mantiene una lista de todas las sesiones de cliente activas
-  - Asigna IDs únicos secuenciales a cada nueva sesión
-  - Proporciona una interfaz unificada para administrar múltiples clientes
-
-  **Ciclo de Vida de Clientes:**
-
-  - **`add_client()`**: Crea nuevas instancias de `ClientSession` para conexiones entrantes
-  - **`remove_client()`**: Finaliza sesiones específicas y las elimina del registro
-  - **`shutdown()`**: Termina todas las sesiones activas durante el cierre del servidor
-
-  **Coordinación:**
-
-  - Comparte la misma instancia de `LotteryService` entre todos los clientes
-  - Garantiza que cada cliente tenga acceso a la lógica de negocio común
-  - Facilita la gestión centralizada de recursos
-
-  **Limitación Actual:** Para la escala de este ejercicio, la implementación de `ClientManager` no era estrictamente necesaria, sin embargo, proporciona una base sólida y escalable para resolver ejercicios posteriores que requerirán el manejo de múltiples clientes.
-
-## Utils
-
-Contiene utilidades auxiliares y funciones helper proporcionadas por la catedra para poder leer / escribir el archivo donde se almacenan los **Bets** (apuestas).
-
-Contiene únicamente el archivo `utils.py` proporcionado por la cátedra, el cual no puede ser modificado según las especificaciones del enunciado.
 
 # Cambios en la Arquitectura del Cliente
 
 ## Business
 
-Contiene la lógica de negocio específica del cliente. Maneja las reglas y procesos relacionados con la generación, validación y preparación de apuestas para su envío al servidor.
-
-Este módulo contiene el archivo `agency_service.go` que implementa la clase `AgencyService` con las siguientes responsabilidades:
-
-- **Validación de apuestas**: Verifica que el formato de las apuestas sea correcto (6 campos separados por comas)
-- **Lectura de datos**: Proporciona una interfaz para obtener las apuestas validadas
-- **Gestión de agencia**: Mantiene el ID único de la agencia para identificación
-
-**Limitación Actual:** La implementación actual procesa únicamente apuestas individuales obtenidas desde la configuración. En ejercicios posteriores, esta arquitectura se expandirá para leer múltiples apuestas desde archivos de agencias, manteniendo la misma estructura modular.
-
-
-## Client
-
-## Business
-
 Se modifica el servicio `AgencyService` para procesar múltiples apuestas desde archivos CSV:
 
 **Funcionalidad principal:**
+
 - **Inicialización**: Recibe la ruta del archivo CSV de la agencia durante la construcción del servicio
 - **Lectura de datos**: Utiliza `bufio.Scanner` de la librería estándar de Go para leer línea por línea el archivo de apuestas
 - **Gestión de recursos**: Implementa el método `Close()` para liberar correctamente los recursos del scanner al finalizar
 
 **Métodos implementados:**
+
 - `NewAgencyService(filePath string)`: Constructor que inicializa el servicio con la ruta del archivo CSV
 - `ReadBets()`: Lee y valida todas las apuestas del archivo, retornando una lista de apuestas estructuradas
 - `Close()`: Cierra el scanner y libera recursos asociados
@@ -221,10 +78,18 @@ Se modifica el servicio `AgencyService` para procesar múltiples apuestas desde 
 
 Ahora en lugar de procesar una apuesta individual desde variables de entorno, se configura la instancia de `ClientConfig` con un nuevo parámetro llamado `AgencyFilePath`. Esta ruta de archivo se utiliza posteriormente en `AgencyService` para leer múltiples apuestas desde archivos CSV.
 
+## Client
 
 ## Protocol
 
-El protocolo se mantiene igual, pero a diferencia con el ejercicio anterior se envia batches de Bets en vez de un solo bet
+El protocolo mantiene la misma estructura base, pero incorpora mejoras para el procesamiento de múltiples apuestas:
+
+**Cambios principales:**
+
+- **Envío masivo**: Se transmiten lotes de apuestas (batches) en lugar de apuestas individuales
+- **Confirmación simplificada**: La función `RecvConfirmation()` ahora recibe únicamente un header de estado en lugar de información detallada de cada apuesta
+
+### Estructura del Protocolo
 
 **Protocolo de envío:**
 
@@ -232,27 +97,26 @@ El protocolo se mantiene igual, pero a diferencia con el ejercicio anterior se e
 [HEADER_BYTE] [LENGTH_BYTE] [BET_DATA]
 ```
 
-#### `RecvConfirmation(connSock *ConnectionInterface)`
-
-Recibe y procesa la confirmación del servidor:
-
-1. **Verificación de header**: Lee el header de respuesta (`SUCCESS_HEADER`)
-2. **Longitud del mensaje**: Obtiene la longitud de la respuesta
-3. **Datos de confirmación**: Lee los datos de confirmación (DNI y número de apuesta)
-4. **Logging**: Registra el resultado de la operación
-
 **Protocolo de recepción:**
 
 ```
-[SUCCESS_HEADER][RESPONSE_LENGTH][CONFIRMATION_DATA]
+[SUCCESS_HEADER]
 ```
+
+puede ser tando un valor de SUCCESS como uno de FAIL
 
 # Cómo Ejecutar
 
-1. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
-2. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
-3. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
-4. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
+1. generar un archivo .yaml de docker-compose mediante la funcion
+
+```bash
+./generar-compose.sh docker-compose-dev.yaml 2
+```
+
+2. **Limpieza inicial**: Ejecutar `make docker-compose-down` para asegurar un inicio limpio
+3. **Inicio de contenedores**: Ejecutar `make docker-compose-up` para iniciar los contenedores de servidor y cliente
+4. **Visualización de logs**: Ejecutar `make docker-compose-logs` para ver los resultados y outputs del servidor y clientes
+5. **Verificación de estado**: Ejecutar `docker ps -a` para confirmar que los contenedores finalizaron con exit status 0
 
 ## Script de Automatización
 
