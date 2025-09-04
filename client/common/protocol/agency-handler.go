@@ -10,15 +10,15 @@ import (
 
 var log = logging.MustGetLogger("log")
 
-type BetHandler struct {
+type AgencyHandler struct {
 	MaxBatchAmount int
 }
 
-func NewBetHandler() *BetHandler {
-	return &BetHandler{}
+func NewBetHandler() *AgencyHandler {
+	return &AgencyHandler{}
 }
 
-func (b *BetHandler) SendBets(bets string, connSock *network.ConnectionInterface) error {
+func (b *AgencyHandler) SendBets(bets string, connSock *network.ConnectionInterface) error {
 
 	if len(bets) > MAX_BATCH_SIZE {
 		return fmt.Errorf("bets size too big to send: %d bytes (max %d)", len(bets), MAX_BATCH_SIZE)
@@ -44,7 +44,7 @@ func (b *BetHandler) SendBets(bets string, connSock *network.ConnectionInterface
 	return err
 }
 
-func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) error {
+func (b *AgencyHandler) RecvConfirmation(connSock *network.ConnectionInterface) error {
 	headerData := make([]byte, SUCCESS_HEADER_SIZE)
 	err := connSock.ReceiveData(headerData)
 	if err != nil {
@@ -62,7 +62,7 @@ func (b *BetHandler) RecvConfirmation(connSock *network.ConnectionInterface) err
 	return nil
 }
 
-func (b *BetHandler) SendDone(connSock *network.ConnectionInterface) error {
+func (b *AgencyHandler) SendDone(connSock *network.ConnectionInterface) error {
 	err := connSock.SendData([]byte(EOF))
 	return err
 }

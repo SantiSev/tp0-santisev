@@ -19,7 +19,7 @@ type Client struct {
 	config        ClientConfig
 	connManager   network.ConnectionManager
 	connInterface *network.ConnectionInterface
-	betHandler    protocol.BetHandler
+	betHandler    protocol.AgencyHandler
 	agencyService business.AgencyService
 }
 

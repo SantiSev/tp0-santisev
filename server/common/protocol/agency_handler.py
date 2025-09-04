@@ -7,7 +7,7 @@ from common.utils.utils import Bet
 from common.protocol.protocol_constants import *
 
 
-class BetHandler:
+class AgencyHandler:
     """Handles individual client connections"""
 
     def __init__(self):

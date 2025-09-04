@@ -33,7 +33,6 @@ for i in $(seq 1 "$AMOUNT_CLIENTS"); do
     environment:
       - CLI_ID=$i
       - CLI_AGENCY_FILEPATH=/data/agency.csv
-      - CLI_CONFIG_FILEPATH=./config.yaml
     networks:
       - testing_net
     volumes:

@@ -5,11 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/op/go-logging"
 )
-
-var log = logging.MustGetLogger("log")
 
 type AgencyService struct {
 	agency_id      uint8
