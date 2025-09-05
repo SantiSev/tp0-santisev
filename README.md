@@ -26,8 +26,47 @@ Se modifica la arquitectura del servidor para manejar múltiples clientes en par
 - **Creación inmediata**: Cada cliente conectado genera un proceso instantáneamente
 - **Ejecución paralela**: Los procesos corren simultáneamente sin bloquearse entre sí
 - **Función externa**: `handle_client()` se ejecuta fuera del contexto del servidor principal
-- **Sincronización final**: `join()` garantiza que todos los procesos terminen antes del sorteo
+- **Sincronización final**: `join()` garantiza que todos los procesos terminen antes del sorteo, en caso de haber un error con alguno de los clientes, se desconecta gracefully el cliente del server
 - **Cleanup automático**: Los procesos se liberan automáticamente al completarse
+
+
+## Session
+
+Se modifica el manejo de sesiones para procesar múltiples clientes de forma concurrente y gestionar desconexiones robustamente durante el procesamiento paralelo.
+
+### Cambio en el Modelo de Manejo de Errores
+
+**Implementación anterior:**
+- `client_session.begin()` retornaba un booleano indicando éxito/fallo
+- El servidor manejaba la desconexión directamente a través del `ClientManager`
+> Esto se debe a que en el ejercicio 7 el procesamiento es secuencial y es facil hacer la limpieza de esta forma
+
+**Implementación actual:**
+- `client_session.begin()` propaga excepciones directamente (`raise exception`)
+- El proceso externo `handle_client()` captura la excepción y termina con `exit(1)`
+- Los procesos exitosos terminan con `exit(0)`
+
+### Ventajas del Nuevo Diseño
+
+**Detección automática de fallos:**
+Al ejecutar `join()` en todos los procesos, el servidor puede identificar automáticamente qué clientes fallaron mediante sus códigos de salida. Los procesos con `exitcode != 0` indican clientes que experimentaron errores o desconexiones.
+
+**Cleanup selectivo:**
+El `ClientManager` desconecta únicamente a los clientes fallidos, manteniendo activos aquellos que completaron exitosamente su procesamiento. Esto permite que la lotería proceda normalmente con los participantes válidos.
+
+
+### Flujo de Procesamiento
+
+```
+1. Múltiples procesos ejecutan clientes en paralelo
+2. Cada proceso termina con exit(0) (éxito) o exit(1) (fallo)
+3. El servidor ejecuta join() y examina códigos de salida
+4. Clientes fallidos se remueven del ClientManager
+5. La lotería procede solo con clientes exitosos
+6. Resultados se envían únicamente a participantes válidos
+```
+
+**Resultado:** Sistema robusto que garantiza la entrega de resultados de lotería a todos los clientes que completaron exitosamente el procesamiento de sus apuestas, sin verse afectado por desconexiones o fallos de otros participantes.
 
 
 ## Business
