@@ -116,7 +116,18 @@ La clase ConnectionInterface implementan mecanismos robustos para manejar lectur
 
 - `receive function`: Utiliza el método `_receive_all()` para garantizar la recepción completa de datos mediante un bucle que continúa hasta obtener exactamente la cantidad de bytes solicitada, evitando problemas de short reads.
 
-- `send function`: Utiliza `sendall()` para asegurar el envío completo de datos, manejando automáticamente las escrituras parciales que pueden ocurrir en redes congestionadas.
+- `send function`: Utiliza `sendall()` de la libreria de `socket` para asegurar el envío completo de datos, manejando automáticamente las escrituras parciales que pueden ocurrir en redes congestionadas.
+
+### Questiones Importantes:
+¿Es `sendall()` realmente **short-write proof**?
+
+Segun la documentacion oficial de la libreria de [socket](https://docs.python.org/3/library/socket.html#socket.socket.sendall):
+
+
+> _"Send data to the socket. The socket must be connected to a remote socket. The optional flags argument has the same meaning as for recv() above.**Unlike send(), this method continues to send data from bytes until either all data has been sent or an error occurs. None is returned on success. On error, an exception is raised, and there is no way to determine how much data, if any, was successfully sent.**"_
+
+En conclusión, `sendall()` asegura el envío completo de los datos o lanza una excepción en caso de error, sin indicar cuántos bytes se enviaron. La implementación de `ConnectionInterface` maneja estas excepciones y realiza el raise correspondiente si ocurre un fallo.
+
 
 ## Protocol
 
@@ -332,6 +343,16 @@ Este módulo contiene 2 clases fundamentales:
 - `SendData()` utiliza un loop que continúa escribiendo hasta enviar todos los bytes
 
 - **`ReceiveData()`**: Utiliza la función estándar de Go `io.ReadFull()` que garantiza lectura completa del buffer
+
+### Questiones Importantes:
+¿Es `io.ReadFull()` realmente **short-read proof**?
+
+Segun la documentacion oficial de [golang](https://pkg.go.dev/io#ReadFull):
+
+
+> _"**ReadFull** reads exactly len(buf) bytes from r into buf. It returns the number of bytes copied and an error if fewer bytes were read. The error is EOF only if no bytes were read. If an EOF happens after reading some but not all the bytes, ReadFull returns ErrUnexpectedEOF. On return, n == len(buf) if and only if err == nil. If r returns an error having read at least len(buf) bytes, the error is dropped."_
+
+En conclusión, `io.ReadFull()` garantiza la lectura completa del buffer y detecta automáticamente cualquier falta de bytes mediante el error retornado.
 
 ## Protocol
 Define e implementa el protocolo de comunicación desde la perspectiva del cliente. Maneja la serialización de datos de apuestas, el formato de mensajes enviados al servidor y el procesamiento de las respuestas de confirmación recibidas.
