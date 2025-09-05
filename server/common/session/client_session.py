@@ -2,7 +2,6 @@ import logging
 from common.business.lottery_service import LotteryService
 from common.network.connection_interface import ConnectionInterface
 from common.protocol.agency_handler import AgencyHandler
-from common.utils.utils import Bet
 
 
 class ClientSession:
