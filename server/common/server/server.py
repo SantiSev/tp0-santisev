@@ -1,6 +1,4 @@
 import logging
-from multiprocessing import Lock, process
-from multiprocessing.dummy import Process
 import signal
 import sys
 from multiprocessing import Lock, Process
